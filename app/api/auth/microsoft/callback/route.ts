@@ -16,7 +16,7 @@ export async function GET(request: Request) {
   const clientSecret = process.env.MICROSOFT_CLIENT_SECRET!;
 
   const redirectUri =
-    "http://localhost:3000/api/auth/microsoft/callback";
+    "https://app.mentoriaprouni.intelectiasac.com/api/auth/microsoft/callback";
 
   const tokenResponse = await fetch(
     `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/token`,

@@ -5,7 +5,7 @@ export async function GET() {
   const clientId = process.env.MICROSOFT_CLIENT_ID!;
 
   const redirectUri =
-    "http://localhost:3000/api/auth/microsoft/callback";
+    "https://app.mentoriaprouni.intelectiasac.com/api/auth/microsoft/callback";
 
   const scopes = [
     "openid",
