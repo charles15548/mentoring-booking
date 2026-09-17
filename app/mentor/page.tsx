@@ -6,7 +6,7 @@ export default function MentorPage() {
       <p className="eyebrow">ESPACIO DEL MENTOR</p>
       <h1>Panel de mentoría</h1>
       <p>Desde aquí podrás revisar tus mentees, sesiones y acuerdos.</p>
-      <Link href="/">Volver al inicio</Link>
+      <Link href="/login">Volver al acceso</Link>
     </main>
   );
 }

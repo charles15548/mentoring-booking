@@ -1,6 +1,6 @@
-// app/page.tsx
 import { redirect } from "next/navigation";
 
-export default function Home() {
-  redirect("/acceso");
+// La raíz solo inicia el acceso al sistema.
+export default function HomePage() {
+  redirect("/login");
 }

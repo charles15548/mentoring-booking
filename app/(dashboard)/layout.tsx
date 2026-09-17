@@ -1,5 +1,6 @@
-import DashboardLayout from "@/components/dashboard-layout";
+import MenteeLayout from "@/components/dashboard-layout";
 
+// (dashboard) es un route group invisible: no crea una ruta /dashboard.
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <DashboardLayout>{children}</DashboardLayout>;
+  return <MenteeLayout>{children}</MenteeLayout>;
 }

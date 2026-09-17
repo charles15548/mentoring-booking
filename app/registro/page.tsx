@@ -33,7 +33,7 @@ export default function RegisterPage() {
       setLoading(false);
       return;
     }
-    if (data.session) router.replace("/");
+    if (data.session) router.replace("/mentores");
     else
       setMessage(
         "Cuenta creada. Revisa tu correo para confirmar el acceso y luego inicia sesión.",

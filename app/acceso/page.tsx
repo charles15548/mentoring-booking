@@ -10,12 +10,14 @@ export default function AccesoPage() {
 
   useEffect(() => {
     async function iniciar() {
+      // Esta pantalla no muestra un formulario. Solo recibe la sesión
+      // que la portada externa devuelve en el hash de la URL.
       const hash = new URLSearchParams(window.location.hash.substring(1));
 
       const accessToken = hash.get("access_token");
       const refreshToken = hash.get("refresh_token");
 
-      // Eliminamos los tokens de la URL inmediatamente
+      // Eliminamos los tokens de la URL inmediatamente.
       window.history.replaceState({}, "", "/acceso");
 
       if (!accessToken || !refreshToken) {
@@ -41,6 +43,7 @@ export default function AccesoPage() {
         return;
       }
 
+      // Después de validar la sesión, enviamos al usuario a su área.
       if (profile.rol === "coordinador") {
         router.replace("/coordinador");
         return;
