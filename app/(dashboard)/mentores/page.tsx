@@ -341,20 +341,19 @@ export default function MentoresPage() {
         <section className="mentor-picker" aria-label="Mentores disponibles">
           {mentors.map((mentor) => (
             <button
-              className={`mentor-option ${
+              className={`mentor-option flex items-center justify-between w-full gap-3 ${
                 selectedMentor?.id === mentor.id ? "selected" : ""
               }`}
               key={mentor.id}
               onClick={() => chooseMentor(mentor)}
             >
-              <span className="mentor-avatar">
-                {mentor.name.slice(0, 2).toUpperCase()}
+              <span className="flex flex-col min-w-0 text-left break-words">
+                <strong className="whitespace-normal">{mentor.name}</strong>
+                <small className="whitespace-normal">
+                  {mentor.businessName}
+                </small>
               </span>
-              <span>
-                <strong>{mentor.name}</strong>
-                <small>{mentor.businessName}</small>
-              </span>
-              <b>Ver agenda →</b>
+              <b className="whitespace-nowrap shrink-0">Ver agenda →</b>
             </button>
           ))}
         </section>

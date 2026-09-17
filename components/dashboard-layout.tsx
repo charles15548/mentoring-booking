@@ -40,8 +40,7 @@ export default function MenteeLayout({
   return (
     <main className="app-shell">
       <aside className="sidebar">
-        <div className="brand-lockup">
-          <div className="brand-mark">P</div>
+        <div className="brand-lockup"> 
           <div>
             <strong>PROUNI</strong>
             <span>Mentorías</span>
