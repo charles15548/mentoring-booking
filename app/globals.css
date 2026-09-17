@@ -34,3 +34,5 @@ button { border: 0; font: inherit; cursor: pointer; }
 
 .modal-backdrop { z-index: 30; }
 .booking-modal { z-index: 31; }
+.agenda-inline { margin-top: 34px; }.agenda-inline > h2 { font: 26px Georgia, serif; margin: 0 0 18px; }.reservation-list { display: grid; gap: 12px; }.reservation-card { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 22px; background: #fff; border: 1px solid var(--line); border-radius: 8px; }.reservation-card h2 { margin: 0 0 7px; font: 20px Georgia, serif; }.reservation-card p:not(.eyebrow) { margin: 0; color: var(--muted); font-size: 12px; }.reservation-card .eyebrow { color: #479278; margin-bottom: 8px; }.reservation-card time { color: var(--teal); font-size: 12px; white-space: nowrap; }
+@media (max-width: 680px) { .reservation-card { display: block; }.reservation-card time { display: block; margin-top: 16px; } }

@@ -1,6 +1,21 @@
 import { NextResponse } from "next/server";
 import type { CreateBookingInput } from "@/models/booking.model";
-import { graphRequest } from "@/lib/microsoft-graph";
+import { getBookingBusinessId, graphRequest, toGraphLocalDateTime } from "@/lib/microsoft-graph";
+
+export async function GET(request: Request) {
+  const email = new URL(request.url).searchParams.get("email")?.trim().toLowerCase();
+  if (!email) return NextResponse.json({ error: "Falta el correo del usuario" }, { status: 400 });
+  try {
+    const data = await graphRequest<{ value?: Array<Record<string, unknown>> }>(`/solutions/bookingBusinesses/${encodeURIComponent(getBookingBusinessId())}/appointments`);
+    const reservations = (data.value || []).filter((appointment) => {
+      const customers = appointment.customers as Array<{ emailAddress?: string }> | undefined;
+      return customers?.some((customer) => customer.emailAddress?.toLowerCase() === email);
+    });
+    return NextResponse.json(reservations);
+  } catch (error) {
+    return NextResponse.json({ error: error instanceof Error ? error.message : "No se pudieron consultar las reservas" }, { status: 500 });
+  }
+}
 
 export async function POST(request: Request) {
   const body = (await request.json()) as Partial<CreateBookingInput>;
@@ -38,13 +53,13 @@ export async function POST(request: Request) {
 
           startDateTime: {
             "@odata.type": "#microsoft.graph.dateTimeTimeZone",
-            dateTime: "2026-09-18T09:00:00.0000000",
+            dateTime: toGraphLocalDateTime(body.startAt),
             timeZone: "SA Pacific Standard Time",
           },
 
           endDateTime: {
             "@odata.type": "#microsoft.graph.dateTimeTimeZone",
-            dateTime: "2026-09-18T09:30:00.0000000",
+            dateTime: toGraphLocalDateTime(body.endAt),
             timeZone: "SA Pacific Standard Time",
           },
 
