@@ -1,7 +1,14 @@
 import { redirect } from "next/navigation";
+import LocalLoginForm from "./local-login-form";
 
-// El formulario de acceso vive en la portada externa de PROUNI.
-// Esa portada devuelve los tokens a /acceso después de autenticar.
+const externalLoginUrl = process.env.NEXT_PUBLIC_EXTERNAL_LOGIN_URL;
+const useExternalLogin =
+  process.env.NEXT_PUBLIC_LOGIN_MODE === "external" && externalLoginUrl;
+
 export default function LoginPage() {
-  redirect("https://mentoriaprouni.intelectiasac.com");
+  if (useExternalLogin) {
+    redirect(externalLoginUrl);
+  }
+
+  return <LocalLoginForm />;
 }

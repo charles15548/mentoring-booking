@@ -50,7 +50,7 @@ export default function AccesoPage() {
       }
 
       if (profile.rol === "mentor") {
-        router.replace("/mentor");
+        router.replace("/horarios");
         return;
       }
 
