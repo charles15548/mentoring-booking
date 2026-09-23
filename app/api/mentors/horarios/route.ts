@@ -177,7 +177,8 @@ export async function GET(request: NextRequest) {
    PUT
    ACTUALIZAR HORARIO SEMANAL
 ========================================================= */
-
+const PERU_BOOKINGS_TIME_ZONE =
+    "SA Pacific Standard Time";
 export async function PUT(request: NextRequest) {
   try {
     const mentor = await getCurrentMentor(request);
@@ -277,8 +278,9 @@ export async function PUT(request: NextRequest) {
 
     /* ================================
        ACTUALIZAR MICROSOFT
-    ================================= */
 
+    ================================= */
+    
     await graphRequest(
       `/solutions/bookingBusinesses/${encodeURIComponent(
         businessId,
@@ -291,6 +293,7 @@ export async function PUT(request: NextRequest) {
         body: JSON.stringify({
           "@odata.type":
             "#microsoft.graph.bookingStaffMember",
+          
 
           /*
             MUY IMPORTANTE:
@@ -299,7 +302,7 @@ export async function PUT(request: NextRequest) {
           useBusinessHours: false,
 
           timeZone:
-            "SA Pacific Standard Time",
+           PERU_BOOKINGS_TIME_ZONE,
 
           "workingHours@odata.type":
             "#Collection(microsoft.graph.bookingWorkHours)",

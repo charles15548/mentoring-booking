@@ -23,10 +23,12 @@ type AvailabilityItem = {
 
   startDateTime: {
     dateTime: string;
+    timeZone?: string;
   };
 
   endDateTime: {
     dateTime: string;
+    timeZone?: string;
   };
 };
 
@@ -46,12 +48,29 @@ type Props = {
   onClose: () => void;
 };
 
-function parseGraphDateTime(value: string) {
-  if (/(?:Z|[+-]\d{2}:?\d{2})$/.test(value)) {
+function parseGraphDateTime(value: string, timeZone?: string) {
+  if (/(?:Z|[+-]\d{2}:?\d{2})$/i.test(value)) {
     return new Date(value);
   }
+  const localDateTime = value.replace(/\.\d+$/,"");
 
-  return new Date(`${value}Z`);
+  const isPeruTimeZone =
+    timeZone === "SA Pacific Standard Time" ||
+    timeZone === "America/Lima" ||
+    timeZone?.includes("UTC-05:00");
+
+  if(isPeruTimeZone){
+    return new Date(`${localDateTime}-05:00`);
+  }
+  if(timeZone === "UTC"){
+    return new Date(`${localDateTime}Z`);
+  }
+
+  console.warn(
+    "Zona horaria no reconocida", timeZone
+  )
+
+  return new Date(`${localDateTime}Z`);
 }
 
 function durationMinutes(duration?: string) {
@@ -73,9 +92,10 @@ function createSlots(
 
   const start = parseGraphDateTime(
     availability.startDateTime.dateTime,
+    availability.startDateTime.timeZone
   ).getTime();
 
-  const end = parseGraphDateTime(availability.endDateTime.dateTime).getTime();
+  const end = parseGraphDateTime(availability.endDateTime.dateTime, availability.endDateTime.timeZone).getTime();
 
   const durationMs = duration * 60 * 1000;
 

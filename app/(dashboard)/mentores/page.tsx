@@ -154,7 +154,7 @@ export default function MentoresPage() {
           whiteSpace: "nowrap",
         }}
       >
-        Consultar →
+          →
       </b>
             </button>
           ))}

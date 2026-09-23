@@ -1,16 +1,15 @@
 "use client";
 
+import "./MenteeLayout.css";
+
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getCurrentProfile, signOut } from "@/services/auth.service";
+import type { ReactNode } from "react";
 import { supabase } from "@/lib/supabase";
+import { getCurrentProfile, signOut } from "@/services/auth.service";
 
-export default function MenteeLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function MenteeLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -38,7 +37,6 @@ export default function MenteeLayout({
           profile.email ||
           "Usuario",
       );
-
       setRol(profile.rol);
     }
 
@@ -50,8 +48,12 @@ export default function MenteeLayout({
     router.replace("/login");
   }
 
+  function active(path: string) {
+    return pathname === path || pathname.startsWith(`${path}/`);
+  }
+
   return (
-    <main className="app-shell">
+    <main className="app-shell mentee-shell">
       <aside className="sidebar">
         <div className="brand-lockup">
           <div>
@@ -60,13 +62,10 @@ export default function MenteeLayout({
           </div>
         </div>
 
-        {/* MENÚ MENTEE */}
         {rol === "mentee" && (
           <nav className="main-nav" aria-label="Navegación principal">
             <Link
-              className={`nav-item ${
-                pathname === "/mentores" ? "active" : ""
-              }`}
+              className={`nav-item ${active("/mentores") ? "active" : ""}`}
               href="/mentores"
             >
               <span className="nav-dot" />
@@ -74,9 +73,7 @@ export default function MenteeLayout({
             </Link>
 
             <Link
-              className={`nav-item ${
-                pathname === "/reservas" ? "active" : ""
-              }`}
+              className={`nav-item ${active("/reservas") ? "active" : ""}`}
               href="/reservas"
             >
               <span className="nav-dot" />
@@ -85,40 +82,29 @@ export default function MenteeLayout({
           </nav>
         )}
 
-        {/* MENÚ MENTOR */}
         {rol === "mentor" && (
           <nav className="main-nav" aria-label="Navegación principal">
-        
-
-            {/* <Link
-              className={`nav-item ${
-                pathname === "/mentor/reservas" ? "active" : ""
-              }`}
-              href="/mentor/reservas"
-            >
-              <span className="nav-dot" />
-              Mis mentorías
-            </Link> */}
-
             <Link
-              className={`nav-item ${
-                pathname === "/horarios" ? "active" : ""
-              }`}
+              className={`nav-item ${active("/horarios") ? "active" : ""}`}
               href="/horarios"
             >
-              <span className="nav-dot"/>
+              <span className="nav-dot" />
               Horarios
+            </Link>
+            <Link
+              className={`nav-item ${active("/reservasMentor") ? "active" : ""}`}
+              href="/reservasMentor"
+            >
+              <span className="nav-dot" />
+              Mentorias
             </Link>
           </nav>
         )}
 
-        {/* MENÚ COORDINADOR */}
         {rol === "coordinador" && (
           <nav className="main-nav" aria-label="Navegación principal">
             <Link
-              className={`nav-item ${
-                pathname === "/coordinador" ? "active" : ""
-              }`}
+              className={`nav-item ${pathname === "/coordinador" ? "active" : ""}`}
               href="/coordinador"
             >
               <span className="nav-dot" />
@@ -126,13 +112,19 @@ export default function MenteeLayout({
             </Link>
 
             <Link
-              className={`nav-item ${
-                pathname === "/gestionMentores" ? "active" : ""
-              }`}
-              href="/gestionMentores/"
+              className={`nav-item ${active("/gestionMentores") ? "active" : ""}`}
+              href="/gestionMentores"
             >
               <span className="nav-dot" />
               Gestión de mentores
+            </Link>
+
+            <Link
+              className={`nav-item ${active("/gestionMentee") ? "active" : ""}`}
+              href="/gestionMentee"
+            >
+              <span className="nav-dot" />
+              Gestión de mentees
             </Link>
           </nav>
         )}
@@ -145,9 +137,7 @@ export default function MenteeLayout({
 
           <div className="profile-chip">
             <div className="avatar">
-              {name !== "Cargando..."
-                ? name.slice(0, 2).toUpperCase()
-                : "..."}
+              {name !== "Cargando..." ? name.slice(0, 2).toUpperCase() : "..."}
             </div>
 
             <div>
@@ -160,22 +150,7 @@ export default function MenteeLayout({
 
       <section className="content-area">
         <header className="topbar">
-          <div className="breadcrumb">
-            <span>Inicio</span>
-            <b>/</b>
-
-            <strong>
-              {pathname === "/reservas"
-                ? "Mis reservas"
-                : pathname === "/mentores"
-                  ? "Mentores disponibles"
-                  : pathname.startsWith("/mentor")
-                    ? "Panel de mentor"
-                    : pathname.startsWith("/coordinador")
-                      ? "Panel de coordinador"
-                      : "Inicio"}
-            </strong>
-          </div>
+          <span />
 
           <span className="status-pill">
             <i />

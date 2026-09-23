@@ -234,7 +234,7 @@
 
 :root {
   --ink: #17252d;
-  --muted: #718087;
+  --muted: #393a3a;
   --line: #e6eceb;
   --paper: #f7faf8;
   --white: #fff;
@@ -312,8 +312,7 @@
 }
 
 .mentor-option strong,
-.mentor-option small {
-  display: block;
+.mentor-option small { 
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -325,7 +324,7 @@
 
 .mentor-option small {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 14px;
   margin-top: 4px;
 }
 
@@ -916,8 +915,7 @@ button {
 }
 
 .slot span,
-.slot small {
-  display: block;
+.slot small { 
   font-size: 10px;
   color: var(--muted);
 }
@@ -937,7 +935,7 @@ button {
 }
 
 .slot.unavailable small {
-  color: #b4bfbd;
+  color: #4f5655;
 }
 
 .calendar-foot {
@@ -1329,7 +1327,9 @@ button {
   border: 1px solid var(--line);
   border-radius: 8px;
 }
-
+.reservation-card .eyebrow.eyebrow-pending {
+  color: var(--wine);
+}
 .reservation-card h2 {
   margin: 0 0 7px;
   font: 20px Georgia, serif;
@@ -1369,7 +1369,7 @@ button {
   --wine-dark: #651013;
   --gold: #d9a62e;
   --text: #2e2e2e;
-  --muted: #777;
+  --muted: #3a3a3a;
   --soft: #f7f6f3;
   --line: #e8e4df;
   --white: #fff;
@@ -1411,10 +1411,11 @@ select {
 }
 
 .eyebrow {
-  color: var(--wine);
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: .1em;
 }
+ 
+
 
 .app-shell {
   background: var(--soft);
@@ -1637,8 +1638,8 @@ select {
  
 
 
-.reservation-card .eyebrow {
-  color: var(--wine);
+.reservation-card .eyebrow.eyebrow-confirmed {
+  color: #16803a;
 }
 
 .agenda-backdrop,
@@ -1769,12 +1770,12 @@ select {
 .mentor-management-card p {
   margin: 0 0 4px;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .mentor-management-card small {
-  color: #999;
-  font-size: 11px;
+  color: #565656;
+  font-size: 13px;
 }
 
 .mentor-management-card>div:last-child {
@@ -1791,7 +1792,7 @@ select {
   background: #fff7df;
   color: var(--wine);
 
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 800;
 }
 
@@ -2184,4 +2185,51 @@ select {
   .scheduleActions :global(.primary-button) {
     width: 100%;
   }
+}
+
+
+
+/*Boton confirmar*/
+.btn-confirm-mentorship {
+  margin-top: 14px;
+  padding: 10px 18px;
+
+  border: none;
+  border-radius: 8px;
+
+  background: #b91c1c;
+  color: #ffffff;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.btn-confirm-mentorship:hover {
+  background: #991b1b;
+
+  transform: translateY(-1px);
+
+  box-shadow: 0 4px 10px
+    rgba(0, 0, 0, 0.15);
+}
+
+.btn-confirm-mentorship:active {
+  transform: translateY(0);
+}
+
+.btn-confirm-mentorship:disabled {
+  background: #d1d5db;
+  color: #6b7280;
+
+  cursor: not-allowed;
+
+  box-shadow: none;
+  transform: none;
 }
