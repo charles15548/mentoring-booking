@@ -2089,7 +2089,7 @@ select {
   margin-top: 22px;
 }
 
-.scheduleActions :global(.primary-button) {
+.scheduleActions .primary-button {
   width: auto;
   min-width: 180px;
 }
@@ -2182,7 +2182,7 @@ select {
     justify-content: stretch;
   }
 
-  .scheduleActions :global(.primary-button) {
+  .scheduleActions .primary-button {
     width: 100%;
   }
 }
