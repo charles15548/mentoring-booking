@@ -288,8 +288,7 @@ export default function HorariosPage() {
           <h1>Mis horarios</h1>
 
           <p className="intro">
-            Define los horarios semanales en los que deseas
-            recibir mentorías.
+           Aquí puedes definir los días y horarios en los que estás disponible para brindar mentorías.
           </p>
 
           {mentorName && (

@@ -1,68 +1,272 @@
 .mentee-shell {
   --sidebar-width: 254px;
+
   min-height: 100vh;
   min-height: 100dvh;
-  background: var(--soft);
 }
+
+/* =====================================================
+   SIDEBAR
+===================================================== */
 
 .mentee-shell > .sidebar {
   position: fixed;
   z-index: 100;
+
   top: 0;
   bottom: 0;
   left: 0;
+
   width: var(--sidebar-width);
+
   height: 100vh;
   height: 100dvh;
+
   display: flex;
   flex-direction: column;
+
   overflow-x: hidden;
   overflow-y: auto;
-  padding: 30px 18px 20px;
-  background: var(--wine);
-  color: #f9e9e5;
-  box-shadow: 8px 0 24px rgba(54, 12, 14, 0.08);
+
+  padding: 24px 16px 18px;
 }
+
+/* =====================================================
+   LOGO
+===================================================== */
+
+.mentee-shell .brand-lockup {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+
+  margin-bottom: 32px;
+}
+
+.mentee-shell .brand-logo {
+  width: 180px;
+  height: auto;
+
+  border-radius: 7px;
+
+  object-fit: contain;
+}
+
+/* =====================================================
+   NAVEGACIÓN
+===================================================== */
+
+.mentee-shell .main-nav {
+  display: flex;
+  flex-direction: column;
+
+  gap: 6px;
+}
+
+.mentee-shell .nav-item {
+  width: 100%;
+  min-height: 46px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 11px 13px;
+
+  border: none;
+  border-radius: 9px;
+
+  text-decoration: none;
+
+  cursor: pointer;
+}
+
+.mentee-shell .nav-item svg {
+  flex-shrink: 0;
+}
+
+/* =====================================================
+   BOTÓN CERRAR SESIÓN
+===================================================== */
+
+.mentee-shell .sidebar-bottom {
+  margin-top: auto;
+
+  padding-top: 20px;
+}
+
+.mentee-shell .logout-item {
+  text-align: left;
+}
+
+/* =====================================================
+   CONTENT
+===================================================== */
 
 .mentee-shell > .content-area {
   width: calc(100% - var(--sidebar-width));
+
   min-width: 0;
+
   min-height: 100vh;
   min-height: 100dvh;
+
   margin-left: var(--sidebar-width);
 }
 
+/* =====================================================
+   HEADER / TOPBAR
+===================================================== */
+
 .mentee-shell .topbar {
   position: sticky;
-  z-index: 50;
+
+  z-index: 40;
+
   top: 0;
+
+  min-height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 24px;
+
+  padding: 10px 24px;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
-/* El perfil y el botón de salida permanecen al final del sidebar. */
-.mentee-shell .sidebar-bottom {
-  margin-top: auto;
-}
+/* =====================================================
+   TÍTULO DE PÁGINA
+===================================================== */
 
-/* Evita que nombres o correos largos ensanchen el sidebar. */
-.mentee-shell .profile-chip,
-.mentee-shell .profile-chip > div:last-child {
+.mentee-shell .topbar-page-info {
   min-width: 0;
 }
 
-.mentee-shell .profile-chip strong,
-.mentee-shell .profile-chip span {
+.mentee-shell .topbar-page-info h1 {
+  margin: 0;
+
+  white-space: nowrap;
+}
+
+/* =====================================================
+   PARTE DERECHA DEL HEADER
+===================================================== */
+
+.mentee-shell .topbar-actions {
+  display: flex;
+  align-items: center;
+
+  gap: 16px;
+
+  flex-shrink: 0;
+}
+
+/* =====================================================
+   BOOKING CONECTADO
+===================================================== */
+
+.mentee-shell .status-pill {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  padding: 7px 11px;
+
+  border-radius: 999px;
+
+  white-space: nowrap;
+}
+
+/* =====================================================
+   DIVISOR
+===================================================== */
+
+.mentee-shell .header-divider {
+  width: 1px;
+  height: 32px;
+}
+
+/* =====================================================
+   PERFIL EN HEADER
+===================================================== */
+
+.mentee-shell .header-profile {
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+.mentee-shell .avatar {
+  width: 38px;
+  height: 38px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+}
+
+.mentee-shell .header-profile-info {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 2px;
+}
+
+.mentee-shell .header-profile-info strong {
+  max-width: 260px;
+
   overflow: hidden;
+
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* =====================================================
+   RESPONSIVE TABLET
+===================================================== */
+
+@media (max-width: 1050px) {
+  .mentee-shell .header-profile-info strong {
+    max-width: 120px;
+  }
 }
 
 @media (max-width: 900px) {
   .mentee-shell {
     --sidebar-width: 210px;
   }
+
+  .mentee-shell .status-pill span {
+    display: none;
+  }
+
+  .mentee-shell .status-pill {
+    padding: 8px;
+  }
 }
 
-/* En móvil se convierte en una barra superior para no tapar el contenido. */
+/* =====================================================
+   MÓVIL
+===================================================== */
+
 @media (max-width: 680px) {
   .mentee-shell {
     min-height: 100dvh;
@@ -70,19 +274,62 @@
 
   .mentee-shell > .sidebar {
     position: sticky;
+
     top: 0;
     bottom: auto;
+
     width: 100%;
     height: auto;
+
     max-height: none;
-    padding: 14px 16px;
+
+    padding: 12px 14px;
+
     overflow-x: auto;
     overflow-y: visible;
-    box-shadow: 0 5px 18px rgba(54, 12, 14, 0.12);
   }
 
   .mentee-shell > .content-area {
     width: 100%;
+
     margin-left: 0;
+  }
+
+  .mentee-shell .brand-lockup {
+    display: none;
+  }
+
+  .mentee-shell .main-nav {
+    flex-direction: row;
+
+    min-width: max-content;
+
+    gap: 5px;
+  }
+
+  .mentee-shell .nav-item {
+    width: auto;
+
+    min-height: 30px;
+
+    padding: 9px 11px;
+  }
+
+  .mentee-shell .sidebar-bottom {
+    display: none;
+  }
+
+  .mentee-shell .topbar {
+    min-height: 30px;
+
+    padding: 10px 16px;
+  }
+
+  .mentee-shell  {
+    display: none;
+  }
+
+  .mentee-shell .header-divider {
+    display: none;
   }
 }

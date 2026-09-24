@@ -156,10 +156,7 @@ export default function ModalReserva({
         );
       }
 
-      window.alert(
-        "Reserva confirmada correctamente.",
-      );
-
+     
       onSuccess();
     } catch (error) {
       setError(

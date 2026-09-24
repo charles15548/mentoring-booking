@@ -104,6 +104,28 @@
   box-shadow: 0 0 0 3px #1f7c7918;
 }
 
+.login-form textarea {
+  display: block;
+  width: 100%;
+  min-height: 130px;
+  box-sizing: border-box;
+  margin-top: 7px;
+  padding: 13px 14px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: var(--white);
+  color: var(--text);
+  font: inherit;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.login-form textarea:focus {
+  outline: none;
+  border-color: var(--wine);
+  box-shadow: 0 0 0 3px rgb(133 20 24 / 8%);
+}
+
 .form-error {
   color: #b25c50;
   background: var(--coral-soft);
@@ -710,7 +732,7 @@ button {
 .intro {
   color: var(--muted);
   margin: 10px 0 0;
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .streak-card {
@@ -1640,6 +1662,9 @@ select {
 
 .reservation-card .eyebrow.eyebrow-confirmed {
   color: #16803a;
+}
+.eyebrow-vencida{
+  color: #474e4e
 }
 
 .agenda-backdrop,

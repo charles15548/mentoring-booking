@@ -240,8 +240,7 @@ export default function GestionMenteePage() {
           <h1>Gestión de mentees</h1>
 
           <p className="intro">
-            Participantes registrados para recibir mentorías y vinculados como
-            clientes en Microsoft Bookings.
+         Administra a las personas que reciben mentoría.<br/> Aquí puedes registrar nuevos mentees, consultar sus datos, editar sus perfiles o eliminarlos.
           </p>
         </div>
 

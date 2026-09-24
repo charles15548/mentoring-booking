@@ -196,7 +196,7 @@ export default function GestionMentoresPage() {
           <p className="eyebrow">COORDINACIÓN · PROUNI</p>
           <h1>Gestión de mentores</h1>
           <p className="intro">
-            Mentores registrados como personal en Microsoft Bookings.
+           Administra a las personas que brindan mentoría. <br/>Aquí puedes registrar nuevos mentores, consultar sus datos, editar sus perfiles o eliminarlos.
           </p>
         </div>
 

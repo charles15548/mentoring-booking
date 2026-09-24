@@ -82,8 +82,7 @@ export default function MentoresPage() {
           </h1>
 
           <p className="intro">
-            Selecciona un mentor para revisar
-            sus próximos horarios disponibles.
+      Selecciona un mentor para consultar sus horarios disponibles y reservar una sesión.
           </p>
         </div>
       </section>
