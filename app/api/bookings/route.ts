@@ -8,6 +8,9 @@ import {
 } from "@/lib/microsoft-graph";
 import { supabase } from "@/lib/supabase";
 import { error } from "console";
+import {
+  supabaseAdmin,
+} from "@/lib/supabase-admin";
 
 
 
@@ -145,6 +148,8 @@ export async function GET(request: Request) {
     );
   }
 }
+
+
 
  
 

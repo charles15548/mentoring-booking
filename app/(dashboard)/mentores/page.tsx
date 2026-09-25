@@ -1,11 +1,9 @@
 "use client";
 
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 
 import Horarios from "./Horarios";
+import { supabase } from "@/lib/supabase";
 
 type Mentor = {
   id: string;
@@ -14,34 +12,32 @@ type Mentor = {
 };
 
 export default function MentoresPage() {
-  const [mentores, setMentores] =
-    useState<Mentor[]>([]);
+  const [mentores, setMentores] = useState<Mentor[]>([]);
 
-  const [selectedMentor, setSelectedMentor] =
-    useState<Mentor | null>(null);
+  const [selectedMentor, setSelectedMentor] = useState<Mentor | null>(null);
 
-  const [isLoading, setIsLoading] =
-    useState(true);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [error, setError] =
-    useState("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     async function cargarMentores() {
       try {
         setIsLoading(true);
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        const response = await fetch("/api/mentors", {
+          cache: "no-store",
+          headers: {
+            Authorization: `Bearer ${session?.access_token}`,
+          },
+        });
 
-        const response =
-          await fetch("/api/mentors");
-
-        const data =
-          await response.json();
+        const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(
-            data.error ||
-              "No se pudieron obtener los mentores.",
-          );
+          throw new Error(data.error || "No se pudieron obtener los mentores.");
         }
 
         setMentores(data);
@@ -73,31 +69,22 @@ export default function MentoresPage() {
     <div className="page-content">
       <section className="welcome-row">
         <div>
-          <p className="eyebrow">
-            PROUNI · MENTORÍAS
-          </p>
+          <p className="eyebrow">PROUNI · MENTORÍAS</p>
 
-          <h1>
-            Elige tu mentor
-          </h1>
+          <h1>Elige tu mentor</h1>
 
           <p className="intro">
-      Selecciona un mentor para consultar sus horarios disponibles y reservar una sesión.
+            Selecciona un mentor para consultar sus horarios disponibles y
+            reservar una sesión.
           </p>
         </div>
       </section>
 
-      {error && (
-        <p className="form-error">
-          {error}
-        </p>
-      )}
+      {error && <p className="form-error">{error}</p>}
 
       {mentores.length === 0 ? (
         <section className="empty-state">
-          <h2>
-            No hay mentores disponibles
-          </h2>
+          <h2>No hay mentores disponibles</h2>
         </section>
       ) : (
         <section className="mentor-picker">
@@ -105,56 +92,52 @@ export default function MentoresPage() {
             <button
               key={mentor.id}
               className={`mentor-option ${
-                selectedMentor?.id === mentor.id
-                  ? "selected"
-                  : ""
+                selectedMentor?.id === mentor.id ? "selected" : ""
               }`}
-              onClick={() =>
-                setSelectedMentor(mentor)
-              }
+              onClick={() => setSelectedMentor(mentor)}
             >
-                    <span
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "4px",
-          minWidth: 0,
-          flex: 1,
-        }}
-      >
-        <strong
-          style={{
-            display: "block",
-            whiteSpace: "normal",
-            overflowWrap: "anywhere",
-            wordBreak: "break-word",
-            lineHeight: 1.4,
-          }}
-        >
-          {mentor.name}
-        </strong>
+              <span
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "4px",
+                  minWidth: 0,
+                  flex: 1,
+                }}
+              >
+                <strong
+                  style={{
+                    display: "block",
+                    whiteSpace: "normal",
+                    overflowWrap: "anywhere",
+                    wordBreak: "break-word",
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {mentor.name}
+                </strong>
 
-        <small
-          style={{
-            display: "block",
-            whiteSpace: "normal",
-            overflowWrap: "anywhere",
-            wordBreak: "break-word",
-            lineHeight: 1.4,
-          }}
-        >
-          {mentor.email}
-        </small>
-      </span>
+                <small
+                  style={{
+                    display: "block",
+                    whiteSpace: "normal",
+                    overflowWrap: "anywhere",
+                    wordBreak: "break-word",
+                    lineHeight: 1.4,
+                  }}
+                >
+                  {mentor.email}
+                </small>
+              </span>
 
-      <b
-        style={{
-          flexShrink: 0,
-          whiteSpace: "nowrap",
-        }}
-      >
-          →
-      </b>
+              <b
+                style={{
+                  flexShrink: 0,
+                  whiteSpace: "nowrap",
+                }}
+              >
+                →
+              </b>
             </button>
           ))}
         </section>
@@ -163,9 +146,7 @@ export default function MentoresPage() {
       {selectedMentor && (
         <Horarios
           mentor={selectedMentor}
-          onClose={() =>
-            setSelectedMentor(null)
-          }
+          onClose={() => setSelectedMentor(null)}
         />
       )}
     </div>

@@ -23,7 +23,7 @@ interface GraphStaffMember {
    SEGURIDAD
 ========================================================= */
 
-async function requireCoordinator(request: NextRequest) {
+export async function requireCoordinator(request: NextRequest) {
   const authorization = request.headers.get("authorization");
 
   if (!authorization?.startsWith("Bearer ")) {
@@ -61,7 +61,7 @@ async function requireCoordinator(request: NextRequest) {
   return user;
 }
 
-function handleError(error: unknown) {
+export function handleError(error: unknown) {
   console.error(error);
 
   const message =

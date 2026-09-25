@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 
 import {
+  Box,
   CalendarDays,
   CheckCircle2,
   Clock3,
@@ -78,6 +79,11 @@ const menus = {
       href: "/gestionMentee",
       label: "Gestión de mentees",
       icon: Users,
+    },
+    {
+      href: "/asignacion",
+      label: "Asignación",
+      icon: Box
     },
   ],
 };

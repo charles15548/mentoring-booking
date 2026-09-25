@@ -52,23 +52,21 @@ function parseGraphDateTime(value: string, timeZone?: string) {
   if (/(?:Z|[+-]\d{2}:?\d{2})$/i.test(value)) {
     return new Date(value);
   }
-  const localDateTime = value.replace(/\.\d+$/,"");
+  const localDateTime = value.replace(/\.\d+$/, "");
 
   const isPeruTimeZone =
     timeZone === "SA Pacific Standard Time" ||
     timeZone === "America/Lima" ||
     timeZone?.includes("UTC-05:00");
 
-  if(isPeruTimeZone){
+  if (isPeruTimeZone) {
     return new Date(`${localDateTime}-05:00`);
   }
-  if(timeZone === "UTC"){
+  if (timeZone === "UTC") {
     return new Date(`${localDateTime}Z`);
   }
 
-  console.warn(
-    "Zona horaria no reconocida", timeZone
-  )
+  console.warn("Zona horaria no reconocida", timeZone);
 
   return new Date(`${localDateTime}Z`);
 }
@@ -92,10 +90,13 @@ function createSlots(
 
   const start = parseGraphDateTime(
     availability.startDateTime.dateTime,
-    availability.startDateTime.timeZone
+    availability.startDateTime.timeZone,
   ).getTime();
 
-  const end = parseGraphDateTime(availability.endDateTime.dateTime, availability.endDateTime.timeZone).getTime();
+  const end = parseGraphDateTime(
+    availability.endDateTime.dateTime,
+    availability.endDateTime.timeZone,
+  ).getTime();
 
   const durationMs = duration * 60 * 1000;
 
@@ -304,7 +305,7 @@ export default function Horarios({ mentor, onClose }: Props) {
           <p
             style={{
               margin: 0,
-              fontSize: "14px", 
+              fontSize: "14px",
               lineHeight: 1.5,
             }}
           >
@@ -380,11 +381,9 @@ export default function Horarios({ mentor, onClose }: Props) {
                 marginBottom: "18px",
               }}
             >
-               
-
               <span
                 style={{
-                  fontSize: "13px", 
+                  fontSize: "13px",
                 }}
               >
                 Selecciona la fecha
@@ -405,11 +404,10 @@ export default function Horarios({ mentor, onClose }: Props) {
               style={{
                 margin: 0,
                 fontSize: "14px",
-                lineHeight: 1.5, 
+                lineHeight: 1.5,
               }}
             >
               Elige uno de los días disponibles.
-              
             </p>
           </div>
 
@@ -461,7 +459,6 @@ export default function Horarios({ mentor, onClose }: Props) {
                         fontSize: "12px",
                         fontWeight: 700,
                         textTransform: "uppercase",
-                        
                       }}
                     >
                       {info.weekday}
@@ -494,7 +491,7 @@ export default function Horarios({ mentor, onClose }: Props) {
                         padding: "5px 8px",
                         borderRadius: "999px",
                         background: "#f5f5f5",
-                        fontSize: "11px", 
+                        fontSize: "11px",
                       }}
                     >
                       {daySlots.length}{" "}
@@ -564,11 +561,9 @@ export default function Horarios({ mentor, onClose }: Props) {
                 marginBottom: "18px",
               }}
             >
-              
-
               <span
                 style={{
-                  fontSize: "13px", 
+                  fontSize: "13px",
                 }}
               >
                 Selecciona la hora
@@ -588,7 +583,7 @@ export default function Horarios({ mentor, onClose }: Props) {
               style={{
                 margin: 0,
                 fontSize: "14px",
-                 
+
                 lineHeight: 1.5,
               }}
             >
@@ -620,7 +615,7 @@ export default function Horarios({ mentor, onClose }: Props) {
                   style={{
                     display: "block",
                     fontSize: "11px",
-                    fontWeight: 700, 
+                    fontWeight: 700,
                     textTransform: "uppercase",
                     marginBottom: "3px",
                   }}
@@ -696,7 +691,7 @@ export default function Horarios({ mentor, onClose }: Props) {
               style={{
                 margin: "20px 0 0",
                 textAlign: "center",
-                fontSize: "12px", 
+                fontSize: "12px",
               }}
             >
               Hora local de Lima, Perú
