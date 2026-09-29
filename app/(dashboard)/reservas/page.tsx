@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import agreementStyles from "@/components/mentor-agreements.module.css";
 
 type Reservation = {
   id: string;
@@ -22,12 +24,16 @@ type Reservation = {
     dateTime: string;
   };
 
-  confirmed?: boolean;
   confirmedAt?: string | null;
   status?: string;
+  agreementCount?: number;
 };
 
-export default function ReservasPage() {
+export default function ReservasPage({
+  view = "reservas",
+}: {
+  view?: "reservas" | "mentorias";
+}) {
   const [items, setItems] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -86,64 +92,63 @@ export default function ReservasPage() {
     }
   }
 
-  async function cancelReservation(reservation:Reservation) {
-    try{
+  async function cancelReservation(reservation: Reservation) {
+    try {
       setCancellingId(reservation.id);
       setError("");
-      const {data: {session} } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       const email = session?.user?.email;
-      const response = await fetch("/api/bookings",
-      {
+      const response = await fetch("/api/bookings", {
         method: "DELETE",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            microsoftBookingId:
-              reservation.id,
-            email,
+          microsoftBookingId: reservation.id,
+          email,
         }),
       });
       const data = await response.json();
-       if (!response.ok) {
-      throw new Error(
-        data.error ||
-          "No se pudo cancelar la reserva.",
+      if (!response.ok) {
+        throw new Error(data.error || "No se pudo cancelar la reserva.");
+      }
+      setItems((currentItems) =>
+        currentItems.filter((item) => item.id !== reservation.id),
       );
-    }
-          setItems(
-      (currentItems) =>
-        currentItems.filter(
-          (item) =>
-            item.id !==
-            reservation.id,
-        ),
-    );
-    }catch(error){
-          console.error(
-      "Error cancelando reserva:",
-      error,
-    );
+    } catch (error) {
+      console.error("Error cancelando reserva:", error);
 
-    setError(
-      error instanceof Error
-        ? error.message
-        : "No se pudo cancelar la reserva.",
-    );
-    } finally{
+      setError(
+        error instanceof Error
+          ? error.message
+          : "No se pudo cancelar la reserva.",
+      );
+    } finally {
       setCancellingId(null);
     }
   }
+
+  const isCompleted = (item: Reservation) =>
+    item.status?.toLowerCase() === "confirmada" &&
+    !!item.startDateTime &&
+    new Date(item.startDateTime.dateTime).getTime() <= Date.now();
+  const visibleItems = items.filter((item) =>
+    view === "mentorias" ? isCompleted(item) : !isCompleted(item),
+  );
+  const isMentoriasView = view === "mentorias";
 
   return (
     <div className="page-content">
       <section className="welcome-row">
         <div>
-          <h1>Mis Reservas</h1>
+          <h1>{isMentoriasView ? "Mentorías" : "Mis Reservas"}</h1>
 
           <p className="intro">
-            Consulta tus mentorías programadas y verifica el estado de cada
-            reserva.
+            {isMentoriasView
+              ? "Consulta los acuerdos definidos en tus sesiones realizadas."
+              : "Consulta tus mentorías programadas y verifica el estado de cada reserva."}
           </p>
         </div>
       </section>
@@ -154,20 +159,32 @@ export default function ReservasPage() {
         </div>
       ) : error ? (
         <p className="form-error">{error}</p>
-      ) : items.length === 0 ? (
+      ) : visibleItems.length === 0 ? (
         <div className="empty-state">
-          <h2>Aún no tienes reservas</h2>
+          <h2>
+            {isMentoriasView
+              ? "Aún no tienes mentorías realizadas"
+              : "Aún no tienes reservas"}
+          </h2>
 
-          <p>Cuando reserves una mentoría aparecerá aquí.</p>
+          <p>
+            {isMentoriasView
+              ? "Las sesiones confirmadas aparecerán aquí cuando su hora haya pasado."
+              : "Cuando reserves una mentoría aparecerá aquí."}
+          </p>
         </div>
       ) : (
         <section className="reservation-list">
-          {items.map((item) => (
+          {visibleItems.map((item) => (
             <article className="reservation-card" key={item.id}>
               <div>
                 <p
                   className={`eyebrow ${
-                    item.status == "confirmada" ? "eyebrow-confirmed" : item.status == "pendiente" ? "eyebrow-pending" : "eyebrow-vencida"
+                    item.status == "confirmada"
+                      ? "eyebrow-confirmed"
+                      : item.status == "pendiente"
+                        ? "eyebrow-pending"
+                        : "eyebrow-vencida"
                   }`}
                 >
                   {item.status || "Pendiente"}
@@ -181,87 +198,83 @@ export default function ReservasPage() {
 
                 {item.mentorEmail && <p>{item.mentorEmail}</p>}
 
-                {item.confirmed && item.confirmedAt && (
-                  <p>
-                    Confirmada el{" "}
-                    {new Date(item.confirmedAt).toLocaleString("es-PE", {
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                      timeZone: "America/Lima",
-                    })}
-                  </p>
-                )}
+                {item.status?.toLowerCase() === "confirmada" &&
+                  item.confirmedAt && (
+                    <p>
+                      Confirmada el{" "}
+                      {new Date(item.confirmedAt).toLocaleString("es-PE", {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                        timeZone: "America/Lima",
+                      })}
+                    </p>
+                  )}
+
               </div>
 
-<div
-  style={{
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "flex-start",
-    gap: "12px",
-  }}
->
-  <time>
-    {item.startDateTime
-      ? new Date(
-          item.startDateTime
-            .dateTime,
-        ).toLocaleString(
-          "es-PE",
-          {
-            dateStyle:
-              "medium",
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  gap: "12px",
+                }}
+              >
+                <time>
+                  {item.startDateTime
+                    ? new Date(item.startDateTime.dateTime).toLocaleString(
+                        "es-PE",
+                        {
+                          dateStyle: "medium",
 
-            timeStyle:
-              "short",
+                          timeStyle: "short",
 
-            timeZone:
-              "America/Lima",
-          },
-        )
-      : "Fecha por confirmar"}
-  </time>
+                          timeZone: "America/Lima",
+                        },
+                      )
+                    : "Fecha por confirmar"}
+                </time>
 
-  {!item.confirmed && (
-    <button
-      type="button"
-      onClick={() =>
-        cancelReservation(item)
-      }
-      disabled={
-        cancellingId === item.id
-      }
-      style={{
-        minWidth: "180px",
-        padding: "10px 16px",
-        border: "1px solid #dc2626",
-        borderRadius: "10px",
-        backgroundColor:
-          "#ffffff",
-        color: "#dc2626",
-        fontSize: "14px",
-        fontWeight: 600,
-        cursor:
-          cancellingId ===
-          item.id
-            ? "not-allowed"
-            : "pointer",
-        opacity:
-          cancellingId ===
-          item.id
-            ? 0.6
-            : 1,
-      }}
-    >
-      {cancellingId ===
-      item.id
-        ? "Cancelando..."
-        : "Cancelar reserva"}
-    </button>
-  )}
-</div>
-
-
+                {item.status?.toLowerCase() === "pendiente" && (
+                  <button
+                    type="button"
+                    onClick={() => cancelReservation(item)}
+                    disabled={cancellingId === item.id}
+                    style={{
+                      minWidth: "180px",
+                      padding: "10px 16px",
+                      border: "1px solid #dc2626",
+                      borderRadius: "10px",
+                      backgroundColor: "#ffffff",
+                      color: "#dc2626",
+                      fontSize: "14px",
+                      fontWeight: 600,
+                      cursor:
+                        cancellingId === item.id ? "not-allowed" : "pointer",
+                      opacity: cancellingId === item.id ? 0.6 : 1,
+                    }}
+                  >
+                    {cancellingId === item.id
+                      ? "Cancelando..."
+                      : "Cancelar reserva"}
+                  </button>
+                )}
+                {isMentoriasView && (item.agreementCount ?? 0) > 0 && (
+                  <Link
+                    className={agreementStyles.manageLink}
+                  href={`/mentoriasMentee/${encodeURIComponent(item.id)}`}
+                  >
+                    {(item.agreementCount ?? 0) === 1
+                      ? "Ver 1 acuerdo"
+                      : `Ver ${item.agreementCount} acuerdos`}
+                  </Link>
+                )}
+                {isMentoriasView && (item.agreementCount ?? 0) === 0 && (
+                  <span className={agreementStyles.emptyAgreementStatus}>
+                    Sin acuerdos
+                  </span>
+                )}
+              </div>
             </article>
           ))}
         </section>

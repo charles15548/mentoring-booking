@@ -78,10 +78,6 @@ export async function GET() {
                           type: ["string", "null"],
                         },
 
-                        confirmed: {
-                          type: "boolean",
-                        },
-
                         confirmedAt: {
                           type: ["string", "null"],
                         },

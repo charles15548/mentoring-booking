@@ -88,7 +88,7 @@ export async function GET(request: Request) {
 
     const {data: confirmationsData} = await supabase
     .from("appointment_confirmations")
-.select("microsoft_booking_id, confirmed, confirmed_at, confirmed_by, status")
+.select("microsoft_booking_id, confirmed_at, confirmed_by, status")
     .in(
       "microsoft_booking_id",
       bookingIds,
@@ -102,6 +102,23 @@ export async function GET(request: Request) {
         ]
       )
     )
+    const { data: agreementsData, error: agreementsError } = await supabaseAdmin
+      .from("acuerdos")
+      .select("microsoft_booking_id")
+      .in("microsoft_booking_id", bookingIds);
+
+    if (agreementsError) {
+      console.error("Error contando acuerdos:", agreementsError);
+    }
+
+    const agreementCountMap = new Map<string, number>();
+
+    for (const agreement of agreementsData ?? []) {
+      agreementCountMap.set(
+        agreement.microsoft_booking_id,
+        (agreementCountMap.get(agreement.microsoft_booking_id) ?? 0) + 1,
+      );
+    }
     // construir respuesta
     const reservations = userAppointments.map(
       (appointment) => {
@@ -125,9 +142,9 @@ export async function GET(request: Request) {
           startDateTime: appointment.startDateTime,
           endDateTime: appointment.endDateTime,
         
-          confirmed: confirmation?.confirmed ?? false ,
           confirmedAt: confirmation?.confirmed_at?? null,
           status: confirmation?.status ?? "pendiente",
+          agreementCount: agreementCountMap.get(appointment.id) ?? 0,
         };
       });
 
@@ -242,9 +259,7 @@ export async function POST(request: Request) {
       .insert({
         microsoft_booking_id:
           appointment.id,
-        confirmed: false,
         status: "pendiente",
-        starts_at: body.startAt,
       });
 
     return NextResponse.json(
@@ -287,12 +302,12 @@ export async function DELETE(request:Request) {
     }
     const {data:confirmation} = await supabase
     .from("appointment_confirmations")
-    .select('microsoft_booking_id, confirmed')
+    .select('microsoft_booking_id, status')
     .eq('microsoft_booking_id', microsoftBookingId)
     .maybeSingle();
 
     // si esta confirmada, no se puede cancelar
-    if(confirmation?.confirmed === true){
+    if(confirmation?.status?.toLowerCase() === "confirmada"){
       return NextResponse.json(
         { error: "Esta mentoria ya fue confirmada y no se puede cancelar."},
         {status: 409}
@@ -316,6 +331,10 @@ export async function DELETE(request:Request) {
       })
     }
     )
+    await supabase
+      .from("appointment_confirmations")
+      .update({ status: "cancelada" })
+      .eq("microsoft_booking_id", microsoftBookingId);
     // repuesta
     return NextResponse.json({
       seccess: true,

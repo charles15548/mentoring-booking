@@ -1,0 +1,96 @@
+.backLink,
+.manageLink {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+}
+
+.backLink {
+  margin: -14px 0 24px;
+  color: var(--wine);
+}
+
+.backLink:hover { text-decoration: underline; }
+
+.formCard { display: block; margin-bottom: 24px; }
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.field,
+.field input,
+.field textarea,
+.field select {
+  min-width: 0;
+  width: 100%;
+}
+
+.field { display: grid; gap: 7px; color: var(--muted); font-size: 13px; font-weight: 700; }
+.wideField { grid-column: 1 / -1; }
+
+.form input,
+.form textarea,
+.statusControl select {
+  box-sizing: border-box;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--text);
+  font: inherit;
+  padding: 10px 12px;
+}
+
+.form textarea { resize: vertical; }
+.form input:focus, .form textarea:focus, .statusControl select:focus { outline: 2px solid color-mix(in srgb, var(--wine) 25%, transparent); border-color: var(--wine); }
+
+.submitButton,
+.deleteButton {
+  width: fit-content;
+  min-width: 160px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.submitButton { border: 1px solid var(--wine); background: var(--wine); color: #fff; }
+.submitButton:disabled { cursor: not-allowed; opacity: .65; }
+.deleteButton { border: 1px solid #d45a5a; background: #fff; color: #b42318; }
+
+.agreementActions { display: grid; min-width: 170px; gap: 12px; }
+.statusControl { display: grid; gap: 7px; color: var(--muted); font-size: 13px; font-weight: 700; }
+.statusControl select { cursor: pointer; }
+
+.manageLink { min-width: 180px; padding: 10px 16px; border: 1px solid var(--wine); background: var(--wine); color: #fff; }
+.manageLink:hover { background: #641014; border-color: #641014; }
+
+.emptyAgreementStatus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 180px;
+  min-height: 42px;
+  box-sizing: border-box;
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+@media (max-width: 680px) {
+  .form { grid-template-columns: 1fr; }
+  .wideField { grid-column: auto; }
+  .agreementActions { margin-top: 16px; }
+  .submitButton, .deleteButton, .manageLink, .emptyAgreementStatus { width: 100%; }
+}

@@ -23,7 +23,6 @@ function createAuthenticatedSupabase(token: string) {
     },
   );
 }
-
 /* =========================================================
    GET
    El mentor consulta SUS mentorías
@@ -137,13 +136,12 @@ export async function GET(request: Request) {
 
     const { data: confirmations, error: confirmationsError } = await db
       .from("appointment_confirmations")
-      .select("microsoft_booking_id, confirmed, confirmed_at, confirmed_by, status")
+      .select("microsoft_booking_id, confirmed_at, confirmed_by, status")
       .in("microsoft_booking_id", bookingIds);
 
     const confirmationMap: Record<
       string,
       {
-        confirmed: boolean;
         confirmed_at: string | null;
         confirmed_by: string | null;
         status: string | null;
@@ -170,9 +168,8 @@ export async function GET(request: Request) {
         startDateTime: appointment.startDateTime,
         endDateTime: appointment.endDateTime,
         onlineMeetingUrl: appointment.onlineMeetingUrl ?? null,
-        confirmed: confirmation?.confirmed ?? false,
         confirmedAt: confirmation?.confirmed_at ?? null,
-        status: confirmation?.status ?? "Pendiente",
+        status: confirmation?.status ?? "pendiente",
       };
     });
 
@@ -191,7 +188,6 @@ export async function GET(request: Request) {
     );
   }
 }
-
 /* =========================================================
    POST
    El mentor confirma una mentoría puntual
@@ -275,8 +271,6 @@ export async function POST(request: Request) {
         {
           microsoft_booking_id: microsoftBookingId,
 
-          confirmed: true,
-
           confirmed_by: user.id,
 
           confirmed_at: confirmedAt,
@@ -315,5 +309,4 @@ export async function POST(request: Request) {
     );
   }
 }
-
  

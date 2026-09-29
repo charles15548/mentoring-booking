@@ -41,8 +41,13 @@ const menus = {
     },
     {
       href: "/reservas",
-      label: "Mis reservas",
+      label: "Reservas",
       icon: CalendarDays,
+    },
+    {
+      href: "/mentoriasMentee",
+      label: "Mentorías",
+      icon: CheckCircle2,
     },
   ],
 
@@ -59,8 +64,13 @@ const menus = {
     },
     {
       href: "/reservasMentor",
-      label: "Mentorías",
+      label: "Reservas",
       icon: CalendarDays,
+    },
+    {
+      href: "/mentorias",
+      label: "Mentorías",
+      icon: CheckCircle2,
     },
   ],
 
