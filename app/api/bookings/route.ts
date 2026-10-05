@@ -188,9 +188,7 @@ export async function POST(request: Request) {
       await graphRequest<{
         id: string;
       }>(
-        `/solutions/bookingBusinesses/${encodeURIComponent(
-          businessId,
-        )}/appointments`,
+        `/solutions/bookingBusinesses/${encodeURIComponent(businessId)}/appointments`,
         {
           method: "POST",
           body: JSON.stringify({
