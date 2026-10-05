@@ -198,9 +198,23 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   let userId: string | null = null;
   let staffId: string | null = null;
+  const correlationId = crypto.randomUUID();
+  const startedAt = Date.now();
+  let stage = "authorize";
+  const log = (event: string, details: Record<string, unknown> = {}) => {
+    console.info(`[mentor-create:${event}]`, {
+      correlationId, stage, durationMs: Date.now() - startedAt, ...details,
+    });
+  };
+  const errorDetails = (error: unknown) => {
+    if (typeof error !== "object" || error === null) return { message: String(error) };
+    const value = error as { name?: string; message?: string; code?: string; status?: number; details?: string; hint?: string };
+    return { name: value.name, message: value.message, code: value.code, status: value.status, details: value.details, hint: value.hint };
+  };
 
   try {
     await requireCoordinator(request);
+    stage = "validate";
 
     const body = await request.json();
 
@@ -209,6 +223,8 @@ export async function POST(request: NextRequest) {
     const email = body.email?.trim().toLowerCase();
     const telefono = body.telefono?.trim() || "";
     const password = body.password?.trim();
+    // Log only the address being diagnosed, never the password or request body.
+    log("input", { email, emailWasNormalized: body.email !== email });
 
     if (!nombres || !email || !password) {
       return NextResponse.json(
@@ -234,6 +250,8 @@ export async function POST(request: NextRequest) {
        1. Crear usuario Supabase Auth
     =============================================== */
 
+    stage = "supabase-create-user";
+    log("start");
     const {
       data: authData,
       error: authError,
@@ -256,6 +274,7 @@ export async function POST(request: NextRequest) {
     }
 
     userId = authData.user.id;
+    log("success", { userId });
 
     /*
       Tu trigger crea automáticamente
@@ -264,6 +283,8 @@ export async function POST(request: NextRequest) {
       Ahora lo convertimos en mentor.
     */
 
+    stage = "supabase-update-profile";
+    log("start", { userId });
     const { error: profileError } = await supabaseAdmin
       .from("profiles")
       .update({
@@ -277,12 +298,19 @@ export async function POST(request: NextRequest) {
       .eq("id", userId);
 
     if (profileError) throw profileError;
+    log("success", { userId });
 
     /* ===============================================
        2. Crear mentor en Microsoft Bookings
     =============================================== */
 
     const businessId = getBookingBusinessId();
+    stage = "bookings-create-staff";
+    log("request", {
+      businessId, emailAddress: email, role: "externalGuest",
+      timeZone: "SA Pacific Standard Time", useBusinessHours: true,
+      availabilityIsAffectedByPersonalCalendar: "not sent",
+    });
 
     const staff =
       await graphRequest<GraphStaffMember>(
@@ -308,14 +336,18 @@ export async function POST(request: NextRequest) {
             useBusinessHours: true,
           }),
         },
+        { correlationId },
       );
 
     staffId = staff.id;
+    log("success", { staffId, emailAddress: staff.emailAddress, role: staff.role });
 
     /* ===============================================
        3. Vincular Supabase con Microsoft
     =============================================== */
 
+    stage = "supabase-link-staff";
+    log("start", { userId, staffId });
     const { error: linkError } = await supabaseAdmin
       .from("profiles")
       .update({
@@ -325,6 +357,7 @@ export async function POST(request: NextRequest) {
       .eq("id", userId);
 
     if (linkError) throw linkError;
+    log("complete", { userId, staffId });
 
     return NextResponse.json(
       {
@@ -348,12 +381,18 @@ export async function POST(request: NextRequest) {
       { status: 201 },
     );
   } catch (error) {
+    console.error("[mentor-create:failed]", {
+      correlationId, stage, userId, staffId,
+      durationMs: Date.now() - startedAt, ...errorDetails(error),
+    });
     /*
       Rollback
     */
 
     if (staffId) {
       try {
+        stage = "rollback-bookings";
+        log("start", { staffId });
         const businessId = getBookingBusinessId();
 
         await graphRequest(
@@ -365,19 +404,31 @@ export async function POST(request: NextRequest) {
           {
             method: "DELETE",
           },
+          { correlationId },
         );
-      } catch {}
+        log("success", { staffId });
+      } catch (rollbackError) {
+        console.error("[mentor-create:rollback-failed]", { correlationId, stage, staffId, ...errorDetails(rollbackError) });
+      }
     }
 
     if (userId) {
       try {
-        await supabaseAdmin.auth.admin.deleteUser(
+        stage = "rollback-supabase";
+        log("start", { userId });
+        const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(
           userId,
         );
-      } catch {}
+        if (deleteError) throw deleteError;
+        log("success", { userId });
+      } catch (rollbackError) {
+        console.error("[mentor-create:rollback-failed]", { correlationId, stage, userId, ...errorDetails(rollbackError) });
+      }
     }
 
-    return handleError(error);
+    const response = handleError(error);
+    response.headers.set("X-Correlation-ID", correlationId);
+    return response;
   }
 }
 

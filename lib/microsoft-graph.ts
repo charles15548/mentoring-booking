@@ -43,8 +43,10 @@ export async function getMicrosoftAccessToken() {
 
 export async function graphRequest<T>(
   path: string,
-  init?: RequestInit
+  init?: RequestInit,
+  diagnostics?: { correlationId: string }
 ) {
+  const startedAt = Date.now();
   const token = await getMicrosoftAccessToken();
 
   const response = await fetch(`${graphBaseUrl}${path}`, {
@@ -52,12 +54,31 @@ export async function graphRequest<T>(
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
+      ...(diagnostics ? {
+        "client-request-id": diagnostics.correlationId,
+        "return-client-request-id": "true",
+      } : {}),
       ...init?.headers,
     },
     cache: "no-store",
   });
 
   const rawBody = await response.text();
+
+  if (diagnostics) {
+    console.info("[mentor-create:graph-response]", {
+      correlationId: diagnostics.correlationId,
+      path,
+      method: init?.method ?? "GET",
+      status: response.status,
+      durationMs: Date.now() - startedAt,
+      requestId: response.headers.get("request-id"),
+      clientRequestId: response.headers.get("client-request-id"),
+      date: response.headers.get("date"),
+      retryAfter: response.headers.get("retry-after"),
+      responseBody: response.ok ? undefined : rawBody,
+    });
+  }
 
   if (!response.ok) {
     const requestId = response.headers.get("request-id");
