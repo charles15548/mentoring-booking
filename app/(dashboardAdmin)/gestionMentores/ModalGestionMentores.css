@@ -178,3 +178,66 @@
   .welcome-row > div { display: contents; }
   .welcome-row > .primary-button { width: 100%; }
 }
+
+/* =============================
+   ALERTAS
+============================= */
+
+.mentor-alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 0 18px;
+  padding: 11px 13px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.mentor-alert-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.mentor-alert-success {
+  color: #0f5132;
+  background: #d1e7dd;
+  border-color: #badbcc;
+}
+
+.mentor-alert-success .mentor-alert-icon {
+  color: #fff;
+  background: #198754;
+}
+
+.mentor-alert-danger {
+  color: #842029;
+  background: #f8d7da;
+  border-color: #f5c2c7;
+}
+
+.mentor-alert-danger .mentor-alert-icon {
+  color: #fff;
+  background: #dc3545;
+}
+
+.mentor-alert-warning {
+  color: #664d03;
+  background: #fff3cd;
+  border-color: #ffecb5;
+}
+
+.mentor-alert-warning .mentor-alert-icon {
+  color: #fff;
+  background: #ffc107;
+}

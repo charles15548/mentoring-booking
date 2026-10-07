@@ -5,12 +5,14 @@ import type { FormEvent } from "react";
 
 import type { Mentee, MenteeFormData } from "./page";
 
+import "./ModalGestionMentee.css";
+
 type Props = {
   mentee: Mentee | null;
   onClose: () => void;
   onSave: (mentee: MenteeFormData) => Promise<void>;
 };
-import "./ModalGestionMentee.css";
+
 export default function ModalGestionMentee({
   mentee,
   onClose,
@@ -25,9 +27,21 @@ export default function ModalGestionMentee({
   const [resumen, setResumen] = useState("");
   const [password, setPassword] = useState("");
   const [activo, setActivo] = useState(true);
+
   const [saving, setSaving] = useState(false);
 
+  const [alert, setAlert] = useState<{
+    type: "success" | "danger" | "warning";
+    message: string;
+  } | null>(null);
+
+  /* ======================================================
+     CARGAR DATOS DEL MENTEE
+  ====================================================== */
+
   useEffect(() => {
+    setAlert(null);
+
     if (!mentee) {
       setNombres("");
       setApellidos("");
@@ -38,6 +52,7 @@ export default function ModalGestionMentee({
       setResumen("");
       setPassword("");
       setActivo(true);
+
       return;
     }
 
@@ -57,18 +72,43 @@ export default function ModalGestionMentee({
     setPassword("");
   }, [mentee]);
 
+  /* ======================================================
+     GUARDAR
+  ====================================================== */
+
   async function guardar(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    /*
+      Limpiamos cualquier alerta anterior antes de validar.
+    */
+    setAlert(null);
+
+    /* ====================================================
+       VALIDACIONES
+    ==================================================== */
+
     if (!nombres.trim() || !email.trim()) {
-      window.alert("Nombres y correo son obligatorios.");
+      setAlert({
+        type: "warning",
+        message: "Nombres y correo son obligatorios.",
+      });
+
       return;
     }
 
     if (!mentee && password.length < 8) {
-      window.alert("La contraseña debe tener mínimo 8 caracteres.");
+      setAlert({
+        type: "warning",
+        message: "La contraseña debe tener mínimo 8 caracteres.",
+      });
+
       return;
     }
+
+    /* ====================================================
+       GUARDAR
+    ==================================================== */
 
     try {
       setSaving(true);
@@ -84,10 +124,48 @@ export default function ModalGestionMentee({
         activo,
         password: mentee ? undefined : password,
       });
-    } finally {
+
+      /*
+        El servidor confirmó que el guardado fue correcto.
+
+        Primero liberamos el botón para que React pueda actualizar
+        visualmente el modal.
+      */
       setSaving(false);
+
+      /*
+        Mostramos la alerta inmediatamente después de confirmar
+        el guardado.
+      */
+      setAlert({
+        type: "success",
+        message: mentee
+          ? "Los cambios del mentee se guardaron correctamente."
+          : "El mentee se registró correctamente.",
+      });
+
+      /*
+        Cerramos el modal después de mostrar la confirmación.
+      */
+      window.setTimeout(() => {
+        onClose();
+      }, 2000);
+    } catch (error) {
+      setSaving(false);
+
+      setAlert({
+        type: "danger",
+        message:
+          error instanceof Error
+            ? error.message
+            : "No se pudo guardar la información del mentee.",
+      });
     }
   }
+
+  /* ======================================================
+     UI
+  ====================================================== */
 
   return (
     <div
@@ -100,6 +178,10 @@ export default function ModalGestionMentee({
         aria-modal="true"
         aria-labelledby="modal-gestion-mentee-title"
       >
+        {/* ==================================================
+            CERRAR
+        ================================================== */}
+
         <button
           type="button"
           className="modal-close"
@@ -109,6 +191,10 @@ export default function ModalGestionMentee({
         >
           ×
         </button>
+
+        {/* ==================================================
+            HEADER
+        ================================================== */}
 
         <div className="mentee-modal-header">
           <p className="eyebrow">
@@ -121,122 +207,218 @@ export default function ModalGestionMentee({
 
           {mentee && !mentee.tieneCuenta && (
             <p className="intro">
-              Este mentee existe en Microsoft Bookings, pero todavía no tiene
-              una cuenta vinculada en Supabase.
+              Este mentee existe en Microsoft Bookings, pero todavía
+              no tiene una cuenta vinculada en Supabase.
             </p>
           )}
         </div>
 
+        {/* ==================================================
+            ALERTA
+        ================================================== */}
+
+        {alert && (
+          <div
+            className={`mentee-alert mentee-alert-${alert.type}`}
+            role={alert.type === "danger" ? "alert" : "status"}
+          >
+            <span
+              className="mentee-alert-icon"
+              aria-hidden="true"
+            >
+              {alert.type === "success"
+                ? "✓"
+                : alert.type === "warning"
+                  ? "!"
+                  : "×"}
+            </span>
+
+            <span>{alert.message}</span>
+          </div>
+        )}
+
+        {/* ==================================================
+            FORMULARIO
+        ================================================== */}
+
         <form className="mentee-form" onSubmit={guardar}>
           <div className="mentee-form-grid">
-            <div className="field">
-            <label htmlFor="mentee-nombres">Nombres</label>
-
-            <input
-              id="mentee-nombres"
-              value={nombres}
-              onChange={(event) => setNombres(event.target.value)}
-              autoComplete="given-name"
-              disabled={saving}
-              autoFocus
-            />
-            </div>
+            {/* ==================================================
+                NOMBRES
+            ================================================== */}
 
             <div className="field">
-            <label htmlFor="mentee-apellidos">Apellidos</label>
+              <label htmlFor="mentee-nombres">
+                Nombres
+              </label>
 
-            <input
-              id="mentee-apellidos"
-              value={apellidos}
-              onChange={(event) => setApellidos(event.target.value)}
-              autoComplete="family-name"
-              disabled={saving}
-            />
+              <input
+                id="mentee-nombres"
+                value={nombres}
+                onChange={(event) =>
+                  setNombres(event.target.value)
+                }
+                autoComplete="given-name"
+                disabled={saving}
+                autoFocus
+              />
             </div>
+
+            {/* ==================================================
+                APELLIDOS
+            ================================================== */}
 
             <div className="field">
-            <label htmlFor="mentee-email">Correo</label>
+              <label htmlFor="mentee-apellidos">
+                Apellidos
+              </label>
 
-            <input
-              id="mentee-email"
-              type="email"
-              value={email}
-              onChange={(event) => setEmail(event.target.value)}
-              autoComplete="email"
-              disabled={saving}
-            />
+              <input
+                id="mentee-apellidos"
+                value={apellidos}
+                onChange={(event) =>
+                  setApellidos(event.target.value)
+                }
+                autoComplete="family-name"
+                disabled={saving}
+              />
             </div>
+
+            {/* ==================================================
+                CORREO
+            ================================================== */}
 
             <div className="field">
-            <label htmlFor="mentee-telefono">Teléfono</label>
+              <label htmlFor="mentee-email">
+                Correo
+              </label>
 
-            <input
-              id="mentee-telefono"
-              type="tel"
-              value={telefono}
-              onChange={(event) => setTelefono(event.target.value)}
-              autoComplete="tel"
-              disabled={saving}
-            />
+              <input
+                id="mentee-email"
+                type="email"
+                value={email}
+                onChange={(event) =>
+                  setEmail(event.target.value)
+                }
+                autoComplete="email"
+                disabled={saving}
+              />
             </div>
+
+            {/* ==================================================
+                TELÉFONO
+            ================================================== */}
 
             <div className="field">
-            <label htmlFor="mentee-especialidad">Especialidad</label>
+              <label htmlFor="mentee-telefono">
+                Teléfono
+              </label>
 
-            <input
-              id="mentee-especialidad"
-              value={especialidad}
-              onChange={(event) => setEspecialidad(event.target.value)}
-              placeholder="Ej. Ingeniería de Sistemas"
-              disabled={saving}
-            />
+              <input
+                id="mentee-telefono"
+                type="tel"
+                value={telefono}
+                onChange={(event) =>
+                  setTelefono(event.target.value)
+                }
+                autoComplete="tel"
+                disabled={saving}
+              />
             </div>
+
+            {/* ==================================================
+                ESPECIALIDAD
+            ================================================== */}
+
+            <div className="field">
+              <label htmlFor="mentee-especialidad">
+                Especialidad
+              </label>
+
+              <input
+                id="mentee-especialidad"
+                value={especialidad}
+                onChange={(event) =>
+                  setEspecialidad(event.target.value)
+                }
+                placeholder="Ej. Ingeniería de Sistemas"
+                disabled={saving}
+              />
+            </div>
+
+            {/* ==================================================
+                FOTO
+            ================================================== */}
 
             {/* <div className="field">
-            <label htmlFor="mentee-foto-url">URL de la foto</label>
+              <label htmlFor="mentee-foto-url">
+                URL de la foto
+              </label>
 
-            <input
-              id="mentee-foto-url"
-              type="url"
-              value={fotoUrl}
-              onChange={(event) => setFotoUrl(event.target.value)}
-              placeholder="https://..."
-              autoComplete="url"
-              disabled={saving}
-            />
+              <input
+                id="mentee-foto-url"
+                type="url"
+                value={fotoUrl}
+                onChange={(event) =>
+                  setFotoUrl(event.target.value)
+                }
+                placeholder="https://..."
+                autoComplete="url"
+                disabled={saving}
+              />
             </div> */}
 
-            <div className="field mentee-field-full">
-            <label htmlFor="mentee-resumen">Resumen</label>
+            {/* ==================================================
+                RESUMEN
+            ================================================== */}
 
-            <textarea
-              id="mentee-resumen"
-              value={resumen}
-              className="mentee-resumen-textarea"
-              onChange={(event) => setResumen(event.target.value)}
-              placeholder="Breve descripción del mentee"
-              rows={4}
-              disabled={saving}
-            />
+            <div className="field mentee-field-full">
+              <label htmlFor="mentee-resumen">
+                Resumen
+              </label>
+
+              <textarea
+                id="mentee-resumen"
+                value={resumen}
+                className="mentee-resumen-textarea"
+                onChange={(event) =>
+                  setResumen(event.target.value)
+                }
+                placeholder="Breve descripción del mentee"
+                rows={4}
+                disabled={saving}
+              />
             </div>
+
+            {/* ==================================================
+                CONTRASEÑA
+            ================================================== */}
 
             {!mentee && (
               <div className="field">
-              <label htmlFor="mentee-password">Contraseña temporal</label>
+                <label htmlFor="mentee-password">
+                  Contraseña temporal
+                </label>
 
-              <input
-                id="mentee-password"
-                type="password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                placeholder="Mínimo 8 caracteres"
-                autoComplete="new-password"
-                minLength={8}
-                disabled={saving}
-              />
+                <input
+                  id="mentee-password"
+                  type="password"
+                  value={password}
+                  onChange={(event) =>
+                    setPassword(event.target.value)
+                  }
+                  placeholder="Mínimo 8 caracteres"
+                  autoComplete="new-password"
+                  minLength={8}
+                  disabled={saving}
+                />
               </div>
             )}
           </div>
+
+          {/* ==================================================
+              ACCIONES
+          ================================================== */}
 
           <div className="mentee-form-actions">
             {mentee?.tieneCuenta && (
@@ -244,7 +426,9 @@ export default function ModalGestionMentee({
                 <input
                   type="checkbox"
                   checked={activo}
-                  onChange={(event) => setActivo(event.target.checked)}
+                  onChange={(event) =>
+                    setActivo(event.target.checked)
+                  }
                   disabled={saving}
                 />
 
@@ -252,7 +436,11 @@ export default function ModalGestionMentee({
               </label>
             )}
 
-            <button className="primary-button" type="submit" disabled={saving}>
+            <button
+              className="primary-button"
+              type="submit"
+              disabled={saving}
+            >
               {saving
                 ? "Guardando..."
                 : mentee

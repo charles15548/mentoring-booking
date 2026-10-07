@@ -1,4 +1,3 @@
- 
 import { NextResponse } from "next/server";
 import type { CreateBookingInput } from "@/models/booking.model";
 import {
@@ -7,46 +6,79 @@ import {
   toGraphLocalDateTime,
 } from "@/lib/microsoft-graph";
 import { supabase } from "@/lib/supabase";
-import { error } from "console";
-import {
-  supabaseAdmin,
-} from "@/lib/supabase-admin";
+import { supabaseAdmin } from "@/lib/supabase-admin";
 
+/* =========================================================
+   TIPOS
+========================================================= */
 
+interface GraphCustomer {
+  id: string;
+  displayName?: string;
+  emailAddress?: string;
+  phones?: Array<{
+    number?: string;
+    type?: string;
+  }>;
+}
 
+interface GraphAppointmentCustomer {
+  "@odata.type"?: string;
+  customerId?: string;
+  name?: string;
+  emailAddress?: string;
+  phone?: string;
+  timeZone?: string;
+}
 
- 
-// OBETENER reservas por email
+interface GraphAppointment {
+  id: string;
+  serviceName?: string;
+  staffMemberIds?: string[];
+
+  customerId?: string;
+  customerName?: string;
+  customerEmailAddress?: string;
+  customerPhone?: string;
+
+  startDateTime?: {
+    dateTime: string;
+    timeZone?: string;
+  };
+
+  endDateTime?: {
+    dateTime: string;
+    timeZone?: string;
+  };
+
+  customers?: GraphAppointmentCustomer[];
+}
+
+/* =========================================================
+   GET
+   OBTENER RESERVAS POR EMAIL
+========================================================= */
+
 export async function GET(request: Request) {
   const email = new URL(request.url).searchParams
     .get("email")
     ?.trim()
     .toLowerCase();
 
-  
   try {
+    if (!email) {
+      return NextResponse.json(
+        { error: "Falta el correo del mentee." },
+        { status: 400 },
+      );
+    }
+
     const businessId = getBookingBusinessId();
 
-    // Obtener citas y mentores
-    const [appointmentsData, staffData] = await Promise.all([
+    // Obtener citas, mentores y customers de Microsoft
+    const [appointmentsData, staffData, customersData] = await Promise.all([
       graphRequest<{
-        value?: Array<{
-          id: string;
-          serviceName?: string;
-          staffMemberIds?: string[];
-          startDateTime?: {
-            dateTime: string;
-            timeZone?: string;
-          };
-          endDateTime?: {
-            dateTime: string;
-            timeZone?: string;
-          };
-          customers?: Array<{
-            name?: string;
-            emailAddress?: string;
-          }>;
-        }>;
+        value?: GraphAppointment[];
       }>(
         `/solutions/bookingBusinesses/${encodeURIComponent(
           businessId,
@@ -64,6 +96,14 @@ export async function GET(request: Request) {
           businessId,
         )}/staffMembers`,
       ),
+
+      graphRequest<{
+        value?: GraphCustomer[];
+      }>(
+        `/solutions/bookingBusinesses/${encodeURIComponent(
+          businessId,
+        )}/customers`,
+      ),
     ]);
 
     // Crear mapa de mentores
@@ -71,82 +111,149 @@ export async function GET(request: Request) {
       (staffData.value || []).map((staff) => [staff.id, staff]),
     );
 
-    const userAppointments = 
-      (appointmentsData.value || []).filter(
-        (appointment) =>
-       appointment.customers?.some(
-        (customer) =>
-          customer.emailAddress
-        ?.trim()
-        .toLowerCase() === email 
-       )
+    // Crear mapa de customers por ID
+    const customersMap = new Map(
+      (customersData.value || []).map((customer) => [customer.id, customer]),
     );
 
-    const bookingIds = userAppointments.map(
-      (appointments) => appointments.id,
+    /*
+      Buscar reservas del usuario.
+
+      Primero intentamos por customerId.
+      Como las reservas antiguas pueden no tener customerId,
+      también mantenemos la búsqueda por email.
+    */
+    const userAppointments = (appointmentsData.value || []).filter(
+      (appointment) => {
+        const customerById = appointment.customerId
+          ? customersMap.get(appointment.customerId)
+          : undefined;
+
+        if (customerById?.emailAddress?.trim().toLowerCase() === email) {
+          return true;
+        }
+
+        return appointment.customers?.some(
+          (customer) => customer.emailAddress?.trim().toLowerCase() === email,
+        );
+      },
     );
 
-    const {data: confirmationsData} = await supabase
-    .from("appointment_confirmations")
-.select("microsoft_booking_id, confirmed_at, confirmed_by, status")
-    .in(
-      "microsoft_booking_id",
-      bookingIds,
-    );
+    const bookingIds = userAppointments.map((appointment) => appointment.id);
+
+    /*
+      Si no hay reservas, evitamos enviar un .in() vacío
+      a Supabase.
+    */
+    let confirmationsData: Array<{
+      microsoft_booking_id: string;
+      confirmed_at: string | null;
+      confirmed_by: string | null;
+      status: string;
+    }> = [];
+
+    let agreementsData: Array<{
+      microsoft_booking_id: string;
+    }> = [];
+
+    if (bookingIds.length > 0) {
+      const { data: confirmations } = await supabase
+        .from("appointment_confirmations")
+        .select("microsoft_booking_id, confirmed_at, confirmed_by, status")
+        .in("microsoft_booking_id", bookingIds);
+
+      confirmationsData = confirmations || [];
+
+      const { data: agreements, error: agreementsError } = await supabaseAdmin
+        .from("acuerdos")
+        .select("microsoft_booking_id")
+        .in("microsoft_booking_id", bookingIds);
+
+      if (agreementsError) {
+        console.error("Error contando acuerdos:", agreementsError);
+      }
+
+      agreementsData = agreements || [];
+    }
 
     const confirmationsMap = new Map(
-      (confirmationsData || []).map(
-        (confirmation) => [
-          confirmation.microsoft_booking_id,
-          confirmation
-        ]
-      )
-    )
-    const { data: agreementsData, error: agreementsError } = await supabaseAdmin
-      .from("acuerdos")
-      .select("microsoft_booking_id")
-      .in("microsoft_booking_id", bookingIds);
-
-    if (agreementsError) {
-      console.error("Error contando acuerdos:", agreementsError);
-    }
+      confirmationsData.map((confirmation) => [
+        confirmation.microsoft_booking_id,
+        confirmation,
+      ]),
+    );
 
     const agreementCountMap = new Map<string, number>();
 
-    for (const agreement of agreementsData ?? []) {
+    for (const agreement of agreementsData) {
       agreementCountMap.set(
         agreement.microsoft_booking_id,
         (agreementCountMap.get(agreement.microsoft_booking_id) ?? 0) + 1,
       );
     }
-    // construir respuesta
-    const reservations = userAppointments.map(
-      (appointment) => {
-        const mentorId = appointment.staffMemberIds?.[0];
 
-        const mentor = mentorId ? staffMap.get(mentorId) : undefined;
+    // Construir respuesta
+    const reservations = userAppointments.map((appointment) => {
+      const mentorId = appointment.staffMemberIds?.[0];
 
-        const customer = appointment.customers?.find(
-          (customer) => customer.emailAddress?.trim().toLowerCase() === email,
-        );
-        const confirmation = confirmationsMap.get(appointment.id);
-      
-        return {
-          id: appointment.id,
-          serviceName: appointment.serviceName || "Sesión de mentoría",
-          customerName: customer?.name,
-          customerEmail: customer?.emailAddress,
-          mentorId,
-          mentorName: mentor?.displayName || "Mentor PROUNI",
-          mentorEmail: mentor?.emailAddress,
-          startDateTime: appointment.startDateTime,
-          endDateTime: appointment.endDateTime,
-        
-          confirmedAt: confirmation?.confirmed_at?? null,
-          status: confirmation?.status ?? "pendiente",
-          agreementCount: agreementCountMap.get(appointment.id) ?? 0,
-        };
-      });
+      const mentor = mentorId ? staffMap.get(mentorId) : undefined;
+
+      /*
+            Buscar primero la información vinculada
+            por customerId.
+          */
+      let customer = appointment.customerId
+        ? customersMap.get(appointment.customerId)
+        : undefined;
+
+      /*
+            Compatibilidad con reservas antiguas
+            que no tienen customerId.
+          */
+      const appointmentCustomer = appointment.customers?.find(
+        (customer) => customer.emailAddress?.trim().toLowerCase() === email,
+      );
+
+      const confirmation = confirmationsMap.get(appointment.id);
+
+      return {
+        id: appointment.id,
+
+        serviceName: appointment.serviceName || "Sesión de mentoría",
+
+        customerName:
+          customer?.displayName ??
+          appointment.customerName ??
+          appointmentCustomer?.name,
+
+        customerEmail:
+          customer?.emailAddress ??
+          appointment.customerEmailAddress ??
+          appointmentCustomer?.emailAddress,
+
+        customerId:
+          appointment.customerId ??
+          appointmentCustomer?.customerId ??
+          customer?.id ??
+          null,
+
+        mentorId,
+
+        mentorName: mentor?.displayName || "Mentor PROUNI",
+
+        mentorEmail: mentor?.emailAddress,
+
+        startDateTime: appointment.startDateTime,
+
+        endDateTime: appointment.endDateTime,
+
+        confirmedAt: confirmation?.confirmed_at ?? null,
+
+        status: confirmation?.status ?? "pendiente",
+
+        agreementCount: agreementCountMap.get(appointment.id) ?? 0,
+      };
+    });
 
     return NextResponse.json(reservations);
   } catch (error) {
@@ -166,186 +273,267 @@ export async function GET(request: Request) {
   }
 }
 
-
-
- 
-
 /* =========================================================
    POST
    CREAR RESERVA
+
+   IMPORTANTE:
+   Ahora buscamos el bookingCustomer real de Microsoft
+   para guardar su customerId en la cita.
+
+   Esto evita crear una relación independiente entre
+   la cita y el nombre del mentee.
 ========================================================= */
 
- 
 export async function POST(request: Request) {
   try {
-    const body =
-      (await request.json()) as CreateBookingInput;
+    const body = (await request.json()) as CreateBookingInput;
 
-    const businessId =
-      getBookingBusinessId();
+    const businessId = getBookingBusinessId();
 
-    const appointment =
-      await graphRequest<{
-        id: string;
-      }>(
-        `/solutions/bookingBusinesses/${encodeURIComponent(
-          businessId,
-        )}/appointments`,
+    const customerEmail = body.customerEmail?.trim().toLowerCase();
+
+    if (!customerEmail) {
+      return NextResponse.json(
         {
-          method: "POST",
-          body: JSON.stringify({
-            "@odata.type":
-              "#microsoft.graph.bookingAppointment",
-
-            serviceId:
-              body.serviceId,
-
-            staffMemberIds: [
-              body.staffId,
-            ],
-
-            customerName:
-              body.customerName,
-
-            customerEmailAddress:
-              body.customerEmail,
-
-            customerTimeZone:
-              "SA Pacific Standard Time",
-
-            startDateTime: {
-              "@odata.type":
-                "#microsoft.graph.dateTimeTimeZone",
-              dateTime:
-                toGraphLocalDateTime(
-                  body.startAt,
-                ),
-              timeZone:
-                "SA Pacific Standard Time",
-            },
-
-            endDateTime: {
-              "@odata.type":
-                "#microsoft.graph.dateTimeTimeZone",
-              dateTime:
-                toGraphLocalDateTime(
-                  body.endAt,
-                ),
-              timeZone:
-                "SA Pacific Standard Time",
-            },
-
-            "customers@odata.type":
-              "#Collection(microsoft.graph.bookingCustomerInformation)",
-
-            customers: [
-              {
-                "@odata.type":
-                  "#microsoft.graph.bookingCustomerInformation",
-                name:
-                  body.customerName,
-                emailAddress:
-                  body.customerEmail,
-                timeZone:
-                  "SA Pacific Standard Time",
-              },
-            ],
-          }),
+          error: "El correo del mentee es obligatorio.",
+        },
+        {
+          status: 400,
         },
       );
+    }
 
-    await supabase
+    /*
+      Buscar el customer existente en Microsoft Bookings.
+    */
+    const customersData = await graphRequest<{
+      value?: GraphCustomer[];
+    }>(
+      `/solutions/bookingBusinesses/${encodeURIComponent(
+        businessId,
+      )}/customers`,
+    );
+
+    const bookingCustomer = (customersData.value || []).find(
+      (customer) =>
+        customer.emailAddress?.trim().toLowerCase() === customerEmail,
+    );
+
+    if (!bookingCustomer) {
+      return NextResponse.json(
+        {
+          error:
+            "No se encontró el mentee en Microsoft Bookings. Primero debe existir como cliente.",
+        },
+        {
+          status: 404,
+        },
+      );
+    }
+
+    console.log("[booking-create] Customer encontrado en Microsoft:", {
+      customerId: bookingCustomer.id,
+
+      displayName: bookingCustomer.displayName,
+
+      emailAddress: bookingCustomer.emailAddress,
+    });
+
+    const appointment = await graphRequest<{
+      id: string;
+    }>(
+      `/solutions/bookingBusinesses/${encodeURIComponent(
+        businessId,
+      )}/appointments`,
+      {
+        method: "POST",
+
+        body: JSON.stringify({
+          "@odata.type": "#microsoft.graph.bookingAppointment",
+
+          serviceId: body.serviceId,
+
+          staffMemberIds: [body.staffId],
+
+          /*
+                También mantenemos estos campos
+                por compatibilidad con Microsoft Bookings.
+              */
+          customerId: bookingCustomer.id,
+
+          customerName: bookingCustomer.displayName || body.customerName,
+
+          customerEmailAddress: bookingCustomer.emailAddress || customerEmail,
+
+          customerTimeZone: "SA Pacific Standard Time",
+
+          startDateTime: {
+            "@odata.type": "#microsoft.graph.dateTimeTimeZone",
+
+            dateTime: toGraphLocalDateTime(body.startAt),
+
+            timeZone: "SA Pacific Standard Time",
+          },
+
+          endDateTime: {
+            "@odata.type": "#microsoft.graph.dateTimeTimeZone",
+
+            dateTime: toGraphLocalDateTime(body.endAt),
+
+            timeZone: "SA Pacific Standard Time",
+          },
+
+          "customers@odata.type":
+            "#Collection(microsoft.graph.bookingCustomerInformation)",
+
+          customers: [
+            {
+              "@odata.type": "#microsoft.graph.bookingCustomerInformation",
+
+              customerId: bookingCustomer.id,
+
+              name: bookingCustomer.displayName || body.customerName,
+
+              emailAddress: bookingCustomer.emailAddress || customerEmail,
+
+              phone: bookingCustomer.phones?.[0]?.number,
+
+              timeZone: "SA Pacific Standard Time",
+            },
+          ],
+        }),
+      },
+    );
+
+    console.log("[booking-create] Reserva creada:", {
+      appointmentId: appointment.id,
+
+      customerId: bookingCustomer.id,
+    });
+
+    const { error: confirmationError } = await supabase
       .from("appointment_confirmations")
       .insert({
-        microsoft_booking_id:
-          appointment.id,
+        microsoft_booking_id: appointment.id,
+
         status: "pendiente",
       });
+
+    if (confirmationError) {
+      console.error("Error guardando confirmación:", confirmationError);
+    }
 
     return NextResponse.json(
       {
         status: "pendiente",
+
         appointment,
+
+        customerId: bookingCustomer.id,
       },
-      { status: 201 },
+      {
+        status: 201,
+      },
     );
   } catch (error: any) {
+    console.error("Error creando reserva:", error);
+
     return NextResponse.json(
-      { error: error.message },
-      { status: 500 },
+      {
+        error: error?.message || "No se pudo crear la reserva.",
+      },
+      {
+        status: 500,
+      },
     );
   }
 }
 
-
 /* =========================================================
    DELETE
    CANCELAR UNA RESERVA
-   Solo si todavía NO fue confirmada por el mentor
+
+   Solo si todavía NO fue confirmada por el mentor.
 ========================================================= */
 
-export async function DELETE(request:Request) {
-  try{
-    const body = (await request.json()) as{
+export async function DELETE(request: Request) {
+  try {
+    const body = (await request.json()) as {
       microsoftBookingId?: string;
       email?: string;
     };
 
-    const microsoftBookingId= body.microsoftBookingId;
-   
-    
-        if (!microsoftBookingId) {
-      return NextResponse.json(
-        {error:"Falta microsoftBookingId."},
-        {status: 400},
-      );
-    }
-    const {data:confirmation} = await supabase
-    .from("appointment_confirmations")
-    .select('microsoft_booking_id, status')
-    .eq('microsoft_booking_id', microsoftBookingId)
-    .maybeSingle();
+    const microsoftBookingId = body.microsoftBookingId;
 
-    // si esta confirmada, no se puede cancelar
-    if(confirmation?.status?.toLowerCase() === "confirmada"){
+    if (!microsoftBookingId) {
       return NextResponse.json(
-        { error: "Esta mentoria ya fue confirmada y no se puede cancelar."},
-        {status: 409}
+        {
+          error: "Falta microsoftBookingId.",
+        },
+        {
+          status: 400,
+        },
       );
     }
 
-    // Obtener cita de microsoft
+    const { data: confirmation } = await supabase
+      .from("appointment_confirmations")
+      .select("microsoft_booking_id, status")
+      .eq("microsoft_booking_id", microsoftBookingId)
+      .maybeSingle();
+
+    // Si está confirmada, no se puede cancelar.
+    if (confirmation?.status?.toLowerCase() === "confirmada") {
+      return NextResponse.json(
+        {
+          error: "Esta mentoria ya fue confirmada y no se puede cancelar.",
+        },
+        {
+          status: 409,
+        },
+      );
+    }
+
     const businessId = getBookingBusinessId();
- 
-    // Cancelar reserva
+
+    // Cancelar reserva en Microsoft Bookings.
     await graphRequest(
-    `/solutions/bookingBusinesses/${encodeURIComponent(
-      businessId
-    )}/appointments/${encodeURIComponent(
-      microsoftBookingId
-    )}/cancel`,
-    {
-      method: "POST",
-      body: JSON.stringify({
-        cancellationMessage: "La sesión de mentoría fue cancelada por el mentee."
-      })
-    }
-    )
+      `/solutions/bookingBusinesses/${encodeURIComponent(
+        businessId,
+      )}/appointments/${encodeURIComponent(microsoftBookingId)}/cancel`,
+      {
+        method: "POST",
+
+        body: JSON.stringify({
+          cancellationMessage:
+            "La sesión de mentoría fue cancelada por el mentee.",
+        }),
+      },
+    );
+
     await supabase
       .from("appointment_confirmations")
-      .update({ status: "cancelada" })
+      .update({
+        status: "cancelada",
+      })
       .eq("microsoft_booking_id", microsoftBookingId);
-    // repuesta
-    return NextResponse.json({
-      seccess: true,
-      message: "La reserva fue canselada correctamente"
-    });
-  }   catch (error) {
-  const err = error as Error;
 
-  return NextResponse.json(
-    { error: err.message },
-    { status: 500 },
-  );
-}
+    return NextResponse.json({
+      success: true,
+
+      message: "La reserva fue cancelada correctamente.",
+    });
+  } catch (error) {
+    const err = error as Error;
+
+    return NextResponse.json(
+      {
+        error: err.message,
+      },
+      {
+        status: 500,
+      },
+    );
+  }
 }

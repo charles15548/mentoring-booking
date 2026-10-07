@@ -1,0 +1,691 @@
+.agreements-page {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px;
+  box-sizing: border-box;
+}
+
+/* =============================
+   HEADER
+============================= */
+
+.agreements-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.agreements-eyebrow {
+  margin: 0 0 6px;
+  color: var(--wine);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.agreements-header h1 {
+  margin: 0 0 8px;
+  color: #1b222c;
+  font-size: 30px;
+  font-weight: 700;
+}
+
+.agreements-description {
+  margin: 0;
+  color: #56595f;
+  font-size: 14px;
+}
+
+/* =============================
+   PANEL
+============================= */
+
+.agreements-panel {
+  background: #fff;
+  border: 1px solid #c2c4cc;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* =============================
+   TOOLBAR
+============================= */
+
+.agreements-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 25px;
+  padding: 22px;
+  border-bottom: 1px solid #c2c4cc;
+}
+
+.agreements-toolbar h2 {
+  margin: 0 0 5px;
+  color: #1f2937;
+  font-size: 19px;
+}
+
+.agreements-toolbar p {
+  margin: 0;
+  color: #616774;
+  font-size: 13px;
+}
+
+.agreements-search-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 340px;
+  padding: 0 13px;
+  box-sizing: border-box;
+  border: 1px solid #d1d5db;
+  border-radius: 9px;
+  background: #fff;
+  color: #616774;
+}
+
+.agreements-search-wrapper:focus-within {
+  border-color: var(--wine);
+}
+
+.agreements-search {
+  width: 100%;
+  min-width: 0;
+  padding: 11px 0;
+  border: none;
+  background: transparent;
+  color: #111827;
+  outline: none;
+  font-size: 14px;
+}
+
+/* =============================
+   LIST
+============================= */
+
+.agreements-list {
+  width: 100%;
+}
+
+.agreement-card {
+  padding: 22px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.agreement-card:last-child {
+  border-bottom: none;
+}
+
+/* =============================
+   AGREEMENT ROW
+============================= */
+
+.agreement-main {
+  display: grid;
+
+  /*
+    Mentee       Mentor       Acuerdo       Fecha       Estado
+    1.1fr        1.1fr        2fr           .8fr        .8fr
+  */
+
+  grid-template-columns:
+    minmax(150px, 1.1fr)
+    minmax(150px, 1.1fr)
+    minmax(250px, 2fr)
+    minmax(105px, 0.8fr)
+    minmax(115px, 0.8fr);
+
+  align-items: center;
+  gap: 24px;
+}
+
+/* =============================
+   INFORMATION
+============================= */
+
+.agreement-mentee,
+.agreement-mentor,
+.agreement-content,
+.agreement-deadline,
+.agreement-status {
+  min-width: 0;
+}
+
+.agreement-label {
+  display: block;
+  margin-bottom: 8px;
+  color: #9ca3af;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.agreement-mentee strong,
+.agreement-mentor strong,
+.agreement-content strong,
+.agreement-deadline strong {
+  display: block;
+  color: #1f2937;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* =============================
+   EMAILS
+============================= */
+
+.agreement-mentee span:not(.agreement-label),
+.agreement-mentor span:not(.agreement-label) {
+  display: block;
+  margin-top: 3px;
+  overflow: hidden;
+  color: #616774;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =============================
+   AGREEMENT CONTENT
+============================= */
+
+.agreement-content strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.agreement-content p {
+  margin: 5px 0 0;
+  overflow: hidden;
+  color: #616774;
+  font-size: 12px;
+  line-height: 1.5;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =============================
+   DEADLINE
+============================= */
+
+.agreement-deadline strong {
+  white-space: nowrap;
+}
+
+/* =============================
+   STATUS
+============================= */
+
+.agreement-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.agreement-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.agreement-status-definido {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+.agreement-status-en_proceso {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.agreement-status-terminado {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.agreement-status-fuera_de_fecha {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+/* =============================
+   EMPTY / ERROR
+============================= */
+
+.agreements-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 60px 25px;
+  text-align: center;
+  color: #616774;
+}
+
+.agreements-empty h3 {
+  margin: 0;
+  color: #39393f;
+}
+
+.agreements-empty p {
+  margin: 0;
+  font-size: 13px;
+}
+
+.agreements-error {
+  margin-bottom: 18px;
+  padding: 12px 15px;
+  border: 1px solid #fecaca;
+  border-radius: 9px;
+  background: #fef2f2;
+  color: #b91c1c;
+  font-size: 14px;
+}
+
+/* =============================
+   RESPONSIVE
+============================= */
+
+@media (max-width: 1150px) {
+  .agreements-page {
+    padding: 24px;
+  }
+
+  .agreement-main {
+    grid-template-columns:
+      minmax(140px, 1fr)
+      minmax(140px, 1fr)
+      minmax(220px, 1.7fr)
+      minmax(105px, 0.7fr)
+      minmax(110px, 0.7fr);
+
+    gap: 18px;
+  }
+}
+
+@media (max-width: 1000px) {
+  .agreement-main {
+    grid-template-columns:
+      minmax(150px, 1fr)
+      minmax(150px, 1fr)
+      minmax(220px, 1.6fr);
+
+    gap: 20px;
+  }
+
+  .agreement-deadline {
+    grid-column: 1 / 2;
+  }
+
+  .agreement-status {
+    grid-column: 2 / 3;
+  }
+}
+
+@media (max-width: 800px) {
+  .agreements-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .agreements-search-wrapper {
+    width: 100%;
+  }
+
+  .agreement-main {
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .agreement-content {
+    grid-column: 1 / -1;
+  }
+
+  .agreement-deadline,
+  .agreement-status {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .agreements-page {
+    padding: 18px;
+  }
+
+  .agreements-header {
+    flex-direction: column;
+  }
+
+  .agreement-main {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .agreement-content,
+  .agreement-deadline,
+  .agreement-status {
+    grid-column: auto;
+  }
+
+  .agreement-card {
+    padding: 18px;
+  }
+
+  .agreement-status {
+    align-items: flex-start;
+  }
+}
+
+
+/* =============================
+   REPORT MODAL
+============================= */
+
+.report-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+
+  background: rgba(15, 23, 42, 0.45);
+}
+
+.report-modal {
+  width: 100%;
+  max-width: 500px;
+
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 16px;
+
+  box-shadow:
+    0 20px 45px rgba(15, 23, 42, 0.18);
+
+  overflow: hidden;
+}
+
+.report-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+
+  padding: 24px;
+
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.report-modal-eyebrow {
+  margin: 0 0 5px;
+
+  color: var(--wine);
+
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.report-modal-header h2 {
+  margin: 0 0 6px;
+
+  color: #1f2937;
+
+  font-size: 21px;
+}
+
+.report-modal-header p {
+  margin: 0;
+
+  color: #616774;
+
+  font-size: 13px;
+}
+
+.report-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 34px;
+  height: 34px;
+
+  flex-shrink: 0;
+
+  border: none;
+  border-radius: 8px;
+
+  background: transparent;
+  color: #6b7280;
+
+  font-size: 25px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.report-modal-close:hover {
+  background: #f3f4f6;
+  color: #1f2937;
+}
+
+/* =============================
+   BODY
+============================= */
+
+.report-modal-body {
+  display: grid;
+  gap: 20px;
+
+  padding: 24px;
+}
+
+.report-date-field {
+  display: grid;
+  gap: 7px;
+}
+
+.report-date-field label {
+  color: #374151;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.report-date-field input {
+  width: 100%;
+  min-height: 44px;
+
+  box-sizing: border-box;
+
+  padding: 0 12px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 9px;
+
+  background: #fff;
+  color: #111827;
+
+  font-size: 14px;
+  outline: none;
+}
+
+.report-date-field input:focus {
+  border-color: var(--wine);
+}
+
+/* =============================
+   ACTIONS
+============================= */
+
+.report-action-section {
+  display: grid;
+  gap: 10px;
+
+  margin-top: 4px;
+}
+
+.report-action-section > span {
+  color: #374151;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.report-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.report-download-button {
+  width: 100%;
+  min-height: 44px;
+
+  padding: 0 15px;
+
+  border: none;
+  border-radius: 9px;
+
+  background: var(--wine);
+  color: #fff;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.report-download-button:hover {
+  opacity: 0.92;
+}
+
+/*
+.report-email-button {
+  min-height: 44px;
+
+  padding: 0 15px;
+
+  border: none;
+  border-radius: 9px;
+
+  background: #f3f4f6;
+  color: #374151;
+
+  border: 1px solid #d1d5db;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.report-email-button:hover {
+  background: #e5e7eb;
+}
+*/
+
+/* =============================
+   FOOTER
+============================= */
+
+.report-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+
+  padding: 16px 24px;
+
+  border-top: 1px solid #e5e7eb;
+}
+
+.report-cancel-button {
+  min-height: 40px;
+
+  padding: 0 18px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+
+  background: #fff;
+  color: #4b5563;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+.report-cancel-button:hover {
+  background: #f9fafb;
+}
+
+/* =============================
+   RESPONSIVE
+============================= */
+
+@media (max-width: 550px) {
+  .report-modal-overlay {
+    padding: 12px;
+  }
+
+  .report-modal-header,
+  .report-modal-body {
+    padding: 20px;
+  }
+
+  .report-modal-footer {
+    padding: 14px 20px;
+  }
+}
+
+/* =============================
+   REPORT BUTTON
+============================= */
+
+.agreements-report-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  min-height: 42px;
+
+  padding: 0 16px;
+
+  border: none;
+  border-radius: 9px;
+
+  background: var(--wine);
+  color: #fff;
+
+  font-size: 13px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.agreements-report-button:hover {
+  opacity: 0.92;
+}
+
+@media (max-width: 600px) {
+  .agreements-report-button {
+    width: 100%;
+  }
+}

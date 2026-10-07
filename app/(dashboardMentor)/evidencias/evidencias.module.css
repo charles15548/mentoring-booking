@@ -1,0 +1,85 @@
+.list {
+display: grid;
+gap: 16px;
+}
+
+.card {
+display: flex;
+align-items: center;
+justify-content: space-between;
+gap: 24px;
+padding: 22px;
+border: 1px solid var(--line);
+border-radius: 12px;
+background: #fff;
+}
+
+.content {
+min-width: 0;
+}
+
+.content h2 {
+margin: 4px 0 4px;
+color: var(--text);
+font-size: 18px;
+}
+
+.email {
+margin: 0;
+color: var(--muted);
+font-size: 14px;
+}
+
+.info {
+display: grid;
+gap: 5px;
+margin-top: 14px;
+}
+
+.info p {
+margin: 0;
+color: var(--muted);
+font-size: 13px;
+}
+
+.info strong {
+color: var(--text);
+}
+
+.actions {
+flex-shrink: 0;
+}
+
+.viewButton {
+min-width: 150px;
+padding: 10px 16px;
+border: 1px solid var(--wine);
+border-radius: 8px;
+background: var(--wine);
+color: #fff;
+font: inherit;
+font-size: 14px;
+font-weight: 700;
+cursor: pointer;
+transition:
+background-color 160ms ease,
+border-color 160ms ease,
+transform 160ms ease;
+}
+
+.viewButton:hover {
+background: #641014;
+border-color: #641014;
+transform: translateY(-1px);
+}
+
+@media (max-width: 680px) {
+.card {
+align-items: stretch;
+flex-direction: column;
+}
+
+.viewButton {
+width: 100%;
+}
+}

@@ -29,7 +29,14 @@ export default function ModalGestionMentores({
   const [activo, setActivo] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  const [alert, setAlert] = useState<{
+    type: "success" | "danger" | "warning";
+    message: string;
+  } | null>(null);
+
   useEffect(() => {
+    setAlert(null);
+
     if (!mentor) {
       setNombres("");
       setApellidos("");
@@ -57,13 +64,21 @@ export default function ModalGestionMentores({
   async function guardar(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    setAlert(null);
+
     if (!nombres.trim() || !email.trim()) {
-      window.alert("Nombres y correo son obligatorios.");
+      setAlert({
+        type: "warning",
+        message: "Nombres y correo son obligatorios.",
+      });
       return;
     }
 
     if (!mentor && password.length < 8) {
-      window.alert("La contraseña debe tener mínimo 8 caracteres.");
+      setAlert({
+        type: "warning",
+        message: "La contraseña debe tener mínimo 8 caracteres.",
+      });
       return;
     }
 
@@ -80,6 +95,25 @@ export default function ModalGestionMentores({
         resumen: resumen.trim(),
         activo,
         password: mentor ? undefined : password,
+      });
+
+      setAlert({
+        type: "success",
+        message: mentor
+          ? "Los cambios del mentor se guardaron correctamente."
+          : "El mentor se registró correctamente.",
+      });
+
+      window.setTimeout(() => {
+        onClose();
+      }, 1600);
+    } catch (error) {
+      setAlert({
+        type: "danger",
+        message:
+          error instanceof Error
+            ? error.message
+            : "No se pudo guardar la información del mentor.",
       });
     } finally {
       setSaving(false);
@@ -105,9 +139,7 @@ export default function ModalGestionMentores({
         </button>
 
         <div className="mentor-modal-header">
-          <p className="eyebrow">
-            {mentor ? "EDITAR MENTOR" : "NUEVO MENTOR"}
-          </p>
+          <p className="eyebrow">{mentor ? "EDITAR MENTOR" : "NUEVO MENTOR"}</p>
 
           <h2 id="modal-gestion-mentor-title">
             {mentor ? "Actualizar mentor" : "Registrar mentor"}
@@ -120,6 +152,23 @@ export default function ModalGestionMentores({
             </p>
           )}
         </div>
+
+        {alert && (
+          <div
+            className={`mentor-alert mentor-alert-${alert.type}`}
+            role={alert.type === "danger" ? "alert" : "status"}
+          >
+            <span className="mentor-alert-icon" aria-hidden="true">
+              {alert.type === "success"
+                ? "✓"
+                : alert.type === "warning"
+                  ? "!"
+                  : "×"}
+            </span>
+
+            <span>{alert.message}</span>
+          </div>
+        )}
 
         <form className="mentor-form" onSubmit={guardar}>
           <div className="mentor-form-grid">

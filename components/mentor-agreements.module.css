@@ -7,7 +7,11 @@
   font-size: 14px;
   font-weight: 700;
   text-decoration: none;
-  transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease;
 }
 
 .backLink {
@@ -15,9 +19,14 @@
   color: var(--wine);
 }
 
-.backLink:hover { text-decoration: underline; }
+.backLink:hover {
+  text-decoration: underline;
+}
 
-.formCard { display: block; margin-bottom: 24px; }
+.formCard {
+  display: block;
+  margin-bottom: 24px;
+}
 
 .form {
   display: grid;
@@ -34,8 +43,17 @@
   width: 100%;
 }
 
-.field { display: grid; gap: 7px; color: var(--muted); font-size: 13px; font-weight: 700; }
-.wideField { grid-column: 1 / -1; }
+.field {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.wideField {
+  grid-column: 1 / -1;
+}
 
 .form input,
 .form textarea,
@@ -49,8 +67,16 @@
   padding: 10px 12px;
 }
 
-.form textarea { resize: vertical; }
-.form input:focus, .form textarea:focus, .statusControl select:focus { outline: 2px solid color-mix(in srgb, var(--wine) 25%, transparent); border-color: var(--wine); }
+.form textarea {
+  resize: vertical;
+}
+
+.form input:focus,
+.form textarea:focus,
+.statusControl select:focus {
+  outline: 2px solid color-mix(in srgb, var(--wine) 25%, transparent);
+  border-color: var(--wine);
+}
 
 .submitButton,
 .deleteButton {
@@ -63,16 +89,238 @@
   cursor: pointer;
 }
 
-.submitButton { border: 1px solid var(--wine); background: var(--wine); color: #fff; }
-.submitButton:disabled { cursor: not-allowed; opacity: .65; }
-.deleteButton { border: 1px solid #d45a5a; background: #fff; color: #b42318; }
+.submitButton {
+  border: 1px solid var(--wine);
+  background: var(--wine);
+  color: #fff;
+}
 
-.agreementActions { display: grid; min-width: 170px; gap: 12px; }
-.statusControl { display: grid; gap: 7px; color: var(--muted); font-size: 13px; font-weight: 700; }
-.statusControl select { cursor: pointer; }
+.submitButton:hover:not(:disabled) {
+  background: #641014;
+  border-color: #641014;
+  transform: translateY(-1px);
+}
 
-.manageLink { min-width: 180px; padding: 10px 16px; border: 1px solid var(--wine); background: var(--wine); color: #fff; }
-.manageLink:hover { background: #641014; border-color: #641014; }
+.submitButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.deleteButton {
+  border: 1px solid #d45a5a;
+  background: #fff;
+  color: #b42318;
+}
+
+.deleteButton:hover {
+  background: #fff5f5;
+}
+
+.agreementActions {
+  display: grid;
+  min-width: 170px;
+  gap: 12px;
+}
+
+.statusControl {
+  display: grid;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.statusControl select {
+  cursor: pointer;
+}
+
+.manageLink {
+  min-width: 180px;
+  padding: 10px 16px;
+  border: 1px solid var(--wine);
+  background: var(--wine);
+  color: #fff;
+}
+
+.manageLink:hover {
+  background: #641014;
+  border-color: #641014;
+}
+
+/* =====================================================
+   EVIDENCIAS
+===================================================== */
+
+.evidenceSection {
+  display: grid;
+  gap: 14px;
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+
+.evidenceSection h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.evidenceSection h4 {
+  margin: 4px 0 0;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.evidenceSection > p {
+  margin: -6px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* Selector de archivo */
+
+.fileInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  background: #fafafa;
+  color: var(--muted);
+  font: inherit;
+  cursor: pointer;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+
+.fileInput:hover {
+  border-color: var(--wine);
+  background: #fff;
+}
+
+.fileInput:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+/* Archivo seleccionado */
+
+.selectedFile {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #fafafa;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.selectedFileIcon {
+  flex-shrink: 0;
+  font-size: 17px;
+}
+
+.selectedFileName {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Botón subir */
+
+.uploadButton {
+  width: fit-content;
+  min-width: 180px;
+  padding: 10px 18px;
+  border: 1px solid var(--wine);
+  border-radius: 8px;
+  background: var(--wine);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease,
+    opacity 160ms ease;
+}
+
+.uploadButton:hover:not(:disabled) {
+  background: #641014;
+  border-color: #641014;
+  transform: translateY(-1px);
+}
+
+.uploadButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* Lista de evidencias */
+
+.evidenceList {
+  display: grid;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.evidenceItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 11px 13px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #fff;
+}
+
+.evidenceFile {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.evidenceFileName {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.viewEvidenceButton {
+  flex-shrink: 0;
+  padding: 7px 11px;
+  border: 1px solid var(--wine);
+  border-radius: 7px;
+  background: #fff;
+  color: var(--wine);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.viewEvidenceButton:hover {
+  background: var(--wine);
+  color: #fff;
+}
+
+/* Estado vacío */
 
 .emptyAgreementStatus {
   display: inline-flex;
@@ -89,8 +337,45 @@
 }
 
 @media (max-width: 680px) {
-  .form { grid-template-columns: 1fr; }
-  .wideField { grid-column: auto; }
-  .agreementActions { margin-top: 16px; }
-  .submitButton, .deleteButton, .manageLink, .emptyAgreementStatus { width: 100%; }
+  .form {
+    grid-template-columns: 1fr;
+  }
+
+  .wideField {
+    grid-column: auto;
+  }
+
+  .agreementActions {
+    margin-top: 16px;
+  }
+
+  .submitButton,
+  .deleteButton,
+  .manageLink,
+  .emptyAgreementStatus,
+  .uploadButton {
+    width: 100%;
+  }
+
+  .evidenceItem {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .viewEvidenceButton {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+.evidenceFileInfo {
+display: grid;
+gap: 4px;
+min-width: 0;
+}
+
+.evidenceDate {
+color: var(--muted);
+font-size: 12px;
+font-weight: 500;
 }

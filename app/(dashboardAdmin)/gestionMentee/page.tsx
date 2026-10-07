@@ -84,9 +84,7 @@ export default function GestionMenteePage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          data.error || "No se pudieron obtener los mentees.",
-        );
+        throw new Error(data.error || "No se pudieron obtener los mentees.");
       }
 
       setMentees(data);
@@ -133,57 +131,40 @@ export default function GestionMenteePage() {
     setModalOpen(false);
     setMenteeEditar(null);
   }
-
   /* ======================================================
-     GUARDAR
-  ====================================================== */
+   GUARDAR
+====================================================== */
 
   async function guardarMentee(formData: MenteeFormData) {
-    try {
-      const token = await getToken();
-      const editando = Boolean(menteeEditar);
+    const token = await getToken();
+    const editando = Boolean(menteeEditar);
 
-      const payload = editando
-        ? {
-            ...formData,
-            id: menteeEditar!.id,
-            customerId: menteeEditar!.customerId,
-            profileId: menteeEditar!.profileId,
-          }
-        : formData;
+    const payload = editando
+      ? {
+          ...formData,
+          id: menteeEditar!.id,
+          customerId: menteeEditar!.customerId,
+          profileId: menteeEditar!.profileId,
+        }
+      : formData;
 
-      const response = await fetch("/api/coordinador/gestionMentees", {
-        method: editando ? "PUT" : "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
-      });
+    const response = await fetch("/api/coordinador/gestionMentees", {
+      method: editando ? "PUT" : "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(payload),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || "No se pudo guardar el mentee.");
-      }
-
-      cerrarModal();
-      await cargarMentees();
-
-      window.alert(
-        editando
-          ? "Mentee actualizado correctamente."
-          : "Mentee creado correctamente.",
-      );
-    } catch (error) {
-      window.alert(
-        error instanceof Error
-          ? error.message
-          : "No se pudo guardar el mentee.",
-      );
+    if (!response.ok) {
+      throw new Error(data.error || "No se pudo guardar el mentee.");
     }
-  }
 
+    await cargarMentees();
+  }
   /* ======================================================
      ELIMINAR
   ====================================================== */
@@ -217,6 +198,7 @@ export default function GestionMenteePage() {
       }
 
       await cargarMentees();
+
       window.alert("Mentee eliminado correctamente.");
     } catch (error) {
       window.alert(
@@ -240,7 +222,10 @@ export default function GestionMenteePage() {
           <h1>Gestión de mentees</h1>
 
           <p className="intro">
-         Administra a las personas que reciben mentoría.<br/> Aquí puedes registrar nuevos mentees, consultar sus datos, editar sus perfiles o eliminarlos.
+            Administra a las personas que reciben mentoría.
+            <br />
+            Aquí puedes registrar nuevos mentees, consultar sus datos, editar
+            sus perfiles o eliminarlos.
           </p>
         </div>
 
@@ -268,29 +253,40 @@ export default function GestionMenteePage() {
         */
         <section className="mentor-management-list">
           {mentees.map((mentee) => (
-            <article
-              key={mentee.customerId}
-              className="mentor-management-card"
-            >
+            <article key={mentee.customerId} className="mentor-management-card">
               <div>
-                {mentee.foto_url && (
-                  <img
-                    src={mentee.foto_url}
-                    alt={`Foto de ${mentee.name}`}
-                    className="mentor-management-avatar"
-                    width={56}
-                    height={56}
-                  />
-                )}
+                {/*
+      La foto del mentee no se muestra actualmente.
+      Se mantiene el código comentado por si posteriormente
+      se decide volver a utilizar.
+    */}
+                {/*
+    {mentee.foto_url && (
+      <img
+        src={mentee.foto_url}
+        alt={`Foto de ${mentee.name}`}
+        className="mentor-management-avatar"
+        width={56}
+        height={56}
+      />
+    )}
+    */}
 
-                <strong>{mentee.name} |  {mentee.email} </strong>
+                <strong>
+                  {mentee.name} | {mentee.email}
+                </strong>
 
-                
+                <small>N° Telefono: {mentee.telefono || "Sin teléfono"}</small>
 
-                <small>N° Telefono: {mentee.telefono || "Sin teléfono"} {" "}</small>
-                <br/>
-                <small>Especialidad: {mentee.especialidad || "Sin especialidad"}</small>
-                <br/><br/>
+                <br />
+
+                <small>
+                  Especialidad: {mentee.especialidad || "Sin especialidad"}
+                </small>
+
+                <br />
+                <br />
+
                 {mentee.resumen && <p>{mentee.resumen}</p>}
               </div>
 

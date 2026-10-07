@@ -13,6 +13,7 @@ import {
   CalendarDays,
   CheckCircle2,
   Clock3,
+  FileCheck2,
   LayoutDashboard,
   LogOut,
   UserCog,
@@ -24,7 +25,7 @@ import { supabase } from "@/lib/supabase";
 import { getCurrentProfile, signOut } from "@/services/auth.service";
 
 /* =====================================================
-   CONFIGURACIÓN DE MENÚS
+CONFIGURACIÓN DE MENÚS
 ===================================================== */
 
 const menus = {
@@ -72,6 +73,11 @@ const menus = {
       label: "Mentorías",
       icon: CheckCircle2,
     },
+    {
+      href: "/evidencias",
+      label: "Evidencias",
+      icon: FileCheck2,
+    },
   ],
 
   coordinador: [
@@ -93,7 +99,12 @@ const menus = {
     {
       href: "/asignacion",
       label: "Asignación",
-      icon: Box
+      icon: Box,
+    },
+    {
+      href: "/acuerdos",
+      label: "Acuerdos",
+      icon: FileCheck2,
     },
   ],
 };
@@ -154,15 +165,15 @@ export default function MenteeLayout({
   }
 
   /* =====================================================
-     MENÚ SEGÚN ROL
+  MENÚ SEGÚN ROL
   ===================================================== */
 
   const currentMenu =
     menus[rol as keyof typeof menus] ?? [];
 
   /* =====================================================
-     TÍTULO AUTOMÁTICO
-     Toma directamente el label de la ruta activa
+  TÍTULO AUTOMÁTICO
+  Toma directamente el label de la ruta activa
   ===================================================== */
 
   const currentTitle =
@@ -171,7 +182,7 @@ export default function MenteeLayout({
     )?.label ?? "";
 
   /* =====================================================
-     INICIALES
+  INICIALES
   ===================================================== */
 
   const initials =
@@ -186,7 +197,7 @@ export default function MenteeLayout({
       : "...";
 
   /* =====================================================
-     NOMBRE DEL ROL
+  NOMBRE DEL ROL
   ===================================================== */
 
   const roleLabels: Record<string, string> = {
@@ -198,7 +209,7 @@ export default function MenteeLayout({
   return (
     <main className="app-shell mentee-shell">
       {/* =================================================
-          SIDEBAR
+      SIDEBAR
       ================================================= */}
 
       <aside className="sidebar">
@@ -300,3 +311,4 @@ export default function MenteeLayout({
     </main>
   );
 }
+

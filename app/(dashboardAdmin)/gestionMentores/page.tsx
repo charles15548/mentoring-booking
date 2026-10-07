@@ -61,8 +61,12 @@ export default function GestionMentoresPage() {
 
     if (!contentType.includes("application/json")) {
       const text = await response.text();
+
       console.error("Respuesta no JSON:", text);
-      throw new Error(`La API no devolvió JSON. Código HTTP: ${response.status}`);
+
+      throw new Error(
+        `La API no devolvió JSON. Código HTTP: ${response.status}`,
+      );
     }
 
     return response.json();
@@ -74,18 +78,28 @@ export default function GestionMentoresPage() {
       setErrorMessage("");
 
       const token = await getToken();
-      const response = await fetch("/api/coordinador/gestionMentores", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+
+      const response = await fetch(
+        "/api/coordinador/gestionMentores",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
       const data = await readResponse(response);
 
       if (!response.ok) {
-        throw new Error(data.error || "No se pudieron obtener los mentores.");
+        throw new Error(
+          data.error || "No se pudieron obtener los mentores.",
+        );
       }
 
       setMentores(data);
     } catch (error) {
       console.error(error);
+
       setErrorMessage(
         error instanceof Error
           ? error.message
@@ -116,69 +130,84 @@ export default function GestionMentoresPage() {
   }
 
   async function guardarMentor(formData: MentorFormData) {
-    try {
-      const token = await getToken();
-      const editando = Boolean(mentorEditar);
-      const payload = editando
-        ? {
-            ...formData,
-            id: mentorEditar!.id,
-            staffId: mentorEditar!.staffId,
-            profileId: mentorEditar!.profileId,
-          }
-        : formData;
+    const token = await getToken();
 
-      const response = await fetch("/api/coordinador/gestionMentores", {
+    const editando = Boolean(mentorEditar);
+
+    const payload = editando
+      ? {
+          ...formData,
+          id: mentorEditar!.id,
+          staffId: mentorEditar!.staffId,
+          profileId: mentorEditar!.profileId,
+        }
+      : formData;
+
+    const response = await fetch(
+      "/api/coordinador/gestionMentores",
+      {
         method: editando ? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(payload),
-      });
-      const data = await readResponse(response);
+      },
+    );
 
-      if (!response.ok) {
-        throw new Error(data.error || "No se pudo guardar el mentor.");
-      }
+    const data = await readResponse(response);
 
-      cerrarModal();
-      await cargarMentores();
-      window.alert(
-        editando
-          ? "Mentor actualizado correctamente."
-          : "Mentor creado correctamente.",
-      );
-    } catch (error) {
-      window.alert(
-        error instanceof Error ? error.message : "No se pudo guardar el mentor.",
+    if (!response.ok) {
+      throw new Error(
+        data.error || "No se pudo guardar el mentor.",
       );
     }
+
+    /*
+     * Actualizamos la lista, pero NO cerramos el modal.
+     * El modal se encargará de mostrar la alerta de éxito
+     * y posteriormente cerrarse.
+     */
+    await cargarMentores();
   }
 
   async function eliminarMentor(mentor: Mentor) {
-    if (!window.confirm(`¿Seguro que deseas eliminar a ${mentor.name}?`)) return;
+    if (
+      !window.confirm(
+        `¿Seguro que deseas eliminar a ${mentor.name}?`,
+      )
+    ) {
+      return;
+    }
 
     try {
       const token = await getToken();
-      const response = await fetch("/api/coordinador/gestionMentores", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+
+      const response = await fetch(
+        "/api/coordinador/gestionMentores",
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            staffId: mentor.staffId,
+            profileId: mentor.profileId,
+          }),
         },
-        body: JSON.stringify({
-          staffId: mentor.staffId,
-          profileId: mentor.profileId,
-        }),
-      });
+      );
+
       const data = await readResponse(response);
 
       if (!response.ok) {
-        throw new Error(data.error || "No se pudo eliminar el mentor.");
+        throw new Error(
+          data.error || "No se pudo eliminar el mentor.",
+        );
       }
 
       await cargarMentores();
+
       window.alert("Mentor eliminado correctamente.");
     } catch (error) {
       window.alert(
@@ -194,18 +223,27 @@ export default function GestionMentoresPage() {
       <section className="welcome-row">
         <div>
           <p className="eyebrow">COORDINACIÓN · PROUNI</p>
+
           <h1>Gestión de mentores</h1>
+
           <p className="intro">
-           Administra a las personas que brindan mentoría. <br/>Aquí puedes registrar nuevos mentores, consultar sus datos, editar sus perfiles o eliminarlos.
+            Administra a las personas que brindan mentoría. <br />
+            Aquí puedes registrar nuevos mentores, consultar sus datos,
+            editar sus perfiles o eliminarlos.
           </p>
         </div>
 
-        <button className="primary-button" onClick={nuevoMentor}>
+        <button
+          className="primary-button"
+          onClick={nuevoMentor}
+        >
           + Nuevo mentor
         </button>
       </section>
 
-      {errorMessage && <p className="form-error">{errorMessage}</p>}
+      {errorMessage && (
+        <p className="form-error">{errorMessage}</p>
+      )}
 
       {isLoading ? (
         <section className="empty-state">
@@ -214,7 +252,10 @@ export default function GestionMentoresPage() {
       ) : mentores.length === 0 ? (
         <section className="empty-state">
           <h2>No hay mentores en Microsoft Bookings</h2>
-          <p>Agrega personal al Booking Agendar mentorías.</p>
+
+          <p>
+            Agrega personal al Booking Agendar mentorías.
+          </p>
         </section>
       ) : (
         <section className="mentor-management-list">
@@ -235,10 +276,20 @@ export default function GestionMentoresPage() {
                 )}
 
                 <strong>{mentor.name}</strong>
+
                 <p>{mentor.email}</p>
-                <small>{mentor.telefono || "Sin teléfono"}</small>
-                <small>{mentor.especialidad || "Sin especialidad"}</small>
-                {mentor.resumen && <p>{mentor.resumen}</p>}
+
+                <small>
+                  {mentor.telefono || "Sin teléfono"}
+                </small>
+
+                <small>
+                  {mentor.especialidad || "Sin especialidad"}
+                </small>
+
+                {mentor.resumen && (
+                  <p>{mentor.resumen}</p>
+                )}
               </div>
 
               <div>
@@ -249,8 +300,18 @@ export default function GestionMentoresPage() {
                       : "Cuenta inactiva"
                     : "Solo Bookings"}
                 </span>
-                <button onClick={() => editarMentor(mentor)}>Editar</button>
-                <button onClick={() => void eliminarMentor(mentor)}>
+
+                <button
+                  onClick={() => editarMentor(mentor)}
+                >
+                  Editar
+                </button>
+
+                <button
+                  onClick={() =>
+                    void eliminarMentor(mentor)
+                  }
+                >
                   Eliminar
                 </button>
               </div>

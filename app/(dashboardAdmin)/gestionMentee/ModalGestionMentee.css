@@ -188,3 +188,69 @@
   .welcome-row > div { display: contents; }
   .welcome-row > .primary-button { width: 100%; }
 }
+
+/* =============================
+   ALERTAS
+============================= */
+
+.mentee-alert {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 0 18px;
+  padding: 11px 13px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.45;
+  flex-shrink: 0;
+}
+
+.mentee-alert-icon {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.mentee-alert-success {
+  color: #0f5132;
+  background: #d1e7dd;
+  border-color: #badbcc;
+}
+
+.mentee-alert-success .mentee-alert-icon {
+  color: #fff;
+  background: #198754;
+}
+
+.mentee-alert-danger {
+  color: #842029;
+  background: #f8d7da;
+  border-color: #f5c2c7;
+}
+
+.mentee-alert-danger .mentee-alert-icon {
+  color: #fff;
+  background: #dc3545;
+}
+
+.mentee-alert-warning {
+  color: #664d03;
+  background: #fff3cd;
+  border-color: #ffecb5;
+}
+
+.mentee-alert-warning .mentee-alert-icon {
+  color: #fff;
+  background: #ffc107;
+}
