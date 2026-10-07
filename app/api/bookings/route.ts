@@ -291,10 +291,18 @@ export async function POST(request: Request) {
 
     const businessId = getBookingBusinessId();
 
+<<<<<<< HEAD
     const customerEmail = body.customerEmail?.trim().toLowerCase();
 
     if (!customerEmail) {
       return NextResponse.json(
+=======
+    const appointment =
+      await graphRequest<{
+        id: string;
+      }>(
+        `/solutions/bookingBusinesses/${encodeURIComponent(businessId)}/appointments`,
+>>>>>>> 2d850bfd4b551b5e9173d217b793407e4413cd90
         {
           error: "El correo del mentee es obligatorio.",
         },

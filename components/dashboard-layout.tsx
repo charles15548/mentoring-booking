@@ -259,7 +259,7 @@ export default function MenteeLayout({
           >
             <LogOut size={19} />
 
-            <span>Cerrar sesión</span>
+            <span>Salir</span>
           </button>
         </div>
       </aside>
