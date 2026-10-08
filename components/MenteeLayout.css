@@ -325,11 +325,24 @@
     padding: 10px 16px;
   }
 
-  .mentee-shell  {
+  .mentee-shell {
     display: none;
   }
 
   .mentee-shell .header-divider {
     display: none;
   }
+}
+.prouni-logo {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 0 0 8px 10px;
+  transform: translate(20px, -64px);
+}
+.prouni-logo-image {
+  width: 140px;
+  height: auto;
+  border-radius: 7px;
+  object-fit: contain;
 }

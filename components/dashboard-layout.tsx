@@ -249,9 +249,23 @@ export default function MenteeLayout({
           })}
         </nav>
 
-        {/* CERRAR SESIÓN */}
+        {/* PARTE INFERIOR DEL SIDEBAR */}
 
         <div className="sidebar-bottom">
+          {/* LOGO PROUNI */}
+
+          <div className="prouni-logo">
+            <Image
+              src="/LogoProUni.jpg"
+              alt="ProUni"
+              width={140}
+              height={50}
+              className="prouni-logo-image"
+            />
+          </div>
+
+          {/* CERRAR SESIÓN */}
+
           <button
             type="button"
             className="nav-item logout-item"
@@ -311,4 +325,3 @@ export default function MenteeLayout({
     </main>
   );
 }
-
