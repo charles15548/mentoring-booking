@@ -64,11 +64,13 @@
 .login-copy h1 {
   max-width: 390px;
   margin: 0;
-  font: 500 42px/1.06 Georgia, serif;
-  letter-spacing: -.7px;
+  font:
+    500 42px/1.06 Georgia,
+    serif;
+  letter-spacing: -0.7px;
 }
 
-.login-copy>p:last-child {
+.login-copy > p:last-child {
   color: var(--muted);
   font-size: 13px;
   line-height: 1.6;
@@ -136,7 +138,7 @@
 }
 
 .primary-button:disabled {
-  opacity: .65;
+  opacity: 0.65;
   cursor: wait;
 }
 
@@ -207,12 +209,16 @@
 
 .aside-note span {
   color: var(--coral);
-  font: 13px Georgia, serif;
+  font:
+    13px Georgia,
+    serif;
 }
 
 .aside-note p {
   color: #e2efeb;
-  font: 28px/1.22 Georgia, serif;
+  font:
+    28px/1.22 Georgia,
+    serif;
   margin: 15px 0;
 }
 
@@ -275,7 +281,9 @@
 }
 
 .state-page h1 {
-  font: 34px Georgia, serif;
+  font:
+    34px Georgia,
+    serif;
 }
 
 .empty-state {
@@ -288,7 +296,9 @@
 
 .empty-state h2 {
   margin: 0 0 8px;
-  font: 23px Georgia, serif;
+  font:
+    23px Georgia,
+    serif;
 }
 
 .empty-state p {
@@ -328,13 +338,13 @@
   box-shadow: 0 0 0 2px #1f7c7915;
 }
 
-.mentor-option>span:nth-child(2) {
+.mentor-option > span:nth-child(2) {
   min-width: 0;
   flex: 1;
 }
 
 .mentor-option strong,
-.mentor-option small { 
+.mentor-option small {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -410,7 +420,9 @@
 
 .agenda-modal-header h2 {
   margin: 0;
-  font: 30px Georgia, serif;
+  font:
+    30px Georgia,
+    serif;
 }
 
 .agenda-modal-header p:last-child {
@@ -419,7 +431,7 @@
   margin: 8px 0 0;
 }
 
-.agenda-modal>.service-select {
+.agenda-modal > .service-select {
   max-width: 280px;
   margin-bottom: 22px;
 }
@@ -440,7 +452,9 @@
 .day-group h3 {
   margin: 0 0 13px;
   text-transform: capitalize;
-  font: 16px Georgia, serif;
+  font:
+    16px Georgia,
+    serif;
 }
 
 .day-slots {
@@ -468,7 +482,7 @@
   font-size: 27px;
 }
 
-.agenda-modal+.modal-backdrop {
+.agenda-modal + .modal-backdrop {
   z-index: 20;
 }
 
@@ -518,7 +532,9 @@ button {
   color: #fff;
   display: grid;
   place-items: center;
-  font: bold 21px Georgia, serif;
+  font:
+    bold 21px Georgia,
+    serif;
 }
 
 .brand-lockup strong {
@@ -720,8 +736,10 @@ button {
 
 .welcome-row h1 {
   margin: 0;
-  font: 500 38px Georgia, serif;
-  letter-spacing: -.5px;
+  font:
+    500 38px Georgia,
+    serif;
+  letter-spacing: -0.5px;
 }
 
 .welcome-row h1 span {
@@ -756,7 +774,9 @@ button {
 }
 
 .streak-card strong {
-  font: 16px Georgia, serif;
+  font:
+    16px Georgia,
+    serif;
 }
 
 .streak-card small {
@@ -790,7 +810,7 @@ button {
   background: var(--cream);
 }
 
-.stat-card>span {
+.stat-card > span {
   color: #474747;
   font-size: 10px;
   letter-spacing: 1.2px;
@@ -800,7 +820,9 @@ button {
 .stat-card strong {
   display: block;
   margin: 13px 0 5px;
-  font: 20px Georgia, serif;
+  font:
+    20px Georgia,
+    serif;
 }
 
 .stat-card small {
@@ -841,7 +863,9 @@ button {
 
 .section-heading h2 {
   margin: 0;
-  font: 23px Georgia, serif;
+  font:
+    23px Georgia,
+    serif;
 }
 
 .outline-button {
@@ -879,7 +903,7 @@ button {
   border-bottom: 1px solid var(--line);
 }
 
-.calendar-header>div {
+.calendar-header > div {
   margin-right: auto;
 }
 
@@ -937,14 +961,16 @@ button {
 }
 
 .slot span,
-.slot small { 
+.slot small {
   font-size: 10px;
   color: var(--muted);
 }
 
 .slot strong {
   display: block;
-  font: 20px Georgia, serif;
+  font:
+    20px Georgia,
+    serif;
   margin: 7px 0 8px;
 }
 
@@ -1016,10 +1042,12 @@ button {
 
 .mentor-card h3 {
   margin: 0 0 7px;
-  font: 21px Georgia, serif;
+  font:
+    21px Georgia,
+    serif;
 }
 
-.mentor-card>p:not(.eyebrow) {
+.mentor-card > p:not(.eyebrow) {
   color: var(--muted);
   line-height: 1.5;
   font-size: 11px;
@@ -1058,11 +1086,15 @@ button {
 
 .quote-mark {
   color: var(--coral);
-  font: 45px Georgia, serif;
+  font:
+    45px Georgia,
+    serif;
 }
 
 .quote-card p {
-  font: 20px/1.3 Georgia, serif;
+  font:
+    20px/1.3 Georgia,
+    serif;
   margin: 3px 0 19px;
 }
 
@@ -1159,7 +1191,9 @@ button {
 }
 
 .booking-modal h2 {
-  font: 27px Georgia, serif;
+  font:
+    27px Georgia,
+    serif;
   margin: 0 0 9px;
 }
 
@@ -1195,8 +1229,6 @@ button {
   font-size: 11px;
   color: #a36a5c;
 }
-
- 
 
 .booking-summary small {
   font-size: 11px;
@@ -1294,7 +1326,7 @@ button {
     flex-wrap: wrap;
   }
 
-  .calendar-header>div {
+  .calendar-header > div {
     width: 100%;
     margin-bottom: 5px;
   }
@@ -1329,8 +1361,10 @@ button {
   margin-top: 34px;
 }
 
-.agenda-inline>h2 {
-  font: 26px Georgia, serif;
+.agenda-inline > h2 {
+  font:
+    26px Georgia,
+    serif;
   margin: 0 0 18px;
 }
 
@@ -1354,7 +1388,9 @@ button {
 }
 .reservation-card h2 {
   margin: 0 0 7px;
-  font: 20px Georgia, serif;
+  font:
+    20px Georgia,
+    serif;
 }
 
 .reservation-card p:not(.eyebrow) {
@@ -1406,7 +1442,14 @@ button {
 body {
   background: var(--white);
   color: var(--text);
-  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    Arial,
+    sans-serif;
 }
 
 button,
@@ -1426,18 +1469,16 @@ select {
 .booking-modal h2,
 .empty-state h2,
 .reservation-card h2,
-.agenda-inline>h2 {
+.agenda-inline > h2 {
   font-family: Inter, system-ui, sans-serif;
   font-weight: 800;
-  letter-spacing: -.035em;
+  letter-spacing: -0.035em;
 }
 
 .eyebrow {
   font-weight: 800;
-  letter-spacing: .1em;
+  letter-spacing: 0.1em;
 }
- 
-
 
 .app-shell {
   background: var(--soft);
@@ -1514,7 +1555,7 @@ select {
 }
 
 .topbar {
-  background: rgba(255, 255, 255, .97);
+  background: rgba(255, 255, 255, 0.97);
   border-color: var(--line);
 }
 
@@ -1563,18 +1604,21 @@ select {
 .empty-state {
   border-color: var(--line);
   border-radius: 18px;
-  box-shadow: 0 7px 22px rgba(40, 30, 30, .05);
+  box-shadow: 0 7px 22px rgba(40, 30, 30, 0.05);
 }
 
 .mentor-option {
   padding: 20px;
-  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
 }
 
 .mentor-option:hover,
 .mentor-option.selected {
   border-color: var(--wine);
-  box-shadow: 0 14px 32px rgba(133, 20, 24, .12);
+  box-shadow: 0 14px 32px rgba(133, 20, 24, 0.12);
   transform: translateY(-3px);
 }
 
@@ -1592,10 +1636,10 @@ select {
   border: 1px solid var(--line);
   border-radius: 18px;
   padding: 24px;
-  box-shadow: 0 7px 22px rgba(40, 30, 30, .05);
+  box-shadow: 0 7px 22px rgba(40, 30, 30, 0.05);
 }
 
-.agenda-inline>h2 {
+.agenda-inline > h2 {
   font-size: 26px;
 }
 
@@ -1631,20 +1675,23 @@ select {
 .service-select select:focus,
 .login-form input:focus {
   border-color: #b26467;
-  box-shadow: 0 0 0 3px rgba(133, 20, 24, .08);
+  box-shadow: 0 0 0 3px rgba(133, 20, 24, 0.08);
 }
 
 .primary-button {
   background: var(--wine);
   border-radius: 9px;
   font-weight: 850;
-  transition: transform .25s ease, box-shadow .25s ease, background .25s ease;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
 }
 
 .primary-button:hover {
   background: var(--wine-dark);
   transform: translateY(-2px);
-  box-shadow: 0 10px 22px rgba(133, 20, 24, .25);
+  box-shadow: 0 10px 22px rgba(133, 20, 24, 0.25);
 }
 
 .form-error {
@@ -1657,19 +1704,17 @@ select {
   background: #fff;
   border-style: solid;
 }
- 
-
 
 .reservation-card .eyebrow.eyebrow-confirmed {
   color: #16803a;
 }
-.eyebrow-vencida{
-  color: #474e4e
+.eyebrow-vencida {
+  color: #474e4e;
 }
 
 .agenda-backdrop,
 .modal-backdrop {
-  background: rgba(46, 20, 20, .45);
+  background: rgba(46, 20, 20, 0.45);
 }
 
 .agenda-modal {
@@ -1706,10 +1751,10 @@ select {
   color: var(--text);
   font-family: Inter, system-ui, sans-serif;
   font-weight: 800;
-  letter-spacing: -.04em;
+  letter-spacing: -0.04em;
 }
 
-.login-copy>p:last-child {
+.login-copy > p:last-child {
   color: var(--muted);
   line-height: 1.7;
 }
@@ -1720,7 +1765,7 @@ select {
 }
 
 .login-form input {
-  background: rgba(255, 255, 255, .8);
+  background: rgba(255, 255, 255, 0.8);
 }
 
 .login-aside {
@@ -1728,11 +1773,11 @@ select {
 }
 
 .login-aside::before {
-  border-color: rgba(255, 255, 255, .22);
+  border-color: rgba(255, 255, 255, 0.22);
 }
 
 .login-aside::after {
-  border-color: rgba(217, 166, 46, .6);
+  border-color: rgba(217, 166, 46, 0.6);
 }
 
 .aside-orbit {
@@ -1757,74 +1802,182 @@ select {
   color: #f0d7d8;
 }
 
-
-
 /* ================================
    GESTIÓN DE MENTORES
 ================================ */
 
 .mentor-management-list {
   display: grid;
-  gap: 14px;
-  margin-top: 24px;
+  gap: 16px;
+  margin-top: 26px;
 }
 
 .mentor-management-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
+  gap: 24px;
 
-  padding: 20px 22px;
+  width: 100%;
+  padding: 18px 20px;
 
   background: #fff;
   border: 1px solid var(--line);
   border-radius: 16px;
 
-  box-shadow: 0 7px 22px rgba(40, 30, 30, 0.05);
+  box-shadow: 0 5px 18px rgba(40, 30, 30, 0.045);
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
-.mentor-management-card strong {
+.mentor-management-card:hover {
+  border-color: #d9c3c3;
+  box-shadow: 0 10px 26px rgba(40, 30, 30, 0.07);
+  transform: translateY(-1px);
+}
+
+/* ================================
+   FOTO + INFORMACIÓN
+================================ */
+
+.mentor-management-identity {
+  display: flex;
+  align-items: flex-start;
+  gap: 25px;
+
+  min-width: 0;
+  flex: 1;
+}
+
+.mentor-management-avatar {
   display: block;
-  color: var(--text);
-  font-size: 15px;
+  flex: 0 0 auto;
+
+  width: 68px;
+  height: 68px;
+
+  object-fit: cover;
+  border-radius: 50%;
+
+  background: #f2dfdc;
+
+  border: 3px solid #fff;
+
+  box-shadow:
+    0 0 0 1px #ead8d8,
+    0 5px 14px rgba(40, 30, 30, 0.08);
+}
+
+.mentor-management-avatar-placeholder {
+  display: grid;
+  place-items: center;
+
+  color: var(--wine);
+  font-size: 19px;
   font-weight: 800;
-  margin-bottom: 5px;
 }
 
-.mentor-management-card p {
-  margin: 0 0 4px;
+.mentor-management-info {
+  min-width: 0;
+  padding-top: 1px;
+}
+
+.mentor-management-info strong {
+  display: block;
+
+  margin: 0 0 5px;
+
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.25;
+  font-weight: 800;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mentor-management-info p {
+  margin: 0 0 5px;
+
   color: var(--muted);
-  font-size: 13px;
+  font-size: 12px;
+  line-height: 1.45;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.mentor-management-card small {
-  color: #565656;
-  font-size: 13px;
+.mentor-management-info small {
+  display: inline-block;
+
+  margin-right: 14px;
+
+  color: #666;
+  font-size: 11px;
+  line-height: 1.5;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.mentor-management-card>div:last-child {
+.mentor-management-info small:last-child {
+  margin-right: 0;
+}
+
+/* ================================
+   ESTADO Y BOTONES
+================================ */
+
+.mentor-management-actions {
   display: flex;
   align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+
+  flex-shrink: 0;
 }
 
-.mentor-management-card>div:last-child>span {
-  padding: 6px 10px;
+.mentor-management-actions span {
+  display: inline-flex;
+  align-items: center;
+
+  min-height: 28px;
+  padding: 5px 10px;
+
   border-radius: 999px;
 
   background: #fff7df;
   color: var(--wine);
 
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 800;
+
+  white-space: nowrap;
 }
 
-/* BOTONES */
+.mentor-management-actions span::before {
+  content: "";
 
-.mentor-management-card button {
-  padding: 8px 13px;
+  width: 6px;
+  height: 6px;
+
+  margin-right: 6px;
+
+  border-radius: 50%;
+
+  background: var(--gold);
+}
+
+.mentor-management-actions button {
+  min-height: 32px;
+
+  padding: 7px 12px;
 
   background: #fff;
   color: var(--wine);
@@ -1832,45 +1985,93 @@ select {
   border: 1px solid #ddcbcb;
   border-radius: 8px;
 
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
 
-  transition: 0.2s ease;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
-.mentor-management-card button:hover {
+.mentor-management-actions button:hover {
   background: #fff7f7;
   border-color: var(--wine);
+  transform: translateY(-1px);
 }
 
-.mentor-management-card button:last-child {
+.mentor-management-actions button:last-child {
   color: #b42318;
   border-color: #f1b8b4;
 }
 
-.mentor-management-card button:last-child:hover {
+.mentor-management-actions button:last-child:hover {
   background: #fff0ef;
   border-color: #b42318;
 }
 
-/* RESPONSIVE */
+/* ================================
+   RESPONSIVE
+================================ */
 
-@media (max-width: 680px) {
+@media (max-width: 850px) {
   .mentor-management-card {
-    flex-direction: column;
     align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
   }
 
-  .mentor-management-card>div:last-child {
+  .mentor-management-identity {
     width: 100%;
   }
 
-  .mentor-management-card button {
-    flex: 1;
+  .mentor-management-actions {
+    width: 100%;
+
+    padding-top: 14px;
+
+    border-top: 1px solid var(--line);
+
+    justify-content: flex-start;
   }
 }
 
+@media (max-width: 520px) {
+  .mentor-management-card {
+    padding: 16px;
+  }
 
+  .mentor-management-avatar {
+    width: 58px;
+    height: 58px;
+  }
+
+  .mentor-management-info strong,
+  .mentor-management-info p,
+  .mentor-management-info small {
+    white-space: normal;
+  }
+
+  .mentor-management-info small {
+    display: block;
+    margin-right: 0;
+  }
+
+  .mentor-management-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .mentor-management-actions span {
+    grid-column: 1 / -1;
+    justify-self: start;
+  }
+
+  .mentor-management-actions button {
+    width: 100%;
+  }
+}
 /* ================================
    INPUTS MODAL GESTIÓN MENTORES
 ================================ */
@@ -1923,7 +2124,7 @@ select {
 
 /* Checkbox activo */
 
-.booking-modal>label {
+.booking-modal > label {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1935,13 +2136,12 @@ select {
   font-weight: 700;
 }
 
-.booking-modal>label input[type="checkbox"] {
+.booking-modal > label input[type="checkbox"] {
   width: 16px;
   height: 16px;
 
   accent-color: var(--wine);
 }
-
 
 .scheduleCard {
   display: grid;
@@ -1973,7 +2173,7 @@ select {
   gap: 20px;
 }
 
-.scheduleDayHeader>div:first-child {
+.scheduleDayHeader > div:first-child {
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -2007,7 +2207,7 @@ select {
   gap: 12px;
 }
 
-.scheduleSlot>div {
+.scheduleSlot > div {
   display: grid;
   gap: 6px;
 }
@@ -2041,8 +2241,7 @@ select {
 .scheduleSlot input[type="time"]:focus {
   border-color: var(--wine);
 
-  box-shadow:
-    0 0 0 3px rgba(133, 20, 24, 0.08);
+  box-shadow: 0 0 0 3px rgba(133, 20, 24, 0.08);
 }
 
 .scheduleSeparator {
@@ -2166,17 +2365,16 @@ select {
 
   border-radius: 50%;
 
-  box-shadow:
-    0 1px 4px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
 
   transition: transform 0.2s ease;
 }
 
-.scheduleSwitch input:checked+span {
+.scheduleSwitch input:checked + span {
   background: var(--wine);
 }
 
-.scheduleSwitch input:checked+span::before {
+.scheduleSwitch input:checked + span::before {
   transform: translateX(18px);
 }
 
@@ -2212,8 +2410,6 @@ select {
   }
 }
 
-
-
 /*Boton confirmar*/
 .btn-confirm-mentorship {
   margin-top: 14px;
@@ -2241,8 +2437,7 @@ select {
 
   transform: translateY(-1px);
 
-  box-shadow: 0 4px 10px
-    rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .btn-confirm-mentorship:active {

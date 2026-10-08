@@ -254,43 +254,36 @@ export default function GestionMenteePage() {
         <section className="mentor-management-list">
           {mentees.map((mentee) => (
             <article key={mentee.customerId} className="mentor-management-card">
-              <div>
-                {/*
-      La foto del mentee no se muestra actualmente.
-      Se mantiene el código comentado por si posteriormente
-      se decide volver a utilizar.
-    */}
-                {/*
-    {mentee.foto_url && (
-      <img
-        src={mentee.foto_url}
-        alt={`Foto de ${mentee.name}`}
-        className="mentor-management-avatar"
-        width={56}
-        height={56}
-      />
-    )}
-    */}
+              <div className="mentor-management-identity">
+                {mentee.foto_url ? (
+                  <img
+                    src={mentee.foto_url}
+                    alt={`Foto de ${mentee.name}`}
+                    className="mentor-management-avatar"
+                    width={68}
+                    height={68}
+                  />
+                ) : (
+                  <div className="mentor-management-avatar mentor-management-avatar-placeholder">
+                    {mentee.nombres?.charAt(0)?.toUpperCase() || "M"}
+                  </div>
+                )}
 
-                <strong>
-                  {mentee.name} | {mentee.email}
-                </strong>
+                <div className="mentor-management-info">
+                  <strong>{mentee.name}</strong>
 
-                <small>N° Telefono: {mentee.telefono || "Sin teléfono"}</small>
+                  <p>{mentee.email}</p>
 
-                <br />
-
-                <small>
-                  Especialidad: {mentee.especialidad || "Sin especialidad"}
-                </small>
-
-                <br />
-                <br />
-
-                {mentee.resumen && <p>{mentee.resumen}</p>}
+                  <small>
+                    {mentee.telefono || "Sin teléfono"}{" "}
+                    <span className="mentor-management-separator">|</span>{" "}
+                    {mentee.especialidad || "Sin especialidad"}
+                  </small>
+                  {/* {mentee.resumen && (  <p>{mentee.resumen}</p>)}*/}
+                </div>
               </div>
 
-              <div>
+              <div className="mentor-management-actions">
                 <span>
                   {mentee.tieneCuenta
                     ? mentee.activo

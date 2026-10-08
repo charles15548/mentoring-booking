@@ -136,15 +136,17 @@ export async function GET(request: NextRequest) {
       .from("profiles")
       .select(
         `
-        id,
-        nombres,
-        apellidos,
-        email,
-        telefono,
-        activo,
-        microsoft_staff_id,
-        microsoft_email
-      `,
+  id,
+  nombres,
+  apellidos,
+  email,
+  telefono,
+  especialidad,
+  foto_url,
+  activo,
+  microsoft_staff_id,
+  microsoft_email
+  `,
       )
       .eq("rol", "mentor");
 
@@ -171,28 +173,17 @@ export async function GET(request: NextRequest) {
         .join(" ");
 
       return {
-        /* ID principal = Microsoft */
         id: staff.id,
-
         staffId: staff.id,
-
         businessId: business.id,
-
         businessName: business.displayName,
 
-        /*
-              Nombre mostrado.
-            */
         name: nombreSupabase || staff.displayName || "",
 
-        /*
-              Correo mostrado.
-            */
         email: profile?.email ?? staff.emailAddress ?? "",
 
         role: staff.role ?? "",
 
-        /* Datos Supabase */
         profileId: profile?.id ?? null,
 
         nombres: profile?.nombres ?? staff.displayName ?? "",
@@ -200,6 +191,10 @@ export async function GET(request: NextRequest) {
         apellidos: profile?.apellidos ?? "",
 
         telefono: profile?.telefono ?? "",
+
+        especialidad: profile?.especialidad ?? "",
+
+        foto_url: profile?.foto_url ?? "",
 
         activo: profile?.activo ?? true,
 
@@ -623,6 +618,8 @@ export async function PUT(request: NextRequest) {
 
     const telefono = body.telefono?.trim() || "";
 
+    const especialidad = body.especialidad?.trim() || "";
+
     const activo = body.activo !== false;
 
     if (!staffId || !nombres || !email) {
@@ -752,6 +749,8 @@ export async function PUT(request: NextRequest) {
 
           telefono: telefono || null,
 
+          especialidad: especialidad || null,
+
           activo,
 
           microsoft_staff_id: staffId,
@@ -790,6 +789,8 @@ export async function PUT(request: NextRequest) {
         email,
 
         telefono,
+
+        especialidad,
 
         activo,
       },

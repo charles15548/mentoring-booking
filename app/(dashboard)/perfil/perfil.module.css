@@ -1,137 +1,1511 @@
 .page {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
 }
 
 .card {
-    width: min(100%, 760px);
+  width: min(100%, 760px);
 }
 
 .photoRow {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    padding-bottom: 22px;
-    border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
 }
 
 .photo,
 .placeholder {
-    width: 76px;
-    height: 76px;
-    flex: 0 0 76px;
-    border-radius: 50%;
-    object-fit: cover;
+  width: 76px;
+  height: 76px;
+  flex: 0 0 76px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 .placeholder {
-    display: grid;
-    place-items: center;
-    background: var(--blue-soft);
-    color: var(--wine);
-    font-size: 1.5rem;
-    font-weight: 700;
+  display: grid;
+  place-items: center;
+  background: var(--blue-soft);
+  color: var(--wine);
+  font-size: 1.5rem;
+  font-weight: 700;
 }
 
 .photoRow h3,
 .photoRow p {
-    margin: 0;
+  margin: 0;
 }
 
 .photoRow p {
-    color: var(--muted);
-    font-size: .85rem;
+  color: var(--muted);
+  font-size: 0.85rem;
 }
 
 .secondaryButton,
 .cancel {
-    margin-top: 9px;
-    padding: 7px 10px;
-    border: 1px solid var(--line);
-    border-radius: 6px;
-    background: var(--white);
-    color: var(--wine);
-    font-weight: 600;
-    cursor: pointer;
+  margin-top: 9px;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--white);
+  color: var(--wine);
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .form {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    margin-top: 22px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 22px;
 }
 
 .full,
 .actions {
-    grid-column: 1 / -1;
+  grid-column: 1 / -1;
 }
 
 .actions {
-    display: flex;
-    justify-content: flex-end;
+  display: flex;
+  justify-content: flex-end;
 }
+
+/* =====================================================
+   MODAL FOTO DE PERFIL
+===================================================== */
 
 .modalHeader {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line);
 }
 
+.modalHeader h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+.modalHeader p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* =====================================================
+   VISTA PREVIA
+===================================================== */
+
 .preview {
-    width: 132px;
-    height: 132px;
-    display: grid;
-    place-items: center;
-    overflow: hidden;
-    margin: 20px auto;
-    border-radius: 50%;
-    background: var(--soft);
-    color: var(--muted);
+  width: 156px;
+  height: 156px;
+
+  display: grid;
+  place-items: center;
+
+  overflow: hidden;
+
+  margin: 24px auto 20px;
+
+  border: 1px solid var(--line);
+  border-radius: 50%;
+
+  background: var(--soft);
+
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+
+  box-shadow: 0 8px 24px rgba(40, 30, 30, 0.07);
 }
 
 .preview img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
+/* =====================================================
+   EDITOR DE RECORTE
+===================================================== */
+
+.cropArea {
+  position: relative;
+
+  width: 100%;
+  height: 310px;
+
+  margin: 22px 0 16px;
+
+  overflow: hidden;
+
+  border-radius: 12px;
+
+  background: #171313;
+}
+.zoomControl {
+  margin-top: 14px;
+}
+
+.zoomLabel {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: var(--text);
+
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.zoomSlider {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.zoomSlider input {
+  flex: 1;
+
+  width: 100%;
+
+  accent-color: var(--wine);
+
+  cursor: pointer;
+}
+
+.zoomButton {
+  display: grid;
+  place-items: center;
+
+  width: 28px;
+  height: 28px;
+
+  padding: 0;
+
+  border: 1px solid var(--line);
+  border-radius: 7px;
+
+  background: var(--white);
+
+  color: var(--text);
+
+  font-size: 17px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.zoomButton:hover:not(:disabled) {
+  border-color: var(--wine);
+  background: #fff7f7;
+  color: var(--wine);
+}
+
+.zoomButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.cropHint {
+  margin: 9px 0 0;
+
+  color: var(--muted);
+
+  font-size: 11px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+/* =====================================================
+   ELEGIR IMAGEN
+===================================================== */
+
 .file {
-    display: block;
-    padding: 10px;
-    border: 1px dashed var(--gold);
-    border-radius: 6px;
-    color: var(--text);
-    font-weight: 600;
-    text-align: center;
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 5px;
+
+  width: 100%;
+  min-height: 76px;
+
+  box-sizing: border-box;
+
+  margin-top: 4px;
+
+  padding: 14px 16px;
+
+  border: 1px dashed #d7aaaa;
+  border-radius: 11px;
+
+  background: #fffafa;
+
+  color: var(--wine);
+
+  text-align: center;
+
+  cursor: pointer;
+
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+
+.file:hover {
+  border-color: var(--wine);
+  background: #fff7f7;
+  transform: translateY(-1px);
+}
+
+.fileTitle {
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.fileDescription {
+  max-width: 100%;
+
+  color: var(--muted);
+
+  font-size: 11px;
+  font-weight: 500;
 }
 
 .file input {
-    display: block;
-    width: 100%;
-    margin-top: 7px;
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  opacity: 0;
+
+  pointer-events: none;
 }
+
+/* =====================================================
+   CAMBIAR IMAGEN
+===================================================== */
+
+.changeFile {
+  display: block;
+
+  width: fit-content;
+
+  margin: 12px auto 0;
+
+  color: var(--wine);
+
+  font-size: 11px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.changeFile:hover {
+  text-decoration: underline;
+}
+
+.changeFile input {
+  position: absolute;
+
+  width: 1px;
+  height: 1px;
+
+  opacity: 0;
+
+  pointer-events: none;
+}
+
+/* =====================================================
+   ELIMINAR FOTO
+===================================================== */
 
 .remove {
-    display: flex;
-    gap: 8px;
-    margin-top: 13px;
-    color: var(--wine);
-    font-size: .9rem;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  margin-top: 14px;
+  padding: 10px 12px;
+
+  border: 1px solid #f1d0cd;
+  border-radius: 9px;
+
+  background: #fff8f7;
+
+  color: var(--wine);
+
+  font-size: 11px;
+  font-weight: 700;
+
+  cursor: pointer;
 }
+
+.remove input {
+  width: 15px;
+  height: 15px;
+
+  margin: 0;
+
+  accent-color: var(--wine);
+
+  cursor: pointer;
+}
+
+/* =====================================================
+   ACCIONES
+===================================================== */
 
 .modalActions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 9px;
-    margin-top: 20px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+
+  gap: 10px;
+
+  margin-top: 22px;
+  padding-top: 18px;
+
+  border-top: 1px solid var(--line);
 }
 
-@media (max-width: 640px) {
-    .form {
-        grid-template-columns: 1fr;
-    }
+.cancel {
+  margin-top: 0;
 
-    .full,
-    .actions {
-        grid-column: auto;
-    }
+  min-width: 100px;
+
+  padding: 10px 15px;
+
+  border: 1px solid var(--line);
+  border-radius: 9px;
+
+  background: #fff;
+
+  color: var(--muted);
+
+  font-size: 12px;
+  font-weight: 700;
+
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.cancel:hover:not(:disabled) {
+  border-color: #cfc8c4;
+  background: var(--soft);
+  color: var(--text);
+}
+
+.modalActions :global(.primary-button) {
+  width: auto;
+  min-width: 120px;
+
+  padding: 10px 16px;
+
+  border-radius: 9px;
+
+  font-size: 12px;
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 640px) {
+  .form {
+    grid-template-columns: 1fr;
+  }
+
+  .full,
+  .actions {
+    grid-column: auto;
+  }
+
+  .modalHeader {
+    padding-right: 4px;
+  }
+
+  .preview {
+    width: 140px;
+    height: 140px;
+
+    margin-top: 20px;
+  }
+
+  .cropArea {
+    height: 280px;
+  }
+
+  .modalActions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .cancel,
+  .modalActions :global(.primary-button) {
+    width: 100%;
+  }
+}
+
+/* =====================================================
+   PERFIL DEL ADMINISTRADOR
+===================================================== */
+
+.adminProfile {
+  width: min(100%, 920px);
+  margin: 0 auto;
+}
+
+.adminHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.adminEyebrow {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--wine);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+}
+
+.adminHeader h1 {
+  margin: 0;
+  color: var(--text);
+  font-size: clamp(30px, 4vw, 42px);
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+}
+
+.adminHeader p {
+  max-width: 600px;
+  margin: 9px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.adminRole {
+  flex-shrink: 0;
+  padding: 7px 11px;
+  border: 1px solid #ead9aa;
+  border-radius: 999px;
+  background: #fff9e9;
+  color: var(--wine);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.adminSection {
+  margin-top: 18px;
+  padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--white);
+  box-shadow: 0 7px 24px rgba(40, 30, 30, 0.045);
+}
+
+.sectionHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.sectionHeader h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.sectionHeader p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.adminForm {
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr);
+  gap: 30px;
+  padding-top: 24px;
+}
+
+.adminPhotoColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.adminPhoto,
+.adminPlaceholder {
+  width: 128px;
+  height: 128px;
+  flex: 0 0 128px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.adminPhoto {
+  border: 3px solid var(--white);
+  box-shadow:
+    0 0 0 1px #ead8d8,
+    0 8px 22px rgba(40, 30, 30, 0.09);
+}
+
+.adminPlaceholder {
+  display: grid;
+  place-items: center;
+  background: var(--blue-soft);
+  color: var(--wine);
+  font-size: 42px;
+  font-weight: 800;
+}
+
+.adminPhotoColumn .secondaryButton {
+  margin-top: 14px;
+}
+
+.adminFields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  min-width: 0;
+}
+
+.adminFields label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.adminFields input {
+  width: 100%;
+  min-height: 42px;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--text);
+  font-size: 13px;
+  outline: none;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.adminFields input:focus {
+  border-color: var(--wine);
+  box-shadow: 0 0 0 3px rgba(133, 20, 24, 0.08);
+}
+
+.adminFields input[readonly] {
+  background: #f8f7f5;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.adminFields small {
+  margin-top: -2px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.adminFull {
+  grid-column: 1 / -1;
+}
+
+.adminActions {
+  display: flex;
+  justify-content: flex-end;
+  grid-column: 1 / -1;
+  padding-top: 4px;
+}
+
+.securityRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-top: 22px;
+}
+
+.securityIcon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 10px;
+  background: #fff7df;
+  font-size: 17px;
+}
+
+.securityInfo {
+  min-width: 0;
+  flex: 1;
+}
+
+.securityInfo strong {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.securityInfo p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.securityButton {
+  flex-shrink: 0;
+  min-height: 36px;
+  padding: 8px 13px;
+  border: 1px solid #ddcbcb;
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--wine);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+/* =====================================================
+   RESPONSIVE - ADMIN
+===================================================== */
+
+@media (max-width: 760px) {
+  .adminHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .adminForm {
+    grid-template-columns: 1fr;
+  }
+
+  .adminPhotoColumn {
+    align-items: flex-start;
+    flex-direction: row;
+    gap: 16px;
+  }
+
+  .adminPhotoColumn .secondaryButton {
+    align-self: center;
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .adminSection {
+    padding: 20px;
+  }
+
+  .adminFields {
+    grid-template-columns: 1fr;
+  }
+
+  .adminFull {
+    grid-column: auto;
+  }
+
+  .adminActions {
+    grid-column: auto;
+  }
+
+  .securityRow {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .securityInfo {
+    width: calc(100% - 56px);
+    flex: 1;
+  }
+
+  .securityButton {
+    width: 100%;
+    margin-left: 56px;
+  }
+}
+
+/* =====================================================
+   MODAL — CAMBIAR CONTRASEÑA
+===================================================== */
+
+.passwordOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+  box-sizing: border-box;
+
+  background: rgba(20, 18, 18, 0.48);
+  backdrop-filter: blur(2px);
+}
+
+.passwordModal {
+  width: min(100%, 460px);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+
+  box-sizing: border-box;
+  padding: 26px;
+
+  border: 1px solid #e8dddd;
+  border-radius: 16px;
+  background: var(--white);
+
+  box-shadow:
+    0 24px 60px rgba(30, 20, 20, 0.18),
+    0 4px 14px rgba(30, 20, 20, 0.08);
+
+  animation: passwordModalIn 160ms ease-out;
+}
+
+@keyframes passwordModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.passwordHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.passwordEyebrow {
+  display: block;
+  margin-bottom: 7px;
+
+  color: var(--wine);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+}
+
+.passwordHeader h2 {
+  margin: 0;
+
+  color: var(--text);
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+.passwordHeader p {
+  max-width: 350px;
+  margin: 7px 0 0;
+
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.passwordClose {
+  display: grid;
+  place-items: center;
+
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+
+  background: var(--white);
+  color: var(--muted);
+
+  font-size: 21px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.passwordClose:hover {
+  border-color: #d9caca;
+  background: #faf8f7;
+  color: var(--text);
+}
+
+.passwordClose:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.passwordForm {
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+}
+
+.passwordForm label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.passwordInput {
+  display: flex;
+  align-items: center;
+
+  min-height: 42px;
+
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #fff;
+
+  overflow: hidden;
+
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.passwordInput:focus-within {
+  border-color: var(--wine);
+  box-shadow: 0 0 0 3px rgba(133, 20, 24, 0.08);
+}
+
+.passwordInput input {
+  width: 100%;
+  min-width: 0;
+
+  padding: 10px 12px;
+
+  border: 0;
+  outline: 0;
+
+  background: transparent;
+  color: var(--text);
+
+  font-size: 13px;
+}
+
+.passwordInput button {
+  flex-shrink: 0;
+
+  padding: 8px 11px;
+
+  border: 0;
+  background: transparent;
+  color: var(--wine);
+
+  font-size: 10px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.passwordInput button:hover {
+  background: #faf6f6;
+}
+
+.passwordInput button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.passwordForm small {
+  margin-top: -2px;
+
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.passwordInvalid {
+  color: #b3261e !important;
+}
+
+.passwordActions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+
+  margin-top: 7px;
+  padding-top: 20px;
+
+  border-top: 1px solid var(--line);
+}
+
+.passwordCancel {
+  min-height: 38px;
+  padding: 9px 14px;
+
+  border: 1px solid var(--line);
+  border-radius: 8px;
+
+  background: var(--white);
+  color: var(--text);
+
+  font-size: 11px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.passwordCancel:hover {
+  background: #faf8f7;
+  border-color: #d9caca;
+}
+
+.passwordCancel:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* El botón de seguridad ya está habilitado */
+.securityButton {
+  cursor: pointer;
+  opacity: 1;
+}
+
+.securityButton:hover {
+  border-color: #c9aaaa;
+  background: #fcf8f8;
+}
+
+/* =====================================================
+   RESPONSIVE — MODAL
+===================================================== */
+
+@media (max-width: 560px) {
+  .passwordOverlay {
+    padding: 14px;
+  }
+
+  .passwordModal {
+    width: 100%;
+    max-height: calc(100vh - 28px);
+    padding: 22px;
+    border-radius: 14px;
+  }
+
+  .passwordHeader {
+    margin-bottom: 20px;
+  }
+
+  .passwordHeader h2 {
+    font-size: 19px;
+  }
+
+  .passwordActions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .passwordActions button {
+    width: 100%;
+  }
+}
+
+.passwordMessageError,
+.passwordMessageSuccess {
+  margin-bottom: 18px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.passwordMessageError {
+  border: 1px solid #edcaca;
+  background: #fff5f5;
+  color: #a32626;
+}
+
+.passwordMessageSuccess {
+  border: 1px solid #cfe3d3;
+  background: #f3faf4;
+  color: #286336;
+}
+
+/* =====================================================
+   CAMBIO DE CORREO
+===================================================== */
+
+.emailField {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.emailField input {
+  flex: 1;
+  min-width: 0;
+}
+
+.emailChangeButton {
+  flex-shrink: 0;
+  min-height: 42px;
+  padding: 9px 13px;
+
+  border: 1px solid #ddcbcb;
+  border-radius: 8px;
+
+  background: var(--white);
+  color: var(--wine);
+
+  font-size: 11px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.emailChangeButton:hover {
+  border-color: #c9aaaa;
+  background: #fcf8f8;
+}
+
+/* Modal */
+
+.emailOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+  box-sizing: border-box;
+
+  background: rgba(20, 18, 18, 0.48);
+  backdrop-filter: blur(2px);
+}
+
+.emailModal {
+  width: min(100%, 460px);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+
+  box-sizing: border-box;
+  padding: 26px;
+
+  border: 1px solid #e8dddd;
+  border-radius: 16px;
+
+  background: var(--white);
+
+  box-shadow:
+    0 24px 60px rgba(30, 20, 20, 0.18),
+    0 4px 14px rgba(30, 20, 20, 0.08);
+
+  animation: emailModalIn 160ms ease-out;
+}
+
+@keyframes emailModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.emailHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.emailEyebrow {
+  display: block;
+  margin-bottom: 7px;
+
+  color: var(--wine);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+}
+
+.emailHeader h2 {
+  margin: 0;
+
+  color: var(--text);
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+.emailHeader p {
+  max-width: 350px;
+  margin: 7px 0 0;
+
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.emailClose {
+  display: grid;
+  place-items: center;
+
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+
+  padding: 0;
+
+  border: 1px solid var(--line);
+  border-radius: 8px;
+
+  background: var(--white);
+  color: var(--muted);
+
+  font-size: 21px;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.emailClose:hover {
+  border-color: #d9caca;
+  background: #faf8f7;
+  color: var(--text);
+}
+
+.emailClose:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.currentEmail {
+  margin-bottom: 20px;
+  padding: 12px 13px;
+
+  border: 1px solid var(--line);
+  border-radius: 9px;
+
+  background: #f8f7f5;
+}
+
+.currentEmail span {
+  display: block;
+  margin-bottom: 4px;
+
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.currentEmail strong {
+  display: block;
+
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 700;
+
+  word-break: break-word;
+}
+
+.emailForm {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.emailForm label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+
+  color: var(--text);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.emailForm input {
+  width: 100%;
+  min-height: 42px;
+  box-sizing: border-box;
+
+  padding: 10px 12px;
+
+  border: 1px solid var(--line);
+  border-radius: 9px;
+
+  background: #fff;
+  color: var(--text);
+
+  font-size: 13px;
+  outline: none;
+
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.emailForm input:focus {
+  border-color: var(--wine);
+  box-shadow: 0 0 0 3px rgba(133, 20, 24, 0.08);
+}
+
+.emailForm small {
+  margin-top: -2px;
+
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.emailActions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+
+  margin-top: 4px;
+  padding-top: 20px;
+
+  border-top: 1px solid var(--line);
+}
+
+.emailCancel {
+  min-height: 38px;
+  padding: 9px 14px;
+
+  border: 1px solid var(--line);
+  border-radius: 8px;
+
+  background: var(--white);
+  color: var(--text);
+
+  font-size: 11px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.emailCancel:hover {
+  background: #faf8f7;
+  border-color: #d9caca;
+}
+
+.emailCancel:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+@media (max-width: 560px) {
+  .emailField {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .emailChangeButton {
+    width: 100%;
+  }
+
+  .emailOverlay {
+    padding: 14px;
+  }
+
+  .emailModal {
+    width: 100%;
+    max-height: calc(100vh - 28px);
+    padding: 22px;
+    border-radius: 14px;
+  }
+
+  .emailActions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .emailActions button {
+    width: 100%;
+  }
+}
+
+/* =====================================================
+   MENSAJES — CAMBIO DE CORREO
+===================================================== */
+
+.emailMessageError,
+.emailMessageSuccess {
+  margin-bottom: 18px;
+  padding: 10px 12px;
+
+  border-radius: 8px;
+
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.emailMessageError {
+  border: 1px solid #edcaca;
+  background: #fff5f5;
+  color: #a32626;
+}
+
+.emailMessageSuccess {
+  border: 1px solid #cfe3d3;
+  background: #f3faf4;
+  color: #286336;
+}
+
+/* =====================================================
+   CONFIRMACIÓN — CORREO ACTUALIZADO
+===================================================== */
+
+.emailSuccessContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 14px 4px 4px;
+}
+
+.emailSuccessIcon {
+  display: grid;
+  place-items: center;
+
+  width: 52px;
+  height: 52px;
+
+  margin-bottom: 16px;
+
+  border-radius: 50%;
+
+  background: #f3faf4;
+  border: 1px solid #cfe3d3;
+
+  color: #286336;
+
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.emailSuccessContent h2 {
+  margin: 0;
+
+  color: var(--text);
+
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+.emailSuccessContent p {
+  max-width: 330px;
+
+  margin: 8px 0 18px;
+
+  color: var(--muted);
+
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.emailSuccessEmail {
+  width: 100%;
+  box-sizing: border-box;
+
+  margin-bottom: 22px;
+  padding: 12px 13px;
+
+  border: 1px solid var(--line);
+  border-radius: 9px;
+
+  background: #f8f7f5;
+
+  text-align: left;
+}
+
+.emailSuccessEmail span {
+  display: block;
+
+  margin-bottom: 4px;
+
+  color: var(--muted);
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.emailSuccessEmail strong {
+  display: block;
+
+  color: var(--text);
+
+  font-size: 12px;
+  font-weight: 700;
+
+  word-break: break-word;
+}
+
+.emailSuccessContent :global(.primary-button) {
+  width: 100%;
+  min-height: 40px;
+
+  border-radius: 9px;
+
+  font-size: 11px;
 }

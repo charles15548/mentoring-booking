@@ -79,21 +79,16 @@ export default function GestionMentoresPage() {
 
       const token = await getToken();
 
-      const response = await fetch(
-        "/api/coordinador/gestionMentores",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const response = await fetch("/api/coordinador/gestionMentores", {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
 
       const data = await readResponse(response);
 
       if (!response.ok) {
-        throw new Error(
-          data.error || "No se pudieron obtener los mentores.",
-        );
+        throw new Error(data.error || "No se pudieron obtener los mentores.");
       }
 
       setMentores(data);
@@ -143,24 +138,19 @@ export default function GestionMentoresPage() {
         }
       : formData;
 
-    const response = await fetch(
-      "/api/coordinador/gestionMentores",
-      {
-        method: editando ? "PUT" : "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(payload),
+    const response = await fetch("/api/coordinador/gestionMentores", {
+      method: editando ? "PUT" : "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
-    );
+      body: JSON.stringify(payload),
+    });
 
     const data = await readResponse(response);
 
     if (!response.ok) {
-      throw new Error(
-        data.error || "No se pudo guardar el mentor.",
-      );
+      throw new Error(data.error || "No se pudo guardar el mentor.");
     }
 
     /*
@@ -172,38 +162,29 @@ export default function GestionMentoresPage() {
   }
 
   async function eliminarMentor(mentor: Mentor) {
-    if (
-      !window.confirm(
-        `¿Seguro que deseas eliminar a ${mentor.name}?`,
-      )
-    ) {
+    if (!window.confirm(`¿Seguro que deseas eliminar a ${mentor.name}?`)) {
       return;
     }
 
     try {
       const token = await getToken();
 
-      const response = await fetch(
-        "/api/coordinador/gestionMentores",
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            staffId: mentor.staffId,
-            profileId: mentor.profileId,
-          }),
+      const response = await fetch("/api/coordinador/gestionMentores", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-      );
+        body: JSON.stringify({
+          staffId: mentor.staffId,
+          profileId: mentor.profileId,
+        }),
+      });
 
       const data = await readResponse(response);
 
       if (!response.ok) {
-        throw new Error(
-          data.error || "No se pudo eliminar el mentor.",
-        );
+        throw new Error(data.error || "No se pudo eliminar el mentor.");
       }
 
       await cargarMentores();
@@ -228,22 +209,17 @@ export default function GestionMentoresPage() {
 
           <p className="intro">
             Administra a las personas que brindan mentoría. <br />
-            Aquí puedes registrar nuevos mentores, consultar sus datos,
-            editar sus perfiles o eliminarlos.
+            Aquí puedes registrar nuevos mentores, consultar sus datos, editar
+            sus perfiles o eliminarlos.
           </p>
         </div>
 
-        <button
-          className="primary-button"
-          onClick={nuevoMentor}
-        >
+        <button className="primary-button" onClick={nuevoMentor}>
           + Nuevo mentor
         </button>
       </section>
 
-      {errorMessage && (
-        <p className="form-error">{errorMessage}</p>
-      )}
+      {errorMessage && <p className="form-error">{errorMessage}</p>}
 
       {isLoading ? (
         <section className="empty-state">
@@ -253,46 +229,43 @@ export default function GestionMentoresPage() {
         <section className="empty-state">
           <h2>No hay mentores en Microsoft Bookings</h2>
 
-          <p>
-            Agrega personal al Booking Agendar mentorías.
-          </p>
+          <p>Agrega personal al Booking Agendar mentorías.</p>
         </section>
       ) : (
         <section className="mentor-management-list">
           {mentores.map((mentor) => (
-            <article
-              key={mentor.staffId}
-              className="mentor-management-card"
-            >
-              <div>
-                {mentor.foto_url && (
+            <article key={mentor.staffId} className="mentor-management-card">
+              <div className="mentor-management-identity">
+                {mentor.foto_url ? (
                   <img
                     src={mentor.foto_url}
                     alt={`Foto de ${mentor.name}`}
                     className="mentor-management-avatar"
-                    width={56}
-                    height={56}
+                    width={68}
+                    height={68}
                   />
+                ) : (
+                  <div className="mentor-management-avatar mentor-management-avatar-placeholder">
+                    {mentor.nombres?.charAt(0)?.toUpperCase() || "M"}
+                  </div>
                 )}
 
-                <strong>{mentor.name}</strong>
+                <div className="mentor-management-info">
+                  <strong>{mentor.name}</strong>
 
-                <p>{mentor.email}</p>
+                  <p>{mentor.email}</p>
 
-                <small>
-                  {mentor.telefono || "Sin teléfono"}
-                </small>
+                  <small>
+                    {mentor.telefono || "Sin teléfono"}{" "}
+                    <span className="mentor-management-separator">|</span>{" "}
+                    {mentor.especialidad || "Sin especialidad"}
+                  </small>
 
-                <small>
-                  {mentor.especialidad || "Sin especialidad"}
-                </small>
-
-                {mentor.resumen && (
-                  <p>{mentor.resumen}</p>
-                )}
+                  {mentor.resumen && <p>{mentor.resumen}</p>}
+                </div>
               </div>
 
-              <div>
+              <div className="mentor-management-actions">
                 <span>
                   {mentor.tieneCuenta
                     ? mentor.activo
@@ -301,17 +274,9 @@ export default function GestionMentoresPage() {
                     : "Solo Bookings"}
                 </span>
 
-                <button
-                  onClick={() => editarMentor(mentor)}
-                >
-                  Editar
-                </button>
+                <button onClick={() => editarMentor(mentor)}>Editar</button>
 
-                <button
-                  onClick={() =>
-                    void eliminarMentor(mentor)
-                  }
-                >
+                <button onClick={() => void eliminarMentor(mentor)}>
                   Eliminar
                 </button>
               </div>

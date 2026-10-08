@@ -15,7 +15,8 @@
     "next": "16.3.5",
     "pdf-lib": "^1.17.1",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "react-easy-crop": "^6.2.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

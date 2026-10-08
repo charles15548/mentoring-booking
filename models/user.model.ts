@@ -7,4 +7,5 @@ export interface UserProfile {
   email: string;
   rol: UserRole;
   activo: boolean;
+  foto_url: string | null;
 }

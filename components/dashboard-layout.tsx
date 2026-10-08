@@ -87,6 +87,11 @@ const menus = {
       icon: LayoutDashboard,
     },
     {
+      href: "/perfil",
+      label: "Mi Perfil",
+      icon: UserRound,
+    },
+    {
       href: "/gestionMentores",
       label: "Gestión de mentores",
       icon: UserCog,
@@ -98,7 +103,7 @@ const menus = {
     },
     {
       href: "/asignacion",
-      label: "Asignación mentor - mentee",
+      label: "Asignación mentor | mentee",
       icon: Box,
     },
     {
@@ -109,77 +114,90 @@ const menus = {
   ],
 };
 
-export default function MenteeLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function MenteeLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
   const [name, setName] = useState("Cargando...");
   const [rol, setRol] = useState("");
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
 
-  useEffect(() => {
-    async function loadProfile() {
-      const { data } = await supabase.auth.getUser();
+  /* =====================================================
+  ACTUALIZAR DATOS DEL PERFIL
+  ===================================================== */
 
-      if (!data.user) {
-        router.replace("/login");
-        return;
-      }
+  async function loadProfile() {
+    const { data } = await supabase.auth.getUser();
 
-      const { data: profile } = await getCurrentProfile(
-        data.user.id,
-      );
-
-      if (!profile) {
-        router.replace("/login");
-        return;
-      }
-
-      setName(
-        [profile.nombres, profile.apellidos]
-          .filter(Boolean)
-          .join(" ") ||
-          profile.email ||
-          "Usuario",
-      );
-
-      setRol(profile.rol);
+    if (!data.user) {
+      router.replace("/login");
+      return;
     }
 
+    const { data: profile } = await getCurrentProfile(data.user.id);
+
+    if (!profile) {
+      router.replace("/login");
+      return;
+    }
+
+    setName(
+      [profile.nombres, profile.apellidos].filter(Boolean).join(" ") ||
+        profile.email ||
+        "Usuario",
+    );
+
+    setRol(profile.rol);
+    setPhotoUrl(profile.foto_url);
+  }
+
+  /* =====================================================
+  CARGA INICIAL + ACTUALIZACIÓN AUTOMÁTICA
+  ===================================================== */
+
+  useEffect(() => {
     void loadProfile();
+
+    function handleProfileUpdated() {
+      void loadProfile();
+    }
+
+    window.addEventListener("profile-updated", handleProfileUpdated);
+
+    return () => {
+      window.removeEventListener("profile-updated", handleProfileUpdated);
+    };
   }, [router]);
+
+  /* =====================================================
+  CERRAR SESIÓN
+  ===================================================== */
 
   async function logout() {
     await signOut();
     router.replace("/login");
   }
 
+  /* =====================================================
+  RUTA ACTIVA
+  ===================================================== */
+
   function active(path: string) {
-    return (
-      pathname === path ||
-      pathname.startsWith(`${path}/`)
-    );
+    return pathname === path || pathname.startsWith(`${path}/`);
   }
 
   /* =====================================================
   MENÚ SEGÚN ROL
   ===================================================== */
 
-  const currentMenu =
-    menus[rol as keyof typeof menus] ?? [];
+  const currentMenu = menus[rol as keyof typeof menus] ?? [];
 
   /* =====================================================
   TÍTULO AUTOMÁTICO
-  Toma directamente el label de la ruta activa
   ===================================================== */
 
   const currentTitle =
-    currentMenu.find((item) =>
-      active(item.href),
-    )?.label ?? "";
+    currentMenu.find((item) => active(item.href))?.label ?? "";
 
   /* =====================================================
   INICIALES
@@ -226,10 +244,7 @@ export default function MenteeLayout({
 
         {/* MENÚ AUTOMÁTICO */}
 
-        <nav
-          className="main-nav"
-          aria-label="Navegación principal"
-        >
+        <nav className="main-nav" aria-label="Navegación principal">
           {currentMenu.map((item) => {
             const Icon = item.icon;
 
@@ -237,9 +252,7 @@ export default function MenteeLayout({
               <Link
                 key={item.href}
                 href={item.href}
-                className={`nav-item ${
-                  active(item.href) ? "active" : ""
-                }`}
+                className={`nav-item ${active(item.href) ? "active" : ""}`}
               >
                 <Icon size={19} />
 
@@ -296,25 +309,26 @@ export default function MenteeLayout({
             <div className="status-pill">
               <CheckCircle2 size={15} />
 
-              <span>
-                Microsoft Bookings conectado
-              </span>
+              <span>Microsoft Bookings conectado</span>
             </div>
 
             <div className="header-divider" />
 
             <div className="header-profile">
-              <div className="avatar">
-                {initials}
-              </div>
+              {photoUrl ? (
+                <img
+                  src={photoUrl}
+                  alt="Foto de perfil"
+                  className="avatar avatar-image"
+                />
+              ) : (
+                <div className="avatar">{initials}</div>
+              )}
 
               <div className="header-profile-info">
                 <strong>{name}</strong>
 
-                <span>
-                  {roleLabels[rol] ??
-                    "Cargando..."}
-                </span>
+                <span>{roleLabels[rol] ?? "Cargando..."}</span>
               </div>
             </div>
           </div>

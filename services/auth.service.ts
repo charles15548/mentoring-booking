@@ -5,7 +5,11 @@ export async function signInWithEmail(email: string, password: string) {
   return supabase.auth.signInWithPassword({ email, password });
 }
 
-export async function signUpWithEmail(name: string, email: string, password: string) {
+export async function signUpWithEmail(
+  name: string,
+  email: string,
+  password: string,
+) {
   return supabase.auth.signUp({
     email,
     password,
@@ -20,7 +24,9 @@ export async function signOut() {
 export async function getCurrentProfile(userId: string) {
   return supabase
     .from("profiles")
-    .select("id, nombres, apellidos, email, rol, activo")
+    .select(
+      "id, nombres, apellidos, email, rol, activo, foto_url"
+    )
     .eq("id", userId)
     .single<UserProfile>();
 }
