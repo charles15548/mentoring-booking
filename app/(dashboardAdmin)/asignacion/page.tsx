@@ -501,7 +501,7 @@ export default function AsignacionPage() {
                   <div className="assignment-mentees">
 
                     <span className="assignment-label">
-                      Mentees asignados
+                      Mentee asignado
                     </span>
 
                     <div className="assignment-tags">

@@ -259,7 +259,7 @@ setError("");
 return ( <main className="page-content"> <section className="welcome-row"> <div> <p className="eyebrow">SEGUIMIENTO A LOS MENTEES BAJO DE MENTORIA </p>
 
 
-      <h1>Evidencias</h1>
+      <h1>Repositorio de Evidencias de mis Mentees</h1>
 
       <p className="intro">
         Revisa las evidencias de avance enviadas

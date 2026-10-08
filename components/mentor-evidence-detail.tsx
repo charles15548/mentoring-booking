@@ -160,7 +160,7 @@ return ( <main className="page-content"> <section className="welcome-row"> <div>
 SEGUIMIENTO </p>
 
 
-      <h1>Evidencias</h1>
+      <h1>Evidencias del Mentee</h1>
 
       <p className="intro">
         Revisa las evidencias enviadas para cada
@@ -173,7 +173,7 @@ SEGUIMIENTO </p>
     className={styles.backLink}
     href="/evidencias"
   >
-    ← Volver a Evidencias
+    ← Volver a Repositorio de Evidencias
   </Link>
 
   {error && (

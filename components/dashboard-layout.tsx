@@ -203,7 +203,7 @@ export default function MenteeLayout({
   const roleLabels: Record<string, string> = {
     mentee: "Mentee",
     mentor: "Mentor",
-    coordinador: "Coordinador",
+    coordinador: "Admin",
   };
 
   return (

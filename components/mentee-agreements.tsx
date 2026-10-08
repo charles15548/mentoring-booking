@@ -247,7 +247,7 @@ return ( <main className="page-content"> <section className="welcome-row"> <div>
     className={styles.backLink}
     href="/mentoriasMentee"
   >
-    ← Volver a Mentorías
+    ← Volver a Repositorio de Mentorías
   </Link>
 
   {error && (

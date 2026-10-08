@@ -71,7 +71,7 @@ export default function MentoresPage() {
         <div>
           <p className="eyebrow">PROUNI · MENTORÍAS</p>
 
-          <h1>Elige tu mentor</h1>
+          <h1>Elige el horario según la disponibilidad del Mentor</h1>
 
           <p className="intro">
             Selecciona un mentor para consultar sus horarios disponibles y

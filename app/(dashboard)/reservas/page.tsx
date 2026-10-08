@@ -143,7 +143,7 @@ export default function ReservasPage({
     <div className="page-content">
       <section className="welcome-row">
         <div>
-          <h1>{isMentoriasView ? "Mentorías" : "Mis Reservas"}</h1>
+          <h1>{isMentoriasView ? "Repositorio de sesiones de mentoría" : "Accediendo a mis sesiones de mentoría"}</h1>
 
           <p className="intro">
             {isMentoriasView

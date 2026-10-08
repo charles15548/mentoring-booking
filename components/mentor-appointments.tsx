@@ -184,7 +184,7 @@ export default function MentorAppointments({ view }: MentorAppointmentsProps) {
   }, [items, view]);
 
   const isMentoriasView = view === "mentorias";
-  const title = isMentoriasView ? "Mentorías" : "Mis reservas";
+  const title = isMentoriasView ? "Consultar sesiones de mentoría" : "Confirmar mentorías solicitadas por el Mentee";
   const description = isMentoriasView
     ? "Consulta las sesiones confirmadas que ya se realizaron."
     : "Gestiona tus reuniones pendientes y las confirmadas que aún no se realizan.";
