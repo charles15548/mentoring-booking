@@ -469,7 +469,9 @@ export default function AsignacionPage() {
 
                   <div className="assignment-mentor">
 
-                    
+                     <span className="assignment-labels">
+                      Mentor
+                    </span>
 
                     <div className="assignment-person-data">
                       <strong>
