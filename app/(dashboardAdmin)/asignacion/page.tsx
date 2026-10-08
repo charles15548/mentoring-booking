@@ -354,7 +354,7 @@ export default function AsignacionPage() {
           </p>
 
           <h1>
-            Asignación de mentores
+            Asignación de mentores a los mentees
           </h1>
 
           <p className="assignment-description">

@@ -305,7 +305,7 @@ export default function AcuerdosPage() {
           </p>
 
           <h1>
-            Acuerdos
+              Repositorios de acuerdos Mentor - Mentee
           </h1>
 
           <p className="agreements-description">

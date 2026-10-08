@@ -74,8 +74,7 @@ export default function MentoresPage() {
           <h1>Elige el horario según la disponibilidad del Mentor</h1>
 
           <p className="intro">
-            Selecciona un mentor para consultar sus horarios disponibles y
-            reservar una sesión.
+            Selecciona fecha y hora según disponibilidad del mentor.
           </p>
         </div>
       </section>

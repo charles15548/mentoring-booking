@@ -285,7 +285,7 @@ export default function HorariosPage() {
         <div>
           <p className="eyebrow">MENTOR · PROUNI</p>
 
-          <h1>Mis horarios</h1>
+          <h1>Mi disponibilidad de horarios para mentoría</h1>
 
           <p className="intro">
            Aquí puedes definir los días y horarios en los que estás disponible para brindar mentorías.

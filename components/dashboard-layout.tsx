@@ -32,22 +32,22 @@ const menus = {
   mentee: [
     {
       href: "/perfil",
-      label: "Perfil",
+      label: "Mi Perfil",
       icon: UserRound,
     },
     {
       href: "/mentores",
-      label: "Mentores",
+      label: "Selección de Horarios",
       icon: Users,
     },
     {
       href: "/reservas",
-      label: "Reservas",
+      label: "Sesiones agendadas",
       icon: CalendarDays,
     },
     {
       href: "/mentoriasMentee",
-      label: "Mentorías",
+      label: "Repositorio de Mentorías",
       icon: CheckCircle2,
     },
   ],
@@ -55,27 +55,27 @@ const menus = {
   mentor: [
     {
       href: "/perfil",
-      label: "Perfil",
+      label: "Mi Perfil",
       icon: UserRound,
     },
     {
       href: "/horarios",
-      label: "Horarios",
+      label: "Mis Horarios",
       icon: Clock3,
     },
     {
       href: "/reservasMentor",
-      label: "Reservas",
+      label: "Confirmar mentorías",
       icon: CalendarDays,
     },
     {
       href: "/mentorias",
-      label: "Mentorías",
+      label: "Registro de mentorías",
       icon: CheckCircle2,
     },
     {
       href: "/evidencias",
-      label: "Evidencias",
+      label: "Repositorio de evidencias",
       icon: FileCheck2,
     },
   ],
@@ -98,12 +98,12 @@ const menus = {
     },
     {
       href: "/asignacion",
-      label: "Asignación",
+      label: "Asignación mentor - mentee",
       icon: Box,
     },
     {
       href: "/acuerdos",
-      label: "Acuerdos",
+      label: "Repositorio de acuerdos",
       icon: FileCheck2,
     },
   ],
