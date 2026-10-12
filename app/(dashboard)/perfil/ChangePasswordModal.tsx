@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { FormEvent } from "react";
 import styles from "./perfil.module.css";
 
 type ChangePasswordModalProps = {
@@ -10,6 +11,7 @@ type ChangePasswordModalProps = {
   success?: string;
   onClose: () => void;
   onConfirm: (currentPassword: string, newPassword: string) => void;
+  initialChange?: boolean;
 };
 
 export default function ChangePasswordModal({
@@ -19,6 +21,7 @@ export default function ChangePasswordModal({
   success,
   onClose,
   onConfirm,
+  initialChange = false,
 }: ChangePasswordModalProps) {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -39,33 +42,55 @@ export default function ChangePasswordModal({
     }
   }, [isOpen]);
 
-  if (!isOpen) {
-    return null;
-  }
+  useEffect(() => {
+    if (!isOpen || !initialChange) return;
+
+    function preventEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    }
+
+    window.addEventListener("keydown", preventEscape, true);
+
+    return () => {
+      window.removeEventListener("keydown", preventEscape, true);
+    };
+  }, [isOpen, initialChange]);
+
+  if (!isOpen) return null;
 
   const passwordsMatch =
     confirmPassword.length === 0 || newPassword === confirmPassword;
 
   const hasMinimumLength = newPassword.length >= 8;
+  const hasMaximumLength = newPassword.length <= 128;
 
-  function submit(event: React.FormEvent<HTMLFormElement>) {
+  function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!currentPassword || !newPassword || !confirmPassword) {
+    if (
+      (!initialChange && !currentPassword) ||
+      !newPassword ||
+      !confirmPassword
+    ) {
       return;
     }
 
-    if (!hasMinimumLength || newPassword !== confirmPassword) {
+    if (
+      !hasMinimumLength ||
+      !hasMaximumLength ||
+      newPassword !== confirmPassword
+    ) {
       return;
     }
 
-    onConfirm(currentPassword, newPassword);
+    onConfirm(initialChange ? "" : currentPassword, newPassword);
   }
 
   function close() {
-    if (saving) {
-      return;
-    }
+    if (saving || initialChange) return;
 
     setCurrentPassword("");
     setNewPassword("");
@@ -97,22 +122,20 @@ export default function ChangePasswordModal({
           <div>
             <span className={styles.passwordEyebrow}>SEGURIDAD</span>
 
-            <h2 id="change-password-title">Cambiar contraseña</h2>
+            <h2 id="change-password-title">
+              {initialChange
+                ? "Establecer contraseña personal"
+                : "Cambiar contraseña"}
+            </h2>
 
-            <p>
-              Actualiza la contraseña que utilizas para acceder a tu cuenta.
-            </p>
+            {!success && (
+              <p>
+                {initialChange
+                  ? "Por seguridad, establece una contraseña personal para continuar. Este paso solo se realiza una vez."
+                  : "Actualiza la contraseña que utilizas para acceder a tu cuenta."}
+              </p>
+            )}
           </div>
-
-          <button
-            type="button"
-            className={styles.passwordClose}
-            onClick={close}
-            disabled={saving}
-            aria-label="Cerrar"
-          >
-            ×
-          </button>
         </div>
 
         {error && (
@@ -122,36 +145,51 @@ export default function ChangePasswordModal({
         )}
 
         {success && (
-          <div className={styles.passwordMessageSuccess} role="status">
-            {success}
-          </div>
+          <>
+            <div className={styles.passwordMessageSuccess} role="status">
+              {success}
+            </div>
+
+            <div className={styles.passwordActions}>
+              <button
+                type="button"
+                className="primary-button"
+                onClick={close}
+                disabled={saving}
+              >
+                Aceptar
+              </button>
+            </div>
+          </>
         )}
 
         {!success && (
           <form className={styles.passwordForm} onSubmit={submit}>
-            <label>
-              Contraseña actual
-              <div className={styles.passwordInput}>
-                <input
-                  type={showCurrent ? "text" : "password"}
-                  value={currentPassword}
-                  onChange={(event) => setCurrentPassword(event.target.value)}
-                  autoComplete="current-password"
-                  disabled={saving}
-                />
+            {!initialChange && (
+              <label>
+                Contraseña actual
+                <div className={styles.passwordInput}>
+                  <input
+                    type={showCurrent ? "text" : "password"}
+                    value={currentPassword}
+                    onChange={(event) => setCurrentPassword(event.target.value)}
+                    autoComplete="current-password"
+                    disabled={saving}
+                  />
 
-                <button
-                  type="button"
-                  onClick={() => setShowCurrent((value) => !value)}
-                  disabled={saving}
-                  aria-label={
-                    showCurrent ? "Ocultar contraseña" : "Mostrar contraseña"
-                  }
-                >
-                  {showCurrent ? "Ocultar" : "Ver"}
-                </button>
-              </div>
-            </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowCurrent((value) => !value)}
+                    disabled={saving}
+                    aria-label={
+                      showCurrent ? "Ocultar contraseña" : "Mostrar contraseña"
+                    }
+                  >
+                    {showCurrent ? "Ocultar" : "Ver"}
+                  </button>
+                </div>
+              </label>
+            )}
 
             <label>
               Nueva contraseña
@@ -162,6 +200,7 @@ export default function ChangePasswordModal({
                   onChange={(event) => setNewPassword(event.target.value)}
                   autoComplete="new-password"
                   disabled={saving}
+                  maxLength={128}
                 />
 
                 <button
@@ -177,7 +216,8 @@ export default function ChangePasswordModal({
               </div>
               <small
                 className={
-                  newPassword.length > 0 && !hasMinimumLength
+                  newPassword.length > 0 &&
+                  (!hasMinimumLength || !hasMaximumLength)
                     ? styles.passwordInvalid
                     : undefined
                 }
@@ -195,6 +235,7 @@ export default function ChangePasswordModal({
                   onChange={(event) => setConfirmPassword(event.target.value)}
                   autoComplete="new-password"
                   disabled={saving}
+                  maxLength={128}
                 />
 
                 <button
@@ -216,28 +257,35 @@ export default function ChangePasswordModal({
             </label>
 
             <div className={styles.passwordActions}>
-              <button
-                type="button"
-                className={styles.passwordCancel}
-                onClick={close}
-                disabled={saving}
-              >
-                Cancelar
-              </button>
+              {!initialChange && (
+                <button
+                  type="button"
+                  className={styles.passwordCancel}
+                  onClick={close}
+                  disabled={saving}
+                >
+                  Cancelar
+                </button>
+              )}
 
               <button
                 type="submit"
                 className="primary-button"
                 disabled={
                   saving ||
-                  !currentPassword ||
+                  (!initialChange && !currentPassword) ||
                   !newPassword ||
                   !confirmPassword ||
                   !hasMinimumLength ||
+                  !hasMaximumLength ||
                   !passwordsMatch
                 }
               >
-                {saving ? "Actualizando..." : "Cambiar contraseña"}
+                {saving
+                  ? "Actualizando..."
+                  : initialChange
+                    ? "Guardar y continuar"
+                    : "Cambiar contraseña"}
               </button>
             </div>
           </form>

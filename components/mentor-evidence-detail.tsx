@@ -7,312 +7,257 @@ import { supabase } from "@/lib/supabase";
 import styles from "./mentor-agreements.module.css";
 
 type Agreement = {
-id: string;
-titulo: string;
-descripcion: string | null;
-observacion: string | null;
-estado: "pendiente" | "en_progreso" | "cumplido" | "cancelado";
-fecha_limite: string | null;
+  id: string;
+  titulo: string;
+  descripcion: string | null;
+  observacion: string | null;
+  estado: "pendiente" | "en_progreso" | "cumplido" | "cancelado";
+  fecha_limite: string | null;
 };
 
 type Evidence = {
-id: string;
-acuerdo_id: string;
-nombre_archivo: string;
-ruta_archivo: string;
-tipo_archivo: string | null;
-tamano: number | null;
-created_at: string;
-url?: string;
+  id: string;
+  acuerdo_id: string;
+  nombre_archivo: string;
+  ruta_archivo: string;
+  tipo_archivo: string | null;
+  tamano: number | null;
+  created_at: string;
+  url?: string;
 };
 
 type AgreementEvidence = {
-agreement: Agreement;
-evidencias: Evidence[];
+  agreement: Agreement;
+  evidencias: Evidence[];
 };
 
 const statusLabels: Record<Agreement["estado"], string> = {
-pendiente: "Pendiente",
-en_progreso: "En progreso",
-cumplido: "Cumplido",
-cancelado: "Cancelado",
+  pendiente: "Pendiente",
+  en_progreso: "En progreso",
+  cumplido: "Cumplido",
+  cancelado: "Cancelado",
 };
 
 function formatDate(value: string) {
-return new Date(value).toLocaleString("es-PE", {
-dateStyle: "medium",
-timeStyle: "short",
-timeZone: "America/Lima",
-});
+  return new Date(value).toLocaleString("es-PE", {
+    dateStyle: "medium",
+    timeStyle: "short",
+    timeZone: "America/Lima",
+  });
 }
 
 export default function MentorEvidenceDetail({
-bookingId,
+  bookingId,
 }: {
-bookingId: string;
+  bookingId: string;
 }) {
-const [items, setItems] = useState<AgreementEvidence[]>([]);
-const [loading, setLoading] = useState(true);
-const [error, setError] = useState("");
+  const [items, setItems] = useState<AgreementEvidence[]>([]);
 
-useEffect(() => {
-void loadEvidence();
-}, [bookingId]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-async function getAccessToken() {
-const {
-data: { session },
-} = await supabase.auth.getSession();
+  /* =====================================================
+     CARGAR DETALLE DE EVIDENCIAS
+  ===================================================== */
 
+  useEffect(() => {
+    const controller = new AbortController();
 
-return session?.access_token ?? null;
+    async function loadEvidence() {
+      try {
+        setLoading(true);
+        setError("");
 
+        /* ============================================
+           1. OBTENER SESIÓN
+        ============================================ */
 
-}
+        const {
+          data: { session },
+          error: sessionError,
+        } = await supabase.auth.getSession();
 
-async function request(
-path: string,
-init?: RequestInit,
-) {
-const accessToken = await getAccessToken();
+        if (controller.signal.aborted) {
+          return;
+        }
 
+        if (sessionError || !session?.access_token) {
+          throw new Error("No se encontró la sesión activa.");
+        }
 
-if (!accessToken) {
-  throw new Error(
-    "No se encontró la sesión activa.",
-  );
-}
+        /* ============================================
+           2. CONSULTA CONSOLIDADA
+        ============================================ */
 
-const response = await fetch(path, {
-  ...init,
-  headers: {
-    Authorization: `Bearer ${accessToken}`,
-    ...init?.headers,
-  },
-});
+        const inicio = performance.now();
 
-const data = await response.json();
+        const response = await fetch(
+          `/api/mentors/evidencias/detalle?bookingId=${encodeURIComponent(
+            bookingId,
+          )}`,
+          {
+            method: "GET",
+            cache: "no-store",
+            signal: controller.signal,
+            headers: {
+              Authorization: `Bearer ${session.access_token}`,
+            },
+          },
+        );
 
-if (!response.ok) {
-  throw new Error(
-    data.error ||
-      "No se pudo completar la operación.",
-  );
-}
+        const data: unknown = await response.json();
 
-return data;
+        if (controller.signal.aborted) {
+          return;
+        }
 
+        if (!response.ok) {
+          const mensaje =
+            data && typeof data === "object" && "error" in data
+              ? String(data.error)
+              : "No se pudieron cargar las evidencias.";
 
-}
+          throw new Error(mensaje);
+        }
 
-async function loadEvidence() {
-try {
-setLoading(true);
-setError("");
+        if (!Array.isArray(data)) {
+          throw new Error("El servidor devolvió un formato inesperado.");
+        }
 
+        const results = data as AgreementEvidence[];
 
-  const agreements = await request(
-    `/api/mentors/acuerdos?bookingId=${encodeURIComponent(
-      bookingId,
-    )}`,
-  );
+        setItems(results);
 
-  const results: AgreementEvidence[] = [];
+        console.log("[Detalle evidencias] Resultado:", {
+          acuerdosConEvidencias: results.length,
+          totalEvidencias: results.reduce(
+            (total, item) => total + item.evidencias.length,
+            0,
+          ),
+          tiempoMs: Math.round(performance.now() - inicio),
+        });
+      } catch (loadError) {
+        if (
+          controller.signal.aborted ||
+          (loadError instanceof Error && loadError.name === "AbortError")
+        ) {
+          return;
+        }
 
-  for (const agreement of agreements as Agreement[]) {
-    const evidencias = await request(
-      `/api/mentors/evidencias?acuerdoId=${encodeURIComponent(
-        agreement.id,
-      )}`,
-    );
+        console.error("Error cargando detalle de evidencias:", loadError);
 
-    if (
-      Array.isArray(evidencias) &&
-      evidencias.length > 0
-    ) {
-      results.push({
-        agreement,
-        evidencias,
-      });
+        setError(
+          loadError instanceof Error
+            ? loadError.message
+            : "No se pudieron cargar las evidencias.",
+        );
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
+      }
     }
-  }
 
-  setItems(results);
-} catch (loadError) {
-  console.error(
-    "Error cargando detalle de evidencias:",
-    loadError,
-  );
+    void loadEvidence();
 
-  setError(
-    loadError instanceof Error
-      ? loadError.message
-      : "No se pudieron cargar las evidencias.",
-  );
-} finally {
-  setLoading(false);
-}
+    return () => {
+      controller.abort();
+    };
+  }, [bookingId]);
 
+  /* =====================================================
+     INTERFAZ ORIGINAL
+  ===================================================== */
 
-}
+  return (
+    <main className="page-content">
+      <section className="welcome-row">
+        <div>
+          <p className="eyebrow">SEGUIMIENTO</p>
 
-return ( <main className="page-content"> <section className="welcome-row"> <div> <p className="eyebrow">
-SEGUIMIENTO </p>
+          <h1>Evidencias del Mentee</h1>
 
+          <p className="intro">
+            Revisa las evidencias enviadas para cada acuerdo de esta mentoría.
+          </p>
+        </div>
+      </section>
 
-      <h1>Evidencias del Mentee</h1>
+      <Link className={styles.backLink} href="/evidencias">
+        ← Volver a Repositorio de Evidencias
+      </Link>
 
-      <p className="intro">
-        Revisa las evidencias enviadas para cada
-        acuerdo de esta mentoría.
-      </p>
-    </div>
-  </section>
+      {error && (
+        <p className="form-error" role="alert">
+          {error}
+        </p>
+      )}
 
-  <Link
-    className={styles.backLink}
-    href="/evidencias"
-  >
-    ← Volver a Repositorio de Evidencias
-  </Link>
+      {loading ? (
+        <div className="empty-state">
+          <h2>Cargando evidencias...</h2>
 
-  {error && (
-    <p className="form-error">
-      {error}
-    </p>
-  )}
+          <p>Estamos obteniendo los archivos enviados por el mentee.</p>
+        </div>
+      ) : items.length === 0 ? (
+        <div className="empty-state">
+          <h2>No hay evidencias disponibles</h2>
 
-  {loading ? (
-    <div className="empty-state">
-      <h2>
-        Cargando evidencias...
-      </h2>
+          <p>Esta mentoría no tiene evidencias registradas.</p>
+        </div>
+      ) : (
+        <section className="reservation-list">
+          {items.map(({ agreement, evidencias }) => (
+            <article className="reservation-card" key={agreement.id}>
+              <div>
+                <p className="eyebrow">{statusLabels[agreement.estado]}</p>
 
-      <p>
-        Estamos obteniendo los archivos enviados
-        por el mentee.
-      </p>
-    </div>
-  ) : items.length === 0 ? (
-    <div className="empty-state">
-      <h2>
-        No hay evidencias disponibles
-      </h2>
+                <h2>{agreement.titulo}</h2>
 
-      <p>
-        Esta mentoría no tiene evidencias
-        registradas.
-      </p>
-    </div>
-  ) : (
-    <section className="reservation-list">
-      {items.map(
-        ({ agreement, evidencias }) => (
-          <article
-            className="reservation-card"
-            key={agreement.id}
-          >
-            <div>
-              <p className="eyebrow">
-                {statusLabels[agreement.estado]}
-              </p>
+                {agreement.descripcion && <p>{agreement.descripcion}</p>}
 
-              <h2>
-                {agreement.titulo}
-              </h2>
+                {agreement.observacion && (
+                  <p>
+                    <strong>Observación:</strong> {agreement.observacion}
+                  </p>
+                )}
 
-              {agreement.descripcion && (
-                <p>
-                  {agreement.descripcion}
-                </p>
-              )}
+                {agreement.fecha_limite && (
+                  <p>
+                    <strong>Fecha límite:</strong>{" "}
+                    {new Date(
+                      `${agreement.fecha_limite}T00:00:00`,
+                    ).toLocaleDateString("es-PE")}
+                  </p>
+                )}
+              </div>
 
-              {agreement.observacion && (
-                <p>
-                  <strong>
-                    Observación:
-                  </strong>{" "}
-                  {agreement.observacion}
-                </p>
-              )}
+              <div className={styles.evidenceList}>
+                <h3>Evidencias enviadas</h3>
 
-              {agreement.fecha_limite && (
-                <p>
-                  <strong>
-                    Fecha límite:
-                  </strong>{" "}
-                  {new Date(
-                    `${agreement.fecha_limite}T00:00:00`,
-                  ).toLocaleDateString(
-                    "es-PE",
-                  )}
-                </p>
-              )}
-            </div>
-
-            <div
-              className={
-                styles.evidenceList
-              }
-            >
-              <h3>
-                Evidencias enviadas
-              </h3>
-
-              {evidencias.map(
-                (evidence) => (
-                  <div
-                    className={
-                      styles.evidenceItem
-                    }
-                    key={evidence.id}
-                  >
-                    <div
-                      className={
-                        styles.evidenceFile
-                      }
-                    >
+                {evidencias.map((evidence) => (
+                  <div className={styles.evidenceItem} key={evidence.id}>
+                    <div className={styles.evidenceFile}>
                       <span>📎</span>
 
-                      <div
-                        className={
-                          styles.evidenceFileInfo
-                        }
-                      >
+                      <div className={styles.evidenceFileInfo}>
                         <span
-                          className={
-                            styles.evidenceFileName
-                          }
-                          title={
-                            evidence.nombre_archivo
-                          }
+                          className={styles.evidenceFileName}
+                          title={evidence.nombre_archivo}
                         >
-                          {
-                            evidence.nombre_archivo
-                          }
+                          {evidence.nombre_archivo}
                         </span>
 
-                        <span
-                          className={
-                            styles.evidenceDate
-                          }
-                        >
-                          Enviado el{" "}
-                          {formatDate(
-                            evidence.created_at,
-                          )}
+                        <span className={styles.evidenceDate}>
+                          Enviado el {formatDate(evidence.created_at)}
                         </span>
                       </div>
                     </div>
 
                     {evidence.url && (
                       <a
-                        className={
-                          styles.viewEvidenceButton
-                        }
-                        href={
-                          evidence.url
-                        }
+                        className={styles.viewEvidenceButton}
+                        href={evidence.url}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -320,15 +265,12 @@ SEGUIMIENTO </p>
                       </a>
                     )}
                   </div>
-                ),
-              )}
-            </div>
-          </article>
-        ),
+                ))}
+              </div>
+            </article>
+          ))}
+        </section>
       )}
-    </section>
-  )}
-</main>
-
-);
+    </main>
+  );
 }

@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 import ModalGestionMentee from "./ModalGestionMentee";
+import ModalImportarMentees from "./ModalImportarMentees";
+import ModalDetallesMentee from "./ModalDetallesMentee";
 
 export type Mentee = {
   id: string;
@@ -41,9 +43,19 @@ export type MenteeFormData = {
 
 export default function GestionMenteePage() {
   const [mentees, setMentees] = useState<Mentee[]>([]);
+
   const [modalOpen, setModalOpen] = useState(false);
+
+  const [modalImportarOpen, setModalImportarOpen] = useState(false);
+
+  const [modalDetallesOpen, setModalDetallesOpen] = useState(false);
+
   const [menteeEditar, setMenteeEditar] = useState<Mentee | null>(null);
+
+  const [menteeDetalles, setMenteeDetalles] = useState<Mentee | null>(null);
+
   const [isLoading, setIsLoading] = useState(true);
+
   const [errorMessage, setErrorMessage] = useState("");
 
   /* ======================================================
@@ -79,6 +91,7 @@ export default function GestionMenteePage() {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        cache: "no-store",
       });
 
       const data = await response.json();
@@ -115,6 +128,40 @@ export default function GestionMenteePage() {
   }
 
   /* ======================================================
+     IMPORTAR
+  ====================================================== */
+
+  function abrirModalImportar() {
+    setModalImportarOpen(true);
+  }
+
+  function cerrarModalImportar() {
+    setModalImportarOpen(false);
+
+    /*
+      Al cerrar la importación, se vuelve a consultar
+      la lista para mostrar las cuentas recién creadas.
+
+      No recargamos la página completa.
+    */
+    void cargarMentees();
+  }
+
+  /* ======================================================
+     DETALLES
+  ====================================================== */
+
+  function abrirDetallesMentee(mentee: Mentee) {
+    setMenteeDetalles(mentee);
+    setModalDetallesOpen(true);
+  }
+
+  function cerrarDetallesMentee() {
+    setModalDetallesOpen(false);
+    setMenteeDetalles(null);
+  }
+
+  /* ======================================================
      EDITAR
   ====================================================== */
 
@@ -131,12 +178,14 @@ export default function GestionMenteePage() {
     setModalOpen(false);
     setMenteeEditar(null);
   }
+
   /* ======================================================
-   GUARDAR
-====================================================== */
+     GUARDAR
+  ====================================================== */
 
   async function guardarMentee(formData: MenteeFormData) {
     const token = await getToken();
+
     const editando = Boolean(menteeEditar);
 
     const payload = editando
@@ -164,7 +213,63 @@ export default function GestionMenteePage() {
     }
 
     await cargarMentees();
+
+    if (editando) {
+      return "Los cambios del mentee se guardaron correctamente.";
+    }
+
+    return data.invitacionEnviada
+      ? "Mentee registrado. Se solicitó el envío del correo de activación."
+      : "Mentee registrado correctamente, pero el correo de activación está pendiente de envío.";
   }
+
+  async function reenviarActivacion(mentee: Mentee) {
+    if (!mentee.profileId) {
+      window.alert("Este mentee no tiene una cuenta vinculada en Supabase.");
+      return;
+    }
+
+    const confirmar = window.confirm(
+      `¿Deseas enviar un nuevo enlace para establecer la contraseña de ${mentee.name}?\n\nCorreo: ${mentee.email}`,
+    );
+
+    if (!confirmar) return;
+
+    try {
+      const token = await getToken();
+
+      const response = await fetch(
+        "/api/coordinador/gestionMentees/reenviar-activacion",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            profileId: mentee.profileId,
+          }),
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "No se pudo reenviar el enlace.");
+      }
+
+      window.alert(
+        `Se solicitó el envío de un nuevo enlace a ${mentee.email}.\n\nRevisa la bandeja de entrada y Spam.`,
+      );
+    } catch (error) {
+      window.alert(
+        error instanceof Error
+          ? error.message
+          : "Ocurrió un error al reenviar el enlace.",
+      );
+    }
+  }
+
   /* ======================================================
      ELIMINAR
   ====================================================== */
@@ -232,6 +337,17 @@ export default function GestionMenteePage() {
         <button className="primary-button" onClick={nuevoMentee}>
           + Nuevo mentee
         </button>
+
+        <button
+          className="primary-button"
+          onClick={abrirModalImportar}
+          style={{
+            position: "relative",
+            top: "55px",
+          }}
+        >
+          Importar CSV
+        </button>
       </section>
 
       {errorMessage && <p className="form-error">{errorMessage}</p>}
@@ -247,10 +363,6 @@ export default function GestionMenteePage() {
           <p>Registra al primer participante que recibirá mentorías.</p>
         </section>
       ) : (
-        /*
-          Se reutilizan estas clases para conservar el diseño actual de la
-          pantalla de mentores sin requerir nuevos estilos CSS.
-        */
         <section className="mentor-management-list">
           {mentees.map((mentee) => (
             <article key={mentee.customerId} className="mentor-management-card">
@@ -279,7 +391,6 @@ export default function GestionMenteePage() {
                     <span className="mentor-management-separator">|</span>{" "}
                     {mentee.especialidad || "Sin especialidad"}
                   </small>
-                  {/* {mentee.resumen && (  <p>{mentee.resumen}</p>)}*/}
                 </div>
               </div>
 
@@ -292,6 +403,20 @@ export default function GestionMenteePage() {
                     : "Solo Bookings"}
                 </span>
 
+                {mentee.tieneCuenta && mentee.activo && (
+                  <button
+                    type="button"
+                    onClick={() => void reenviarActivacion(mentee)}
+                    title="Enviar un nuevo enlace para establecer la contraseña"
+                  >
+                    Reenviar enlace
+                  </button>
+                )}
+
+                <button onClick={() => abrirDetallesMentee(mentee)}>
+                  Detalles
+                </button>
+
                 <button onClick={() => editarMentee(mentee)}>Editar</button>
 
                 <button onClick={() => void eliminarMentee(mentee)}>
@@ -303,11 +428,31 @@ export default function GestionMenteePage() {
         </section>
       )}
 
+      {/* MODAL CREAR / EDITAR */}
+
       {modalOpen && (
         <ModalGestionMentee
           mentee={menteeEditar}
           onClose={cerrarModal}
           onSave={guardarMentee}
+        />
+      )}
+
+      {/* MODAL IMPORTAR */}
+
+      {modalImportarOpen && (
+        <ModalImportarMentees
+          menteesExistentes={mentees}
+          onClose={cerrarModalImportar}
+        />
+      )}
+
+      {/* MODAL DETALLES */}
+
+      {modalDetallesOpen && menteeDetalles && (
+        <ModalDetallesMentee
+          mentee={menteeDetalles}
+          onClose={cerrarDetallesMentee}
         />
       )}
     </div>

@@ -8,4 +8,5 @@ export interface UserProfile {
   rol: UserRole;
   activo: boolean;
   foto_url: string | null;
+  debe_cambiar_password: boolean;
 }

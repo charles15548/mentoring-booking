@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 
 const BUCKET = "bucket";
-const FIELDS = "id, nombres, apellidos, email, telefono, especialidad, foto_url, resumen, rol";
+const FIELDS =
+  "id, nombres, apellidos, email, telefono, especialidad, foto_url, resumen, rol, debe_cambiar_password";
 
 type Profile = {
   id: string;
@@ -14,6 +15,7 @@ type Profile = {
   foto_url: string | null;
   resumen: string | null;
   rol: "mentee" | "mentor" | "coordinador";
+  debe_cambiar_password: boolean;
 };
 
 async function currentProfile(request: NextRequest) {

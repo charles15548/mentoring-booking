@@ -24,6 +24,8 @@ import {
 import { supabase } from "@/lib/supabase";
 import { getCurrentProfile, signOut } from "@/services/auth.service";
 
+import ChangePasswordModal from "@/app/(dashboard)/perfil/ChangePasswordModal";
+
 /* =====================================================
 CONFIGURACIÓN DE MENÚS
 ===================================================== */
@@ -114,6 +116,8 @@ const menus = {
   ],
 };
 
+type AccessStatus = "loading" | "ready" | "required" | "error";
+
 export default function MenteeLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -122,33 +126,59 @@ export default function MenteeLayout({ children }: { children: ReactNode }) {
   const [rol, setRol] = useState("");
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
 
+  const [accessStatus, setAccessStatus] = useState<AccessStatus>("loading");
+
+  const [loadError, setLoadError] = useState("");
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState("");
+
   /* =====================================================
-  ACTUALIZAR DATOS DEL PERFIL
+  ACTUALIZAR PERFIL Y COMPROBAR PRIMER INGRESO
   ===================================================== */
 
   async function loadProfile() {
-    const { data } = await supabase.auth.getUser();
+    try {
+      setLoadError("");
 
-    if (!data.user) {
-      router.replace("/login");
-      return;
+      const { data, error: authError } = await supabase.auth.getUser();
+
+      if (authError || !data.user) {
+        setAccessStatus("loading");
+        router.replace("/login");
+        return;
+      }
+
+      const { data: profile, error: profileError } = await getCurrentProfile(
+        data.user.id,
+      );
+
+      if (profileError || !profile) {
+        setLoadError("No se pudo comprobar el perfil. Vuelve a intentarlo.");
+        setAccessStatus("error");
+        return;
+      }
+
+      setName(
+        [profile.nombres, profile.apellidos].filter(Boolean).join(" ") ||
+          profile.email ||
+          "Usuario",
+      );
+
+      setRol(profile.rol);
+      setPhotoUrl(profile.foto_url);
+
+      const requiereCambio =
+        (profile.rol === "mentor" || profile.rol === "mentee") &&
+        profile.debe_cambiar_password === true;
+
+      setAccessStatus(requiereCambio ? "required" : "ready");
+    } catch (error) {
+      console.error("No se pudo cargar el perfil:", error);
+
+      setLoadError("No se pudo comprobar tu cuenta. Vuelve a intentarlo.");
+
+      setAccessStatus("error");
     }
-
-    const { data: profile } = await getCurrentProfile(data.user.id);
-
-    if (!profile) {
-      router.replace("/login");
-      return;
-    }
-
-    setName(
-      [profile.nombres, profile.apellidos].filter(Boolean).join(" ") ||
-        profile.email ||
-        "Usuario",
-    );
-
-    setRol(profile.rol);
-    setPhotoUrl(profile.foto_url);
   }
 
   /* =====================================================
@@ -168,6 +198,66 @@ export default function MenteeLayout({ children }: { children: ReactNode }) {
       window.removeEventListener("profile-updated", handleProfileUpdated);
     };
   }, [router]);
+
+  /* =====================================================
+  CAMBIO INICIAL OBLIGATORIO
+  ===================================================== */
+
+  async function changeInitialPassword(
+    _currentPassword: string,
+    newPassword: string,
+  ) {
+    if (accessStatus !== "required" || changingPassword) {
+      return;
+    }
+
+    setChangingPassword(true);
+    setPasswordError("");
+
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session?.access_token) {
+        throw new Error("Tu sesión ha finalizado. Inicia sesión nuevamente.");
+      }
+
+      const response = await fetch("/api/perfil/password-inicial", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          newPassword,
+        }),
+      });
+
+      const result: {
+        error?: string;
+        debe_cambiar_password?: boolean;
+      } = await response.json();
+
+      if (!response.ok || result.debe_cambiar_password !== false) {
+        throw new Error(
+          result.error || "No se pudo completar el cambio de contraseña.",
+        );
+      }
+
+      setAccessStatus("ready");
+
+      window.dispatchEvent(new Event("profile-updated"));
+    } catch (error) {
+      setPasswordError(
+        error instanceof Error
+          ? error.message
+          : "No se pudo cambiar la contraseña.",
+      );
+    } finally {
+      setChangingPassword(false);
+    }
+  }
 
   /* =====================================================
   CERRAR SESIÓN
@@ -226,9 +316,7 @@ export default function MenteeLayout({ children }: { children: ReactNode }) {
 
   return (
     <main className="app-shell mentee-shell">
-      {/* =================================================
-      SIDEBAR
-      ================================================= */}
+      {/* SIDEBAR */}
 
       <aside className="sidebar">
         <div className="brand-lockup">
@@ -245,28 +333,26 @@ export default function MenteeLayout({ children }: { children: ReactNode }) {
         {/* MENÚ AUTOMÁTICO */}
 
         <nav className="main-nav" aria-label="Navegación principal">
-          {currentMenu.map((item) => {
-            const Icon = item.icon;
+          {accessStatus === "ready" &&
+            currentMenu.map((item) => {
+              const Icon = item.icon;
 
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`nav-item ${active(item.href) ? "active" : ""}`}
-              >
-                <Icon size={19} />
-
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`nav-item ${active(item.href) ? "active" : ""}`}
+                >
+                  <Icon size={19} />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
         </nav>
 
         {/* PARTE INFERIOR DEL SIDEBAR */}
 
         <div className="sidebar-bottom">
-          {/* LOGO PROUNI */}
-
           <div className="prouni-logo">
             <Image
               src="/LogoProUni.jpg"
@@ -277,38 +363,28 @@ export default function MenteeLayout({ children }: { children: ReactNode }) {
             />
           </div>
 
-          {/* CERRAR SESIÓN */}
-
           <button
             type="button"
             className="nav-item logout-item"
             onClick={() => void logout()}
           >
             <LogOut size={19} />
-
             <span>Salir</span>
           </button>
         </div>
       </aside>
 
-      {/* =================================================
-          CONTENIDO
-      ================================================= */}
+      {/* CONTENIDO */}
 
       <section className="content-area">
         <header className="topbar">
-          {/* TÍTULO AUTOMÁTICO */}
-
           <div className="topbar-page-info">
             <h1>{currentTitle}</h1>
           </div>
 
-          {/* DERECHA */}
-
           <div className="topbar-actions">
             <div className="status-pill">
               <CheckCircle2 size={15} />
-
               <span>Microsoft Bookings conectado</span>
             </div>
 
@@ -327,15 +403,49 @@ export default function MenteeLayout({ children }: { children: ReactNode }) {
 
               <div className="header-profile-info">
                 <strong>{name}</strong>
-
                 <span>{roleLabels[rol] ?? "Cargando..."}</span>
               </div>
             </div>
           </div>
         </header>
 
-        {children}
+        {accessStatus === "ready" && children}
+
+        {accessStatus === "loading" && (
+          <p className="page-content">Verificando cuenta...</p>
+        )}
+
+        {accessStatus === "required" && (
+          <p className="page-content">
+            Establece tu contraseña personal para continuar.
+          </p>
+        )}
+
+        {accessStatus === "error" && (
+          <div className="page-content">
+            <p role="alert">{loadError}</p>
+
+            <button
+              type="button"
+              className="primary-button"
+              onClick={() => void loadProfile()}
+            >
+              Reintentar
+            </button>
+          </div>
+        )}
       </section>
+
+      {/* CAMBIO OBLIGATORIO */}
+
+      <ChangePasswordModal
+        isOpen={accessStatus === "required"}
+        initialChange
+        saving={changingPassword}
+        error={passwordError}
+        onClose={() => {}}
+        onConfirm={changeInitialPassword}
+      />
     </main>
   );
 }

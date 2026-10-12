@@ -397,11 +397,7 @@ async function actualizarReservaConReintento(
     appointmentPayload.customers = updatedCustomers;
   }
 
-  for (
-    let intento = 1;
-    intento <= APPOINTMENT_MAX_RETRIES;
-    intento++
-  ) {
+  for (let intento = 1; intento <= APPOINTMENT_MAX_RETRIES; intento++) {
     try {
       console.log("[mentee-update] Actualizando reserva:", {
         appointmentId: appointment.id,
@@ -473,39 +469,30 @@ async function actualizarReservaConReintento(
         esperamos antes de volver a enviar.
       */
       if (intento < APPOINTMENT_MAX_RETRIES) {
-        const delay =
-          APPOINTMENT_RETRY_DELAY_MS * intento;
+        const delay = APPOINTMENT_RETRY_DELAY_MS * intento;
 
-        console.log(
-          "[mentee-update] Microsoft limitó la solicitud.",
-          {
-            appointmentId: appointment.id,
+        console.log("[mentee-update] Microsoft limitó la solicitud.", {
+          appointmentId: appointment.id,
 
-            siguienteIntento: intento + 1,
+          siguienteIntento: intento + 1,
 
-            esperaMs: delay,
-          },
-        );
+          esperaMs: delay,
+        });
 
         await wait(delay);
       } else {
-        console.error(
-          "[mentee-update] Se agotaron los reintentos:",
-          {
-            appointmentId: appointment.id,
+        console.error("[mentee-update] Se agotaron los reintentos:", {
+          appointmentId: appointment.id,
 
-            intentos: APPOINTMENT_MAX_RETRIES,
-          },
-        );
+          intentos: APPOINTMENT_MAX_RETRIES,
+        });
 
         throw error;
       }
     }
   }
 
-  throw new Error(
-    `No se pudo actualizar la reserva ${appointment.id}.`,
-  );
+  throw new Error(`No se pudo actualizar la reserva ${appointment.id}.`);
 }
 
 /* =========================================================
@@ -615,64 +602,74 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   let userId: string | null = null;
-
   let customerId: string | null = null;
 
   try {
+    // 1. Verificar coordinador
     await requireCoordinator(request);
 
     const body = await request.json();
 
-    const nombres = body.nombres?.trim();
+    const nombres = typeof body.nombres === "string" ? body.nombres.trim() : "";
 
-    const apellidos = body.apellidos?.trim() || "";
+    const apellidos =
+      typeof body.apellidos === "string" ? body.apellidos.trim() : "";
 
-    const email = normalizeEmail(body.email);
+    const email =
+      typeof body.email === "string" ? normalizeEmail(body.email) : "";
 
-    const telefono = body.telefono?.trim() || "";
+    const telefono =
+      typeof body.telefono === "string" ? body.telefono.trim() : "";
 
-    const especialidad = body.especialidad?.trim() || "";
+    const especialidad =
+      typeof body.especialidad === "string" ? body.especialidad.trim() : "";
 
-    const foto_url = body.foto_url?.trim() || "";
+    const foto_url =
+      typeof body.foto_url === "string" ? body.foto_url.trim() : "";
 
-    const resumen = body.resumen?.trim() || "";
+    const resumen = typeof body.resumen === "string" ? body.resumen.trim() : "";
 
-    const password = body.password?.trim();
-
-    if (!nombres || !email || !password) {
+    if (
+      !nombres ||
+      !email ||
+      nombres.length > 150 ||
+      email.length > 254 ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    ) {
       return NextResponse.json(
         {
-          error: "Nombres, correo y contraseña son obligatorios.",
+          error: "Nombres o correo inválidos.",
         },
-        {
-          status: 400,
-        },
+        { status: 400 },
       );
     }
 
-    if (password.length < 8) {
+    // 2. Comprobar si ya existe un perfil
+    const { data: perfilesExistentes, error: buscarError } = await supabaseAdmin
+      .from("profiles")
+      .select("id")
+      .ilike("email", email)
+      .limit(1);
+
+    if (buscarError) {
+      throw buscarError;
+    }
+
+    if ((perfilesExistentes ?? []).length > 0) {
       return NextResponse.json(
         {
-          error: "La contraseña debe tener mínimo 8 caracteres.",
+          error: "Ya existe una cuenta registrada con este correo.",
         },
-        {
-          status: 400,
-        },
+        { status: 409 },
       );
     }
 
-    /* =====================================================
-       1. CREAR USUARIO EN SUPABASE AUTH
-    ===================================================== */
-
+    // 3. Crear usuario sin contraseña temporal.
+    // El usuario establecerá su contraseña por correo.
     const { data: authData, error: authError } =
       await supabaseAdmin.auth.admin.createUser({
         email,
-
-        password,
-
         email_confirm: true,
-
         user_metadata: {
           nombres,
           apellidos,
@@ -680,54 +677,50 @@ export async function POST(request: NextRequest) {
       });
 
     if (authError) {
+      if (/already|registered|exists|duplicate/i.test(authError.message)) {
+        return NextResponse.json(
+          {
+            error: "Este correo ya está registrado en Supabase Auth.",
+          },
+          { status: 409 },
+        );
+      }
+
       throw authError;
     }
 
     if (!authData.user) {
-      throw new Error("No se pudo crear el usuario en Supabase.");
+      throw new Error("Supabase no devolvió el usuario creado.");
     }
 
     userId = authData.user.id;
 
-    /* =====================================================
-       2. ACTUALIZAR PROFILES
-    ===================================================== */
-
-    const { error: profileError } = await supabaseAdmin
+    // 4. Actualizar profile creado por el trigger
+    const { data: profile, error: profileError } = await supabaseAdmin
       .from("profiles")
       .update({
         nombres,
-
         apellidos: apellidos || null,
-
         email,
-
         telefono: telefono || null,
-
         especialidad: especialidad || null,
-
         foto_url: foto_url || null,
-
         resumen: resumen || null,
-
         rol: "mentee",
-
         activo: true,
-
+        cuenta_activada: false,
         microsoft_staff_id: null,
-
         microsoft_email: email,
       })
-      .eq("id", userId);
+      .eq("id", userId)
+      .select("id")
+      .single();
 
-    if (profileError) {
-      throw profileError;
+    if (profileError || !profile) {
+      throw new Error("No se pudo actualizar el perfil del nuevo mentee.");
     }
 
-    /* =====================================================
-       3. CREAR CUSTOMER EN MICROSOFT BOOKINGS
-    ===================================================== */
-
+    // 5. Registrar mentee en Microsoft Bookings
     const businessId = getBookingBusinessId();
 
     const customer = await graphRequest<GraphBookingCustomer>(
@@ -736,63 +729,86 @@ export async function POST(request: NextRequest) {
       )}/customers`,
       {
         method: "POST",
-
         body: JSON.stringify(
           buildCustomerPayload(nombres, apellidos, email, telefono),
         ),
       },
     );
 
+    if (!customer.id) {
+      throw new Error("Microsoft Bookings no devolvió el ID del cliente.");
+    }
+
     customerId = customer.id;
 
-    console.log("[mentee-create] Customer creado en Microsoft:", {
-      customerId: customer.id,
+    // A partir de aquí el registro está completo.
+    // Un fallo del correo NO debe revertir los registros.
 
-      displayName: customer.displayName,
+    // 6. Enviar enlace para establecer contraseña
+    let invitacionEnviada = false;
+    let mensajeInvitacion = "El correo de activación está pendiente de envío.";
 
-      emailAddress: customer.emailAddress,
-    });
+    try {
+      const redirectTo = new URL(
+        "/auth/activar-cuenta",
+        request.url,
+      ).toString();
 
+      const { error: emailError } =
+        await supabaseAdmin.auth.resetPasswordForEmail(email, {
+          redirectTo,
+        });
+
+      if (emailError) {
+        throw emailError;
+      }
+
+      invitacionEnviada = true;
+      mensajeInvitacion =
+        "Se solicitó correctamente el envío del correo de activación.";
+
+      console.info("[mentee-create] Correo de activación solicitado:", email);
+    } catch (emailError) {
+      console.error("[mentee-create] No se pudo enviar el correo:", {
+        email,
+        error: emailError,
+      });
+
+      mensajeInvitacion =
+        "El mentee fue registrado, pero no se pudo enviar el correo de activación. Será necesario reenviarlo.";
+    }
+
+    // 7. Respuesta final
     return NextResponse.json(
       {
-        message: "Mentee creado correctamente.",
+        message: invitacionEnviada
+          ? "Mentee registrado. Correo de activación solicitado."
+          : "Mentee registrado. Correo de activación pendiente.",
+
+        invitacionEnviada,
+        mensajeInvitacion,
 
         mentee: {
-          id: customer.id,
-
-          customerId: customer.id,
-
+          id: customerId,
+          customerId,
           profileId: userId,
-
           name: customer.displayName,
-
           nombres,
-
           apellidos,
-
           email,
-
           telefono,
-
           especialidad,
-
           foto_url,
-
           resumen,
-
           activo: true,
-
           tieneCuenta: true,
         },
       },
-      {
-        status: 201,
-      },
+      { status: 201 },
     );
   } catch (error) {
-    /* =====================================================
-       ROLLBACK CUSTOMER
-    ===================================================== */
+    // Rollback solo para errores de registro,
+    // nunca para errores de envío de correo.
 
     if (customerId) {
       try {
@@ -802,28 +818,27 @@ export async function POST(request: NextRequest) {
           `/solutions/bookingBusinesses/${encodeURIComponent(
             businessId,
           )}/customers/${encodeURIComponent(customerId)}`,
-          {
-            method: "DELETE",
-          },
+          { method: "DELETE" },
         );
       } catch (rollbackError) {
         console.error(
-          "No se pudo revertir el customer de Bookings",
+          "[mentee-create] Error de rollback en Bookings:",
           rollbackError,
         );
       }
     }
 
-    /* =====================================================
-       ROLLBACK USUARIO
-    ===================================================== */
-
     if (userId) {
       try {
-        await supabaseAdmin.auth.admin.deleteUser(userId);
+        const { error: deleteError } =
+          await supabaseAdmin.auth.admin.deleteUser(userId);
+
+        if (deleteError) {
+          throw deleteError;
+        }
       } catch (rollbackError) {
         console.error(
-          "No se pudo revertir el usuario de Supabase",
+          "[mentee-create] Error de rollback en Supabase:",
           rollbackError,
         );
       }
@@ -962,9 +977,7 @@ export async function PUT(request: NextRequest) {
     ===================================================== */
 
     const cambioCustomer =
-      oldName !== nuevoNombre ||
-      oldEmail !== email ||
-      oldPhone !== telefono;
+      oldName !== nuevoNombre || oldEmail !== email || oldPhone !== telefono;
 
     console.log("[mentee-update] ¿Hay cambios en Microsoft?", {
       cambioCustomer,
@@ -1098,29 +1111,22 @@ export async function PUT(request: NextRequest) {
          la reserva vuelve a intentarse automáticamente.
       =================================================== */
 
-      console.log(
-        "[mentee-update] Iniciando sincronización de reservas:",
-        {
-          cantidad: appointments.length,
+      console.log("[mentee-update] Iniciando sincronización de reservas:", {
+        cantidad: appointments.length,
 
-          concurrenciaMaxima: APPOINTMENT_BATCH_SIZE,
+        concurrenciaMaxima: APPOINTMENT_BATCH_SIZE,
 
-          maxReintentos: APPOINTMENT_MAX_RETRIES,
-        },
-      );
+        maxReintentos: APPOINTMENT_MAX_RETRIES,
+      });
 
       for (
         let index = 0;
         index < appointments.length;
         index += APPOINTMENT_BATCH_SIZE
       ) {
-        const batch = appointments.slice(
-          index,
-          index + APPOINTMENT_BATCH_SIZE,
-        );
+        const batch = appointments.slice(index, index + APPOINTMENT_BATCH_SIZE);
 
-        const batchNumber =
-          Math.floor(index / APPOINTMENT_BATCH_SIZE) + 1;
+        const batchNumber = Math.floor(index / APPOINTMENT_BATCH_SIZE) + 1;
 
         const totalBatches = Math.ceil(
           appointments.length / APPOINTMENT_BATCH_SIZE,
@@ -1131,9 +1137,7 @@ export async function PUT(request: NextRequest) {
 
           cantidad: batch.length,
 
-          appointmentIds: batch.map(
-            (appointment) => appointment.id,
-          ),
+          appointmentIds: batch.map((appointment) => appointment.id),
         });
 
         const results = await Promise.allSettled(
@@ -1310,9 +1314,7 @@ export async function PUT(request: NextRequest) {
          no necesitamos tocar Microsoft ni sus reservas.
       =================================================== */
 
-      console.log(
-        "[mentee-update] Nombre, correo y teléfono no cambiaron.",
-      );
+      console.log("[mentee-update] Nombre, correo y teléfono no cambiaron.");
 
       console.log(
         "[mentee-update] Se omite actualización de Microsoft y reservas.",
@@ -1460,77 +1462,270 @@ export async function DELETE(request: NextRequest) {
     const body = await request.json();
 
     const customerId = body.customerId ?? body.id;
+    const submittedProfileId = body.profileId ?? null;
 
-    const profileId = body.profileId ?? null;
-
-    if (!customerId) {
+    if (!customerId || typeof customerId !== "string") {
       return NextResponse.json(
-        {
-          error: "El customerId es obligatorio.",
-        },
-        {
-          status: 400,
-        },
+        { error: "El customerId es obligatorio." },
+        { status: 400 },
       );
     }
 
-    /*
-      Si ya tiene una relación de mentoría,
-      se conserva el historial.
-      Debe desactivarse mediante PUT.
-    */
+    const businessId = getBookingBusinessId();
 
-    if (profileId) {
-      const { count, error: pairError } = await supabaseAdmin
-        .from("mentoring_pairs")
-        .select("id", {
-          count: "exact",
-          head: true,
-        })
-        .eq("mentee_id", profileId);
+    // 1. Verificar cliente en Microsoft Bookings.
+    const customersResponse = await graphRequest<{
+      value?: GraphBookingCustomer[];
+    }>(
+      `/solutions/bookingBusinesses/${encodeURIComponent(
+        businessId,
+      )}/customers`,
+    );
 
-      if (pairError) {
-        throw pairError;
+    const customer = (customersResponse.value ?? []).find(
+      (item) => item.id === customerId,
+    );
+
+    if (!customer) {
+      return NextResponse.json(
+        {
+          error:
+            "No se encontró al mentee en Microsoft Bookings. No se eliminó ninguna cuenta.",
+        },
+        { status: 404 },
+      );
+    }
+
+    const email = normalizeEmail(customer.emailAddress);
+
+    if (!email) {
+      return NextResponse.json(
+        {
+          error:
+            "El mentee no tiene un correo válido en Bookings. No se puede verificar su vinculación.",
+        },
+        { status: 409 },
+      );
+    }
+
+    // 2. Resolver identidad desde Supabase.
+    const { data: profiles, error: profileError } = await supabaseAdmin
+      .from("profiles")
+      .select("id, email, rol")
+      .eq("rol", "mentee")
+      .ilike("email", email);
+
+    if (profileError) {
+      throw profileError;
+    }
+
+    if (!profiles || profiles.length === 0) {
+      // Comprobar que no exista cuenta Auth sin perfil.
+      const { data: authUsers, error: authListError } =
+        await supabaseAdmin.auth.admin.listUsers({
+          page: 1,
+          perPage: 1000,
+        });
+
+      if (authListError) {
+        throw authListError;
       }
 
-      if ((count ?? 0) > 0) {
+      const cuentaExistente = authUsers.users.some(
+        (user) => user.email?.trim().toLowerCase() === email,
+      );
+
+      if (cuentaExistente || submittedProfileId) {
         return NextResponse.json(
           {
             error:
-              "Este mentee ya tiene relaciones de mentoría registradas. No puede eliminarse; debe desactivarse.",
+              "Existe una posible vinculación pendiente en Supabase. Se bloqueó la eliminación para evitar inconsistencias.",
           },
-          {
-            status: 409,
-          },
+          { status: 409 },
         );
       }
+
+      // El cliente existe únicamente en Bookings.
+      await graphRequest(
+        `/solutions/bookingBusinesses/${encodeURIComponent(
+          businessId,
+        )}/customers/${encodeURIComponent(customerId)}`,
+        { method: "DELETE" },
+      );
+
+      return NextResponse.json({
+        message: "Mentee sin cuenta vinculada eliminado de Microsoft Bookings.",
+      });
     }
 
-    /* =====================================================
-       1. ELIMINAR CUSTOMER DE MICROSOFT BOOKINGS
-    ===================================================== */
+    if (profiles.length !== 1) {
+      return NextResponse.json(
+        {
+          error:
+            "Se encontraron vinculaciones inconsistentes en Supabase. Se bloqueó la eliminación.",
+        },
+        { status: 409 },
+      );
+    }
 
-    const businessId = getBookingBusinessId();
+    const profileId = profiles[0].id;
 
+    if (submittedProfileId && submittedProfileId !== profileId) {
+      return NextResponse.json(
+        {
+          error:
+            "Los identificadores del mentee no coinciden. Se bloqueó la eliminación.",
+        },
+        { status: 409 },
+      );
+    }
+
+    // 3. Verificar cuenta en Authentication.
+    const { data: authData, error: authError } =
+      await supabaseAdmin.auth.admin.getUserById(profileId);
+
+    if (
+      authError ||
+      !authData.user ||
+      normalizeEmail(authData.user.email) !== email
+    ) {
+      return NextResponse.json(
+        {
+          error: "No se pudo verificar la cuenta del mentee en Authentication.",
+        },
+        { status: 409 },
+      );
+    }
+
+    // 4. Comprobar TODAS las dependencias conocidas.
+    // Ninguna eliminación debe comenzar si existen registros.
+    const [asignaciones, acuerdosCreados, acuerdosResponsable, confirmaciones] =
+      await Promise.all([
+        supabaseAdmin
+          .from("mentor_assignments")
+          .select("id", { count: "exact", head: true })
+          .eq("mentee_id", profileId),
+
+        supabaseAdmin
+          .from("acuerdos")
+          .select("id", { count: "exact", head: true })
+          .eq("creado_por", profileId),
+
+        supabaseAdmin
+          .from("acuerdos")
+          .select("id", { count: "exact", head: true })
+          .eq("responsable_id", profileId),
+
+        supabaseAdmin
+          .from("appointment_confirmations")
+          .select("microsoft_booking_id", {
+            count: "exact",
+            head: true,
+          })
+          .eq("confirmed_by", profileId),
+      ]);
+
+    // Si alguna consulta falla, bloquear la eliminación.
+    const errorDependencias =
+      asignaciones.error ||
+      acuerdosCreados.error ||
+      acuerdosResponsable.error ||
+      confirmaciones.error;
+
+    if (errorDependencias) {
+      console.error(
+        "[mentee-delete] Error verificando dependencias:",
+        errorDependencias,
+      );
+
+      return NextResponse.json(
+        {
+          error:
+            "No se pudieron verificar los registros asociados al mentee. No se realizó ninguna eliminación.",
+        },
+        { status: 500 },
+      );
+    }
+
+    const totalAsignaciones = asignaciones.count ?? 0;
+    const totalAcuerdosCreados = acuerdosCreados.count ?? 0;
+    const totalAcuerdosResponsable = acuerdosResponsable.count ?? 0;
+    const totalConfirmaciones = confirmaciones.count ?? 0;
+
+    const totalDependencias =
+      totalAsignaciones +
+      totalAcuerdosCreados +
+      totalAcuerdosResponsable +
+      totalConfirmaciones;
+
+    if (totalDependencias > 0) {
+      const detalles: string[] = [];
+
+      if (totalAsignaciones > 0) {
+        detalles.push(`${totalAsignaciones} asignación(es) de mentoría`);
+      }
+
+      if (totalAcuerdosCreados > 0) {
+        detalles.push(`${totalAcuerdosCreados} acuerdo(s) creados`);
+      }
+
+      if (totalAcuerdosResponsable > 0) {
+        detalles.push(
+          `${totalAcuerdosResponsable} acuerdo(s) bajo su responsabilidad`,
+        );
+      }
+
+      if (totalConfirmaciones > 0) {
+        detalles.push(`${totalConfirmaciones} confirmación(es) de mentoría`);
+      }
+
+      return NextResponse.json(
+        {
+          error:
+            "No se puede eliminar este mentee porque tiene registros asociados: " +
+            detalles.join(", ") +
+            ". Debe conservarse su historial.",
+          dependencias: {
+            asignaciones: totalAsignaciones,
+            acuerdosCreados: totalAcuerdosCreados,
+            acuerdosResponsable: totalAcuerdosResponsable,
+            confirmaciones: totalConfirmaciones,
+          },
+        },
+        { status: 409 },
+      );
+    }
+
+    // 5. Eliminar de Microsoft Bookings.
+    // Solo se llega aquí cuando no existen dependencias.
     await graphRequest(
       `/solutions/bookingBusinesses/${encodeURIComponent(
         businessId,
       )}/customers/${encodeURIComponent(customerId)}`,
-      {
-        method: "DELETE",
-      },
+      { method: "DELETE" },
     );
 
-    /* =====================================================
-       2. ELIMINAR SUPABASE AUTH
-    ===================================================== */
+    // 6. Eliminar de Supabase Authentication.
+    // La eliminación del perfil depende de las relaciones
+    // y triggers configurados en la base de datos.
+    const { error: deleteError } =
+      await supabaseAdmin.auth.admin.deleteUser(profileId);
 
-    if (profileId) {
-      const { error } = await supabaseAdmin.auth.admin.deleteUser(profileId);
+    if (deleteError) {
+      console.error("[mentee-delete] Eliminación parcial:", {
+        customerId,
+        profileId,
+        error: deleteError,
+      });
 
-      if (error) {
-        throw error;
-      }
+      return NextResponse.json(
+        {
+          error:
+            "El mentee fue eliminado de Bookings, pero Supabase rechazó la eliminación. Se requiere corregir la sincronización.",
+          synchronization: "partial_failure",
+        },
+        { status: 502 },
+      );
     }
 
     return NextResponse.json({

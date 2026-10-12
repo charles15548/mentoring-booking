@@ -11,12 +11,15 @@
   "dependencies": {
     "@scalar/nextjs-api-reference": "^0.9.26",
     "@supabase/supabase-js": "^2.109.0",
+    "exceljs": "^4.4.0",
     "lucide-react": "^1.47.0",
     "next": "16.3.5",
     "pdf-lib": "^1.17.1",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "react-easy-crop": "^6.2.4"
+    "react-easy-crop": "^6.2.4",
+    "read-excel-file": "^9.3.12",
+    "resend": "^6.32.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

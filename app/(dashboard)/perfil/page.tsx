@@ -6,6 +6,7 @@ import ProfilePhotoModal, { type PhotoChange } from "./ProfilePhotoModal";
 import styles from "./perfil.module.css";
 import ChangePasswordModal from "./ChangePasswordModal";
 import ChangeEmailModal from "./ChangeEmailModal";
+import { KeyRound } from "lucide-react";
 
 type Profile = {
   id: string;
@@ -396,7 +397,9 @@ export default function PerfilPage() {
             </div>
 
             <div className={styles.securityRow}>
-              <div className={styles.securityIcon}>🔒</div>
+              <div className={styles.securityIcon}>
+                <KeyRound size={20} strokeWidth={1.8} />
+              </div>
 
               <div className={styles.securityInfo}>
                 <strong>Contraseña</strong>
@@ -462,109 +465,162 @@ export default function PerfilPage() {
 
   return (
     <main className={`page-content ${styles.page}`}>
-      <section
-        className={`mentor-card ${styles.card}`}
-        aria-labelledby="profile-heading"
-      >
-        {error && (
-          <p className="form-error" role="alert">
-            {error}
-          </p>
-        )}
+      <div className={styles.menteeProfileLayout}>
+        {/* ============================================
+            INFORMACIÓN PERSONAL - MENTOR Y MENTEE
+        ============================================ */}
 
-        {message && (
-          <p className="form-success" role="status">
-            {message}
-          </p>
-        )}
-
-        <div className={styles.photoRow}>
-          {profile.foto_url ? (
-            <img
-              className={styles.photo}
-              src={profile.foto_url}
-              alt="Foto de perfil"
-            />
-          ) : (
-            <div className={styles.placeholder}>
-              {profile.nombres.charAt(0).toUpperCase()}
-            </div>
+        <section
+          className={`mentor-card ${styles.card}`}
+          aria-label="Información personal"
+        >
+          {error && (
+            <p className="form-error" role="alert">
+              {error}
+            </p>
           )}
 
-          <div>
-            <h2>Foto de perfil</h2>
+          {message && (
+            <p className="form-success" role="status">
+              {message}
+            </p>
+          )}
+
+          <div className={styles.photoRow}>
+            {profile.foto_url ? (
+              <img
+                className={styles.photo}
+                src={profile.foto_url}
+                alt="Foto de perfil"
+              />
+            ) : (
+              <div className={styles.placeholder}>
+                {profile.nombres.charAt(0).toUpperCase()}
+              </div>
+            )}
+
+            <div>
+              <h2>Foto de perfil</h2>
+
+              <button
+                type="button"
+                className={styles.secondaryButton}
+                onClick={() => setPhotoModalOpen(true)}
+              >
+                Cambiar foto
+              </button>
+            </div>
+          </div>
+
+          <form className={`login-form ${styles.form}`} onSubmit={submit}>
+            <label>
+              Nombres
+              <input
+                name="nombres"
+                required
+                defaultValue={profile.nombres}
+                maxLength={120}
+              />
+            </label>
+
+            <label>
+              Apellidos
+              <input
+                name="apellidos"
+                defaultValue={profile.apellidos ?? ""}
+                maxLength={120}
+              />
+            </label>
+
+            <label>
+              Correo electrónico
+              <input value={profile.email} readOnly />
+            </label>
+
+            <label>
+              Teléfono
+              <input
+                name="telefono"
+                type="tel"
+                defaultValue={profile.telefono ?? ""}
+                maxLength={30}
+              />
+            </label>
+
+            <label className={styles.full}>
+              Especialidad
+              <input
+                name="especialidad"
+                defaultValue={profile.especialidad ?? ""}
+                maxLength={160}
+              />
+            </label>
+
+            <label className={styles.full}>
+              Resumen
+              <textarea
+                name="resumen"
+                defaultValue={profile.resumen ?? ""}
+                maxLength={1200}
+                rows={5}
+              />
+            </label>
+
+            <div className={styles.actions}>
+              <button
+                className="primary-button"
+                type="submit"
+                disabled={saving}
+              >
+                {saving ? "Guardando..." : "Guardar cambios"}
+              </button>
+            </div>
+          </form>
+        </section>
+
+        {/* ============================================
+            SEGURIDAD - MENTOR Y MENTEE
+        ============================================ */}
+
+        <section className={styles.adminSection}>
+          <div className={styles.sectionHeader}>
+            <div>
+              <h2>Seguridad</h2>
+              <p>Protege el acceso a tu cuenta.</p>
+            </div>
+          </div>
+
+          <div className={styles.securityRow}>
+            <div className={styles.securityIcon}>
+              <KeyRound size={20} strokeWidth={1.8} />
+            </div>
+
+            <div className={styles.securityInfo}>
+              <strong>Contraseña</strong>
+              <p>
+                Puedes actualizar la contraseña de tu cuenta cuando lo
+                necesites.
+              </p>
+            </div>
 
             <button
               type="button"
-              className={styles.secondaryButton}
-              onClick={() => setPhotoModalOpen(true)}
+              className={styles.securityButton}
+              onClick={() => {
+                setPasswordError("");
+                setPasswordSuccess("");
+                setPasswordModalOpen(true);
+              }}
             >
-              Cambiar foto
+              Cambiar contraseña
             </button>
           </div>
-        </div>
+        </section>
+      </div>
 
-        <form className={`login-form ${styles.form}`} onSubmit={submit}>
-          <label>
-            Nombres
-            <input
-              name="nombres"
-              required
-              defaultValue={profile.nombres}
-              maxLength={120}
-            />
-          </label>
-
-          <label>
-            Apellidos
-            <input
-              name="apellidos"
-              defaultValue={profile.apellidos ?? ""}
-              maxLength={120}
-            />
-          </label>
-
-          <label>
-            Correo electrónico
-            <input value={profile.email} readOnly />
-          </label>
-
-          <label>
-            Teléfono
-            <input
-              name="telefono"
-              type="tel"
-              defaultValue={profile.telefono ?? ""}
-              maxLength={30}
-            />
-          </label>
-
-          <label className={styles.full}>
-            Especialidad
-            <input
-              name="especialidad"
-              defaultValue={profile.especialidad ?? ""}
-              maxLength={160}
-            />
-          </label>
-
-          <label className={styles.full}>
-            Resumen
-            <textarea
-              name="resumen"
-              defaultValue={profile.resumen ?? ""}
-              maxLength={1200}
-              rows={5}
-            />
-          </label>
-
-          <div className={styles.actions}>
-            <button className="primary-button" type="submit" disabled={saving}>
-              {saving ? "Guardando..." : "Guardar cambios"}
-            </button>
-          </div>
-        </form>
-      </section>
+      {/* ============================================
+          MODALES
+      ============================================ */}
 
       <ProfilePhotoModal
         isOpen={photoModalOpen}
@@ -572,6 +628,19 @@ export default function PerfilPage() {
         saving={saving}
         onClose={() => setPhotoModalOpen(false)}
         onConfirm={changePhoto}
+      />
+
+      <ChangePasswordModal
+        isOpen={passwordModalOpen}
+        saving={changingPassword}
+        error={passwordError}
+        success={passwordSuccess}
+        onClose={() => {
+          setPasswordModalOpen(false);
+          setPasswordError("");
+          setPasswordSuccess("");
+        }}
+        onConfirm={changePassword}
       />
     </main>
   );

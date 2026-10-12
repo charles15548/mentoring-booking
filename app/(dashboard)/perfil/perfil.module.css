@@ -661,7 +661,6 @@
   gap: 14px;
   padding-top: 22px;
 }
-
 .securityIcon {
   display: grid;
   place-items: center;
@@ -669,8 +668,8 @@
   height: 42px;
   flex: 0 0 42px;
   border-radius: 10px;
-  background: #fff7df;
-  font-size: 17px;
+  background: #f9eeee;
+  color: var(--wine);
 }
 
 .securityInfo {
@@ -1508,4 +1507,60 @@
   border-radius: 9px;
 
   font-size: 11px;
+}
+
+/* =====================================================
+   PERFIL MENTOR Y MENTEE
+   DISTRIBUCIÓN VERTICAL
+===================================================== */
+
+.menteeProfileLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  width: min(100%, 760px);
+  margin: 0 auto;
+}
+
+.menteeProfileLayout .card {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.menteeProfileLayout .adminSection {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 0;
+}
+
+/* =====================================================
+   PERFIL MENTOR Y MENTEE
+   INFORMACIÓN PERSONAL + SEGURIDAD
+===================================================== */
+
+.menteeProfileLayout {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+
+  width: min(100%, 760px);
+  margin: 0 auto;
+}
+
+.menteeProfileLayout .card {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.menteeProfileLayout .adminSection {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 0;
+}
+
+@media (max-width: 640px) {
+  .menteeProfileLayout {
+    width: 100%;
+  }
 }

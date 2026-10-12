@@ -25,7 +25,7 @@ export async function getCurrentProfile(userId: string) {
   return supabase
     .from("profiles")
     .select(
-      "id, nombres, apellidos, email, rol, activo, foto_url"
+      "id, nombres, apellidos, email, rol, activo, foto_url, debe_cambiar_password"
     )
     .eq("id", userId)
     .single<UserProfile>();

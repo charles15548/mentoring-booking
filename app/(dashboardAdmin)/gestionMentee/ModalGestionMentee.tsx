@@ -10,14 +10,10 @@ import "./ModalGestionMentee.css";
 type Props = {
   mentee: Mentee | null;
   onClose: () => void;
-  onSave: (mentee: MenteeFormData) => Promise<void>;
+  onSave: (mentee: MenteeFormData) => Promise<string>;
 };
 
-export default function ModalGestionMentee({
-  mentee,
-  onClose,
-  onSave,
-}: Props) {
+export default function ModalGestionMentee({ mentee, onClose, onSave }: Props) {
   const [nombres, setNombres] = useState("");
   const [apellidos, setApellidos] = useState("");
   const [email, setEmail] = useState("");
@@ -25,7 +21,6 @@ export default function ModalGestionMentee({
   const [especialidad, setEspecialidad] = useState("");
   const [fotoUrl, setFotoUrl] = useState("");
   const [resumen, setResumen] = useState("");
-  const [password, setPassword] = useState("");
   const [activo, setActivo] = useState(true);
 
   const [saving, setSaving] = useState(false);
@@ -50,17 +45,15 @@ export default function ModalGestionMentee({
       setEspecialidad("");
       setFotoUrl("");
       setResumen("");
-      setPassword("");
       setActivo(true);
-
       return;
     }
 
     /*
-      Los mentees antiguos que existen solamente en Bookings pueden
-      no tener nombres y apellidos separados. Se utiliza name como
-      respaldo hasta que el coordinador complete sus datos.
+      Los mentees antiguos que existen solamente en Bookings
+      pueden no tener nombres y apellidos separados.
     */
+
     setNombres(mentee.nombres || mentee.name || "");
     setApellidos(mentee.apellidos || "");
     setEmail(mentee.email || "");
@@ -69,7 +62,6 @@ export default function ModalGestionMentee({
     setFotoUrl(mentee.foto_url || "");
     setResumen(mentee.resumen || "");
     setActivo(mentee.activo);
-    setPassword("");
   }, [mentee]);
 
   /* ======================================================
@@ -79,9 +71,6 @@ export default function ModalGestionMentee({
   async function guardar(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    /*
-      Limpiamos cualquier alerta anterior antes de validar.
-    */
     setAlert(null);
 
     /* ====================================================
@@ -97,15 +86,6 @@ export default function ModalGestionMentee({
       return;
     }
 
-    if (!mentee && password.length < 8) {
-      setAlert({
-        type: "warning",
-        message: "La contraseña debe tener mínimo 8 caracteres.",
-      });
-
-      return;
-    }
-
     /* ====================================================
        GUARDAR
     ==================================================== */
@@ -113,7 +93,7 @@ export default function ModalGestionMentee({
     try {
       setSaving(true);
 
-      await onSave({
+      const mensajeServidor = await onSave({
         nombres: nombres.trim(),
         apellidos: apellidos.trim(),
         email: email.trim().toLowerCase(),
@@ -122,31 +102,17 @@ export default function ModalGestionMentee({
         foto_url: fotoUrl.trim(),
         resumen: resumen.trim(),
         activo,
-        password: mentee ? undefined : password,
       });
 
-      /*
-        El servidor confirmó que el guardado fue correcto.
-
-        Primero liberamos el botón para que React pueda actualizar
-        visualmente el modal.
-      */
       setSaving(false);
 
-      /*
-        Mostramos la alerta inmediatamente después de confirmar
-        el guardado.
-      */
       setAlert({
         type: "success",
         message: mentee
           ? "Los cambios del mentee se guardaron correctamente."
-          : "El mentee se registró correctamente.",
+          : mensajeServidor,
       });
 
-      /*
-        Cerramos el modal después de mostrar la confirmación.
-      */
       window.setTimeout(() => {
         onClose();
       }, 2000);
@@ -168,10 +134,7 @@ export default function ModalGestionMentee({
   ====================================================== */
 
   return (
-    <div
-      className="modal-backdrop mentee-modal-backdrop"
-      role="presentation"
-    >
+    <div className="modal-backdrop mentee-modal-backdrop" role="presentation">
       <div
         className="booking-modal mentee-modal"
         role="dialog"
@@ -197,9 +160,7 @@ export default function ModalGestionMentee({
         ================================================== */}
 
         <div className="mentee-modal-header">
-          <p className="eyebrow">
-            {mentee ? "EDITAR MENTEE" : "NUEVO MENTEE"}
-          </p>
+          <p className="eyebrow">{mentee ? "EDITAR MENTEE" : "NUEVO MENTEE"}</p>
 
           <h2 id="modal-gestion-mentee-title">
             {mentee ? "Actualizar mentee" : "Registrar mentee"}
@@ -207,8 +168,8 @@ export default function ModalGestionMentee({
 
           {mentee && !mentee.tieneCuenta && (
             <p className="intro">
-              Este mentee existe en Microsoft Bookings, pero todavía
-              no tiene una cuenta vinculada en Supabase.
+              Este mentee existe en Microsoft Bookings, pero todavía no tiene
+              una cuenta vinculada en Supabase.
             </p>
           )}
         </div>
@@ -222,10 +183,7 @@ export default function ModalGestionMentee({
             className={`mentee-alert mentee-alert-${alert.type}`}
             role={alert.type === "danger" ? "alert" : "status"}
           >
-            <span
-              className="mentee-alert-icon"
-              aria-hidden="true"
-            >
+            <span className="mentee-alert-icon" aria-hidden="true">
               {alert.type === "success"
                 ? "✓"
                 : alert.type === "warning"
@@ -243,175 +201,104 @@ export default function ModalGestionMentee({
 
         <form className="mentee-form" onSubmit={guardar}>
           <div className="mentee-form-grid">
-            {/* ==================================================
-                NOMBRES
-            ================================================== */}
+            {/* NOMBRES */}
 
             <div className="field">
-              <label htmlFor="mentee-nombres">
-                Nombres
-              </label>
+              <label htmlFor="mentee-nombres">Nombres</label>
 
               <input
                 id="mentee-nombres"
                 value={nombres}
-                onChange={(event) =>
-                  setNombres(event.target.value)
-                }
+                onChange={(event) => setNombres(event.target.value)}
                 autoComplete="given-name"
                 disabled={saving}
                 autoFocus
               />
             </div>
 
-            {/* ==================================================
-                APELLIDOS
-            ================================================== */}
+            {/* APELLIDOS */}
 
             <div className="field">
-              <label htmlFor="mentee-apellidos">
-                Apellidos
-              </label>
+              <label htmlFor="mentee-apellidos">Apellidos</label>
 
               <input
                 id="mentee-apellidos"
                 value={apellidos}
-                onChange={(event) =>
-                  setApellidos(event.target.value)
-                }
+                onChange={(event) => setApellidos(event.target.value)}
                 autoComplete="family-name"
                 disabled={saving}
               />
             </div>
 
-            {/* ==================================================
-                CORREO
-            ================================================== */}
+            {/* CORREO */}
 
             <div className="field">
-              <label htmlFor="mentee-email">
-                Correo
-              </label>
+              <label htmlFor="mentee-email">Correo</label>
 
               <input
                 id="mentee-email"
                 type="email"
                 value={email}
-                onChange={(event) =>
-                  setEmail(event.target.value)
-                }
+                onChange={(event) => setEmail(event.target.value)}
                 autoComplete="email"
                 disabled={saving}
               />
             </div>
 
-            {/* ==================================================
-                TELÉFONO
-            ================================================== */}
+            {/* TELÉFONO */}
 
             <div className="field">
-              <label htmlFor="mentee-telefono">
-                Teléfono
-              </label>
+              <label htmlFor="mentee-telefono">Teléfono</label>
 
               <input
                 id="mentee-telefono"
                 type="tel"
                 value={telefono}
-                onChange={(event) =>
-                  setTelefono(event.target.value)
-                }
+                onChange={(event) => setTelefono(event.target.value)}
                 autoComplete="tel"
                 disabled={saving}
               />
             </div>
 
-            {/* ==================================================
-                ESPECIALIDAD
-            ================================================== */}
+            {/* ESPECIALIDAD */}
 
             <div className="field">
-              <label htmlFor="mentee-especialidad">
-                Especialidad
-              </label>
+              <label htmlFor="mentee-especialidad">Especialidad</label>
 
               <input
                 id="mentee-especialidad"
                 value={especialidad}
-                onChange={(event) =>
-                  setEspecialidad(event.target.value)
-                }
+                onChange={(event) => setEspecialidad(event.target.value)}
                 placeholder="Ej. Ingeniería de Sistemas"
                 disabled={saving}
               />
             </div>
 
-            {/* ==================================================
-                FOTO
-            ================================================== */}
-
-            {/* <div className="field">
-              <label htmlFor="mentee-foto-url">
-                URL de la foto
-              </label>
-
-              <input
-                id="mentee-foto-url"
-                type="url"
-                value={fotoUrl}
-                onChange={(event) =>
-                  setFotoUrl(event.target.value)
-                }
-                placeholder="https://..."
-                autoComplete="url"
-                disabled={saving}
-              />
-            </div> */}
-
-            {/* ==================================================
-                RESUMEN
-            ================================================== */}
+            {/* RESUMEN */}
 
             <div className="field mentee-field-full">
-              <label htmlFor="mentee-resumen">
-                Resumen
-              </label>
+              <label htmlFor="mentee-resumen">Resumen</label>
 
               <textarea
                 id="mentee-resumen"
                 value={resumen}
                 className="mentee-resumen-textarea"
-                onChange={(event) =>
-                  setResumen(event.target.value)
-                }
+                onChange={(event) => setResumen(event.target.value)}
                 placeholder="Breve descripción del mentee"
                 rows={4}
                 disabled={saving}
               />
             </div>
 
-            {/* ==================================================
-                CONTRASEÑA
-            ================================================== */}
+            {/* ACTIVACIÓN POR CORREO */}
 
             {!mentee && (
-              <div className="field">
-                <label htmlFor="mentee-password">
-                  Contraseña temporal
-                </label>
-
-                <input
-                  id="mentee-password"
-                  type="password"
-                  value={password}
-                  onChange={(event) =>
-                    setPassword(event.target.value)
-                  }
-                  placeholder="Mínimo 8 caracteres"
-                  autoComplete="new-password"
-                  minLength={8}
-                  disabled={saving}
-                />
+              <div className="field mentee-field-full">
+                <p className="intro">
+                  Al registrar al mentee, se solicitará el envío de un correo
+                  electrónico con un enlace para establecer su contraseña y
+                  activar su cuenta en ProUni.
+                </p>
               </div>
             )}
           </div>
@@ -426,21 +313,14 @@ export default function ModalGestionMentee({
                 <input
                   type="checkbox"
                   checked={activo}
-                  onChange={(event) =>
-                    setActivo(event.target.checked)
-                  }
+                  onChange={(event) => setActivo(event.target.checked)}
                   disabled={saving}
                 />
-
                 Usuario activo
               </label>
             )}
 
-            <button
-              className="primary-button"
-              type="submit"
-              disabled={saving}
-            >
+            <button className="primary-button" type="submit" disabled={saving}>
               {saving
                 ? "Guardando..."
                 : mentee

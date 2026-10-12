@@ -2,7 +2,7 @@
 
 import "./ModalGestionMentores.css";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 
 import type { Mentor, MentorFormData } from "./page";
@@ -10,7 +10,7 @@ import type { Mentor, MentorFormData } from "./page";
 type Props = {
   mentor: Mentor | null;
   onClose: () => void;
-  onSave: (mentor: MentorFormData) => Promise<void>;
+  onSave: (mentor: MentorFormData) => Promise<string>;
 };
 
 export default function ModalGestionMentores({
@@ -25,9 +25,11 @@ export default function ModalGestionMentores({
   const [especialidad, setEspecialidad] = useState("");
   const [fotoUrl, setFotoUrl] = useState("");
   const [resumen, setResumen] = useState("");
-  const [password, setPassword] = useState("");
   const [activo, setActivo] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [guardado, setGuardado] = useState(false);
+
+  const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const [alert, setAlert] = useState<{
     type: "success" | "danger" | "warning";
@@ -36,6 +38,7 @@ export default function ModalGestionMentores({
 
   useEffect(() => {
     setAlert(null);
+    setGuardado(false);
 
     if (!mentor) {
       setNombres("");
@@ -45,7 +48,6 @@ export default function ModalGestionMentores({
       setEspecialidad("");
       setFotoUrl("");
       setResumen("");
-      setPassword("");
       setActivo(true);
       return;
     }
@@ -58,11 +60,22 @@ export default function ModalGestionMentores({
     setFotoUrl(mentor.foto_url || "");
     setResumen(mentor.resumen || "");
     setActivo(mentor.activo);
-    setPassword("");
   }, [mentor]);
+
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current !== null) {
+        clearTimeout(closeTimeoutRef.current);
+      }
+    };
+  }, []);
 
   async function guardar(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+
+    if (saving || guardado) {
+      return;
+    }
 
     setAlert(null);
 
@@ -74,18 +87,10 @@ export default function ModalGestionMentores({
       return;
     }
 
-    if (!mentor && password.length < 8) {
-      setAlert({
-        type: "warning",
-        message: "La contraseña debe tener mínimo 8 caracteres.",
-      });
-      return;
-    }
-
     try {
       setSaving(true);
 
-      await onSave({
+      const mensajeResultado = await onSave({
         nombres: nombres.trim(),
         apellidos: apellidos.trim(),
         email: email.trim().toLowerCase(),
@@ -94,19 +99,24 @@ export default function ModalGestionMentores({
         foto_url: fotoUrl.trim(),
         resumen: resumen.trim(),
         activo,
-        password: mentor ? undefined : password,
       });
+
+      const correoPendiente =
+        !mentor && mensajeResultado.toLowerCase().includes("pendiente");
 
       setAlert({
-        type: "success",
-        message: mentor
-          ? "Los cambios del mentor se guardaron correctamente."
-          : "El mentor se registró correctamente.",
+        type: correoPendiente ? "warning" : "success",
+        message: mensajeResultado,
       });
 
-      window.setTimeout(() => {
-        onClose();
-      }, 1600);
+      setGuardado(true);
+
+      closeTimeoutRef.current = setTimeout(
+        () => {
+          onClose();
+        },
+        correoPendiente ? 3500 : 2500,
+      );
     } catch (error) {
       setAlert({
         type: "danger",
@@ -148,7 +158,14 @@ export default function ModalGestionMentores({
           {mentor && !mentor.tieneCuenta && (
             <p className="intro">
               Este mentor existe en Microsoft Bookings, pero todavía no tiene
-              una cuenta vinculada en Supabase.
+              una cuenta vinculada en ProUni.
+            </p>
+          )}
+
+          {!mentor && (
+            <p className="intro">
+              Registra los datos del mentor. Podrá establecer su propia
+              contraseña mediante un enlace enviado a su correo electrónico.
             </p>
           )}
         </div>
@@ -174,77 +191,72 @@ export default function ModalGestionMentores({
           <div className="mentor-form-grid">
             <div className="field">
               <label htmlFor="mentor-nombres">Nombres</label>
+
               <input
                 id="mentor-nombres"
                 value={nombres}
                 onChange={(event) => setNombres(event.target.value)}
                 autoComplete="given-name"
-                disabled={saving}
+                disabled={saving || guardado}
                 autoFocus
+                required
               />
             </div>
 
             <div className="field">
               <label htmlFor="mentor-apellidos">Apellidos</label>
+
               <input
                 id="mentor-apellidos"
                 value={apellidos}
                 onChange={(event) => setApellidos(event.target.value)}
                 autoComplete="family-name"
-                disabled={saving}
+                disabled={saving || guardado}
               />
             </div>
 
             <div className="field">
               <label htmlFor="mentor-email">Correo</label>
+
               <input
                 id="mentor-email"
                 type="email"
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 autoComplete="email"
-                disabled={saving}
+                disabled={saving || guardado}
+                required
               />
             </div>
 
             <div className="field">
               <label htmlFor="mentor-telefono">Teléfono</label>
+
               <input
                 id="mentor-telefono"
                 type="tel"
                 value={telefono}
                 onChange={(event) => setTelefono(event.target.value)}
                 autoComplete="tel"
-                disabled={saving}
+                disabled={saving || guardado}
               />
             </div>
 
             <div className="field">
               <label htmlFor="mentor-especialidad">Especialidad</label>
+
               <input
                 id="mentor-especialidad"
                 value={especialidad}
                 onChange={(event) => setEspecialidad(event.target.value)}
                 placeholder="Ej. Gestión de proyectos"
-                disabled={saving}
+                disabled={saving || guardado}
               />
             </div>
 
-            {/* <div className="field">
-              <label htmlFor="mentor-foto-url">URL de la foto</label>
-              <input
-                id="mentor-foto-url"
-                type="url"
-                value={fotoUrl}
-                onChange={(event) => setFotoUrl(event.target.value)}
-                placeholder="https://..."
-                autoComplete="url"
-                disabled={saving}
-              />
-            </div> */}
-
             <div className="field mentor-field-full">
               <label htmlFor="mentor-resumen">Resumen</label>
+
               <textarea
                 id="mentor-resumen"
                 className="mentor-resumen-textarea"
@@ -252,25 +264,9 @@ export default function ModalGestionMentores({
                 onChange={(event) => setResumen(event.target.value)}
                 placeholder="Breve descripción del mentor"
                 rows={4}
-                disabled={saving}
+                disabled={saving || guardado}
               />
             </div>
-
-            {!mentor && (
-              <div className="field">
-                <label htmlFor="mentor-password">Contraseña temporal</label>
-                <input
-                  id="mentor-password"
-                  type="password"
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  placeholder="Mínimo 8 caracteres"
-                  autoComplete="new-password"
-                  minLength={8}
-                  disabled={saving}
-                />
-              </div>
-            )}
           </div>
 
           <div className="mentor-form-actions">
@@ -280,18 +276,24 @@ export default function ModalGestionMentores({
                   type="checkbox"
                   checked={activo}
                   onChange={(event) => setActivo(event.target.checked)}
-                  disabled={saving}
+                  disabled={saving || guardado}
                 />
                 Usuario activo
               </label>
             )}
 
-            <button className="primary-button" type="submit" disabled={saving}>
+            <button
+              className="primary-button"
+              type="submit"
+              disabled={saving || guardado}
+            >
               {saving
                 ? "Guardando..."
-                : mentor
-                  ? "Guardar cambios"
-                  : "Crear mentor"}
+                : guardado
+                  ? "Guardado"
+                  : mentor
+                    ? "Guardar cambios"
+                    : "Registrar mentor"}
             </button>
           </div>
         </form>
