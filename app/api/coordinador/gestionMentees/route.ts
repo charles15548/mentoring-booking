@@ -749,10 +749,19 @@ export async function POST(request: NextRequest) {
     let mensajeInvitacion = "El correo de activación está pendiente de envío.";
 
     try {
-      const redirectTo = new URL(
-        "/auth/activar-cuenta",
-        request.url,
-      ).toString();
+      // Utilizar el dominio configurado para la aplicación.
+      const appUrl =
+        process.env.NEXT_PUBLIC_APP_URL ||
+        (process.env.NODE_ENV === "development" ? "http://localhost:3000" : "");
+
+      if (!appUrl) {
+        throw new Error(
+          "Falta configurar NEXT_PUBLIC_APP_URL para enviar el enlace de activación.",
+        );
+      }
+
+      // Página donde el usuario establecerá su contraseña.
+      const redirectTo = new URL("/auth/activar-cuenta", appUrl).toString();
 
       const { error: emailError } =
         await supabaseAdmin.auth.resetPasswordForEmail(email, {
