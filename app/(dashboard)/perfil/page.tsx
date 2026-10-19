@@ -1,3 +1,4 @@
+
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
@@ -6,6 +7,7 @@ import ProfilePhotoModal, { type PhotoChange } from "./ProfilePhotoModal";
 import styles from "./perfil.module.css";
 import ChangePasswordModal from "./ChangePasswordModal";
 import ChangeEmailModal from "./ChangeEmailModal";
+import ProfileLoader from "@/components/ui/ProfileLoader";
 import { KeyRound } from "lucide-react";
 
 type Profile = {
@@ -37,6 +39,10 @@ export default function PerfilPage() {
   const [changingEmail, setChangingEmail] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [emailSuccess, setEmailSuccess] = useState("");
+
+  /* =========================================================
+     AUTENTICACIÓN Y CONSULTA DEL PERFIL
+  ========================================================= */
 
   async function token() {
     const {
@@ -70,12 +76,20 @@ export default function PerfilPage() {
     return data.profile as Profile;
   }
 
+  /* =========================================================
+     CARGAR PERFIL
+  ========================================================= */
+
   useEffect(() => {
     void requestProfile()
       .then(setProfile)
       .catch((reason: Error) => setError(reason.message))
       .finally(() => setLoading(false));
   }, []);
+
+  /* =========================================================
+     GUARDAR INFORMACIÓN PERSONAL
+  ========================================================= */
 
   async function save(formData: FormData, successMessage: string) {
     setSaving(true);
@@ -113,6 +127,10 @@ export default function PerfilPage() {
     );
   }
 
+  /* =========================================================
+     FOTO DE PERFIL
+  ========================================================= */
+
   function changePhoto(change: PhotoChange) {
     const form = new FormData();
 
@@ -131,6 +149,10 @@ export default function PerfilPage() {
         : "La foto fue actualizada.",
     );
   }
+
+  /* =========================================================
+     CAMBIAR CONTRASEÑA
+  ========================================================= */
 
   async function changePassword(currentPassword: string, newPassword: string) {
     if (!profile?.email) {
@@ -174,6 +196,10 @@ export default function PerfilPage() {
     }
   }
 
+  /* =========================================================
+     CAMBIAR CORREO ELECTRÓNICO
+  ========================================================= */
+
   async function changeEmail(newEmail: string, currentPassword: string) {
     if (!profile?.email) {
       setEmailError("No se encontró el correo de la cuenta.");
@@ -185,7 +211,6 @@ export default function PerfilPage() {
     setEmailSuccess("");
 
     try {
-      // Verificar la contraseña actual antes de permitir el cambio.
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: profile.email,
         password: currentPassword,
@@ -201,7 +226,6 @@ export default function PerfilPage() {
         throw new Error("Tu sesión ha finalizado. Ingresa nuevamente.");
       }
 
-      // Actualizar el correo en Auth y profiles desde el servidor.
       const response = await fetch("/api/perfil/email", {
         method: "PATCH",
         headers: {
@@ -232,8 +256,6 @@ export default function PerfilPage() {
         }),
       );
 
-      // El modal mostrará la pantalla de confirmación.
-      // Se cerrará cuando el usuario pulse "Listo".
       setEmailSuccess("Tu correo electrónico se actualizó correctamente.");
     } catch (reason) {
       setEmailError(
@@ -246,9 +268,21 @@ export default function PerfilPage() {
     }
   }
 
+  /* =========================================================
+     CARGA INSTITUCIONAL - MI PERFIL
+  ========================================================= */
+
   if (loading) {
-    return <main className={styles.state}>Cargando perfil...</main>;
+    return (
+      <main className={`page-content ${styles.page}`}>
+        <ProfileLoader />
+      </main>
+    );
   }
+
+  /* =========================================================
+     PERFIL NO DISPONIBLE
+  ========================================================= */
 
   if (!profile) {
     return (
@@ -259,6 +293,10 @@ export default function PerfilPage() {
   }
 
   const isAdmin = profile.rol === "coordinador";
+
+  /* =========================================================
+     PERFIL DEL ADMINISTRADOR
+  ========================================================= */
 
   if (isAdmin) {
     return (
@@ -391,7 +429,6 @@ export default function PerfilPage() {
             <div className={styles.sectionHeader}>
               <div>
                 <h2>Seguridad</h2>
-
                 <p>Protege el acceso a tu cuenta.</p>
               </div>
             </div>
@@ -463,11 +500,15 @@ export default function PerfilPage() {
     );
   }
 
+  /* =========================================================
+     PERFIL DE MENTOR Y MENTEE
+  ========================================================= */
+
   return (
     <main className={`page-content ${styles.page}`}>
       <div className={styles.menteeProfileLayout}>
         {/* ============================================
-            INFORMACIÓN PERSONAL - MENTOR Y MENTEE
+            INFORMACIÓN PERSONAL
         ============================================ */}
 
         <section
@@ -579,7 +620,7 @@ export default function PerfilPage() {
         </section>
 
         {/* ============================================
-            SEGURIDAD - MENTOR Y MENTEE
+            SEGURIDAD
         ============================================ */}
 
         <section className={styles.adminSection}>
@@ -597,6 +638,7 @@ export default function PerfilPage() {
 
             <div className={styles.securityInfo}>
               <strong>Contraseña</strong>
+
               <p>
                 Puedes actualizar la contraseña de tu cuenta cuando lo
                 necesites.

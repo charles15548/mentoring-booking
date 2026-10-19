@@ -1,0 +1,916 @@
+
+/* =========================================
+   EVIDENCIAS DEL MENTEE - MENTOR
+   ========================================= */
+
+.mentorPage {
+  min-width: 0;
+  padding-top: 12px;
+  padding-bottom: 32px;
+}
+
+/* =========================================
+   ENCABEZADO
+   ========================================= */
+
+.pageHeader {
+  margin-bottom: 10px;
+}
+
+.pageTitle {
+  margin: 0;
+  color: #292929;
+  font-size: clamp(34px, 3vw, 44px);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+}
+
+.pageDescription {
+  margin: 9px 0 0;
+  color: #46515f;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 18px;
+  color: #81111b;
+  font-size: 15px;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.backLink:hover {
+  text-decoration: underline;
+}
+
+/* =========================================
+   IDENTIFICACIÓN DEL MENTEE
+   ========================================= */
+
+.menteeSummary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 22px;
+
+  margin-bottom: 20px;
+  padding: 19px 22px;
+
+  border: 1px solid #e8e5e3;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.025);
+}
+
+.studentIdentity {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* =========================================
+   FOTOGRAFÍA DEL MENTEE
+   ESTILO GESTIÓN DE MENTEES
+   ========================================= */
+
+.studentAvatarFrame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 66px;
+  height: 66px;
+  padding: 3px;
+
+  box-sizing: border-box;
+  border: 1px solid #e8d3d6;
+  border-radius: 50%;
+  background: #ffffff;
+
+  box-shadow:
+    0 0 0 2px #f5e9eb,
+    0 3px 8px rgba(0, 0, 0, 0.05);
+}
+
+.studentAvatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+
+  overflow: hidden;
+  border-radius: 50%;
+
+  background: #f6e9ea;
+  color: #81111b;
+}
+
+.studentAvatarImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* =========================================
+   DATOS DEL ESTUDIANTE
+   ========================================= */
+
+.studentInfo {
+  min-width: 0;
+}
+
+.studentLabel {
+  display: block;
+  margin-bottom: 4px;
+  color: #73808d;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.studentInfo h2 {
+  margin: 0;
+  color: #292d33;
+  font-size: 19px;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.studentInfo p {
+  margin: 4px 0 0;
+  color: #596574;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+
+.studentInfo .groupNotice {
+  max-width: 560px;
+  color: #94621d;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* =========================================
+   CONTADORES
+   ========================================= */
+
+.summaryStats {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  flex-shrink: 0;
+}
+
+.summaryStat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 118px;
+  padding: 3px 16px;
+}
+
+.summaryStat + .summaryStat {
+  border-left: 1px solid #e9e6e4;
+}
+
+.summaryStat strong {
+  color: #81111b;
+  font-size: 25px;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.summaryStat span {
+  color: #647080;
+  font-size: 12px;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* =========================================
+   LISTA DE ACUERDOS CON EVIDENCIAS
+   ========================================= */
+
+.agreementList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  min-width: 0;
+}
+
+.agreementCard {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1.35fr)
+    minmax(0, 1fr);
+  gap: 22px;
+  align-items: stretch;
+
+  padding: 21px 22px;
+  min-width: 0;
+
+  border: 1px solid #e8e5e3;
+  border-radius: 15px;
+  background: #fff;
+
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.035);
+}
+
+/* =========================================
+   EVIDENCIAS: COLUMNA PRINCIPAL
+   ========================================= */
+
+.evidenceColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  min-width: 0;
+
+  padding: 16px;
+  border: 1px solid #eae8e6;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.evidenceHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-width: 0;
+}
+
+.evidenceHeadingTitle {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: #81111b;
+}
+
+.evidenceHeadingTitle h3 {
+  margin: 0;
+  color: #30343b;
+  font-size: 18px;
+  font-weight: 750;
+}
+
+.evidenceCount {
+  display: inline-flex;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #f4f1f1;
+  color: #58616c;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.latestLabel {
+  margin: 2px 0 0;
+  color: #47515e;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* =========================================
+   ARCHIVO MÁS RECIENTE
+   ========================================= */
+
+.evidenceItem {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  min-width: 0;
+  padding: 15px 14px;
+
+  border: 1px solid #e2e5e9;
+  border-radius: 10px;
+  background: #fafbfc;
+  color: #626d7b;
+
+  text-decoration: none;
+}
+
+a.evidenceItem:hover {
+  border-color: #c9adb1;
+  background: #fcf8f9;
+}
+
+.evidenceItem > svg {
+  flex-shrink: 0;
+}
+
+.evidenceInfo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.evidenceInfo strong {
+  display: block;
+  overflow: hidden;
+  color: #303a46;
+  font-size: 15px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.evidenceInfo span {
+  color: #657180;
+  font-size: 13px;
+}
+
+.evidenceInfo small {
+  color: #647080;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+/* =========================================
+   BOTÓN DE HISTORIAL
+   ========================================= */
+
+.viewAllButton {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 8px;
+
+  margin-top: 2px;
+  min-height: 36px;
+  padding: 6px 2px;
+
+  border: 0;
+  background: transparent;
+  color: #81111b;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.viewAllButton:hover {
+  color: #650b14;
+  text-decoration: underline;
+}
+
+/* =========================================
+   ACUERDO: INFORMACIÓN SECUNDARIA
+   ========================================= */
+
+.agreementColumn {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 5px 0;
+}
+
+.agreementTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 11px;
+}
+
+.agreementNumber {
+  color: #707985;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.045em;
+}
+
+.agreementTitle {
+  margin: 0 0 10px;
+  color: #30343b;
+  font-size: 18px;
+  font-weight: 750;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.agreementDescription {
+  margin: 0 0 11px;
+  color: #596574;
+  font-size: 14px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* =========================================
+   ESTADOS DEL ACUERDO
+   ========================================= */
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  gap: 6px;
+
+  padding: 6px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.statusPending {
+  background: #fff4e1;
+  color: #94621d;
+}
+
+.statusProgress {
+  background: #e9f1ff;
+  color: #315eaa;
+}
+
+.statusDone {
+  background: #e8f5ed;
+  color: #24764a;
+}
+
+.statusCancelled {
+  background: #f1f2f4;
+  color: #656b74;
+}
+
+/* =========================================
+   INDICACIONES DEL MENTOR
+   ========================================= */
+
+.observation {
+  margin: 5px 0 10px;
+  padding: 10px 13px;
+
+  border-left: 3px solid #d9b9bd;
+  border-radius: 0 8px 8px 0;
+  background: #faf8f8;
+}
+
+.fieldLabel {
+  display: block;
+  color: #47515e;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.observation p {
+  margin: 6px 0 0;
+  color: #596574;
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* =========================================
+   FECHA LÍMITE
+   ========================================= */
+
+.deadline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 7px;
+
+  color: #647080;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.deadline svg {
+  flex-shrink: 0;
+}
+
+.deadline strong {
+  color: #354150;
+}
+
+/* =========================================
+   ESTADOS VACÍOS Y CARGA
+   ========================================= */
+
+.emptyPage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  min-height: 200px;
+  padding: 28px;
+
+  border: 1px solid #e8e5e3;
+  border-radius: 14px;
+  background: #fff;
+  color: #687480;
+  text-align: center;
+}
+
+.emptyPage h2 {
+  margin: 5px 0 0;
+  color: #30343b;
+  font-size: 20px;
+}
+
+.emptyPage p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* =========================================
+   MODAL DEL HISTORIAL
+   ========================================= */
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+  background: rgba(19, 24, 33, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+.evidenceModal {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  max-width: 680px;
+  max-height: min(760px, calc(100dvh - 48px));
+
+  overflow: hidden;
+  border: 1px solid #e5e5e5;
+  border-radius: 16px;
+  background: #fff;
+
+  box-shadow: 0 22px 65px rgba(0, 0, 0, 0.2);
+  animation: modalAppear 200ms ease-out both;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  flex-shrink: 0;
+
+  padding: 24px 26px 20px;
+  border-bottom: 1px solid #ece9e7;
+}
+
+.modalHeading {
+  flex: 1;
+  min-width: 0;
+}
+
+.modalEyebrow {
+  display: block;
+  margin-bottom: 7px;
+  color: #81111b;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.07em;
+}
+
+.modalHeading h2 {
+  margin: 0;
+  color: #292d33;
+  font-size: 23px;
+  font-weight: 750;
+  line-height: 1.3;
+}
+
+.modalHeading p {
+  margin: 8px 0 0;
+  color: #65707d;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.modalClose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 36px;
+  height: 36px;
+  padding: 0;
+
+  border: 1px solid #e4e6e9;
+  border-radius: 9px;
+  background: #fff;
+  color: #596574;
+  cursor: pointer;
+}
+
+.modalClose:hover {
+  background: #f7f7f8;
+  color: #81111b;
+}
+
+.modalBody {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 20px 26px 24px;
+}
+
+.modalCount {
+  margin: 0 0 13px;
+  color: #65707d;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.modalEvidenceList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modalEvidenceItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  min-width: 0;
+  padding: 13px 14px;
+
+  border: 1px solid #e6e8eb;
+  border-radius: 10px;
+  background: #fff;
+  color: #647080;
+  text-decoration: none;
+
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease;
+}
+
+a.modalEvidenceItem:hover {
+  border-color: #d9b9bd;
+  background: #fcf9f9;
+}
+
+.modalFileIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 40px;
+  height: 40px;
+  border-radius: 9px;
+
+  background: #f8f0f1;
+  color: #81111b;
+}
+
+.modalFileInfo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.modalFileInfo strong {
+  color: #35404d;
+  font-size: 14px;
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+.modalFileInfo span {
+  color: #687480;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.modalEvidenceItem > svg {
+  flex-shrink: 0;
+}
+
+.recentBadge {
+  display: inline-flex;
+  flex-shrink: 0;
+
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: #eaf5ee;
+  color: #287249;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.modalFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+
+  padding: 14px 26px;
+  border-top: 1px solid #ece9e7;
+  background: #fff;
+}
+
+.modalDone {
+  min-height: 40px;
+  padding: 9px 20px;
+
+  border: 1px solid #81111b;
+  border-radius: 8px;
+  background: #81111b;
+  color: #fff;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.modalDone:hover {
+  background: #690d16;
+}
+
+/* =========================================
+   ACCESIBILIDAD
+   ========================================= */
+
+.backLink:focus-visible,
+.evidenceItem:focus-visible,
+.viewAllButton:focus-visible,
+.modalClose:focus-visible,
+.modalDone:focus-visible,
+.modalEvidenceItem:focus-visible {
+  outline: 2px solid #81111b;
+  outline-offset: 3px;
+}
+
+/* =========================================
+   ANIMACIÓN
+   ========================================= */
+
+@keyframes modalAppear {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* =========================================
+   RESPONSIVO
+   ========================================= */
+
+@media (max-width: 1050px) {
+  .agreementCard {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 16px;
+    padding: 20px;
+  }
+
+  .deadline {
+    margin-top: 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  .mentorPage {
+    padding-top: 10px;
+  }
+
+  .pageTitle {
+    font-size: 34px;
+  }
+
+  .pageDescription {
+    font-size: 15px;
+  }
+
+  .menteeSummary {
+    padding: 16px;
+  }
+
+  .studentAvatarFrame {
+    width: 58px;
+    height: 58px;
+  }
+
+  .summaryStats {
+    width: 100%;
+    justify-content: flex-start;
+    padding-top: 12px;
+    border-top: 1px solid #ece9e7;
+  }
+
+  .summaryStat {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .agreementCard {
+    padding: 14px;
+    gap: 15px;
+  }
+
+  .evidenceColumn {
+    padding: 13px;
+  }
+
+  .agreementTitle {
+    font-size: 17px;
+  }
+
+  .modalOverlay {
+    padding: 12px;
+  }
+
+  .evidenceModal {
+    max-height: calc(100dvh - 24px);
+    border-radius: 13px;
+  }
+
+  .modalHeader {
+    padding: 20px 16px 16px;
+  }
+
+  .modalHeading h2 {
+    font-size: 20px;
+  }
+
+  .modalBody {
+    padding: 16px;
+  }
+
+  .modalEvidenceItem {
+    padding: 11px;
+    gap: 9px;
+  }
+
+  .modalFileIcon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .recentBadge {
+    display: none;
+  }
+
+  .modalFooter {
+    padding: 12px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .evidenceModal {
+    animation: none;
+  }
+
+  .modalEvidenceItem {
+    transition: none;
+  }
+}

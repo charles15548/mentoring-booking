@@ -6,9 +6,9 @@
   box-sizing: border-box;
 }
 
-/* =============================
-   HEADER
-============================= */
+/* =====================================================
+   CABECERA
+===================================================== */
 
 .agreements-header {
   display: flex;
@@ -39,20 +39,20 @@
   font-size: 14px;
 }
 
-/* =============================
+/* =====================================================
    PANEL
-============================= */
+===================================================== */
 
 .agreements-panel {
+  overflow: hidden;
   background: #fff;
   border: 1px solid #c2c4cc;
   border-radius: 16px;
-  overflow: hidden;
 }
 
-/* =============================
-   TOOLBAR
-============================= */
+/* =====================================================
+   ENCABEZADO DEL PANEL Y BUSCADOR
+===================================================== */
 
 .agreements-toolbar {
   display: flex;
@@ -60,7 +60,7 @@
   justify-content: space-between;
   gap: 25px;
   padding: 22px;
-  border-bottom: 1px solid #c2c4cc;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .agreements-toolbar h2 {
@@ -80,6 +80,7 @@
   align-items: center;
   gap: 9px;
   width: 340px;
+  flex-shrink: 0;
   padding: 0 13px;
   box-sizing: border-box;
   border: 1px solid #d1d5db;
@@ -100,56 +101,60 @@
   background: transparent;
   color: #111827;
   outline: none;
+  font-family: inherit;
   font-size: 14px;
 }
 
-/* =============================
-   LIST
-============================= */
+/* =====================================================
+   LISTADO
+===================================================== */
 
 .agreements-list {
   width: 100%;
 }
 
 .agreement-card {
-  padding: 22px;
-  border-bottom: 1px solid #f0f0f0;
+  padding: 19px 22px;
+  border-bottom: 1px solid #edf0f2;
+  background: #fff;
 }
 
 .agreement-card:last-child {
   border-bottom: none;
 }
 
-/* =============================
-   AGREEMENT ROW
-============================= */
+.agreement-card-expanded {
+  background: #fff;
+}
+
+/* =====================================================
+   DISTRIBUCIÓN DE SEIS COLUMNAS
+
+   1. Mentee
+   2. Mentor
+   3. Acuerdo
+   4. Fecha de registro
+   5. Fecha límite
+   6. Estado
+===================================================== */
 
 .agreement-main {
   display: grid;
-
-  /*
-    Mentee       Mentor       Acuerdo       Fecha       Estado
-    1.1fr        1.1fr        2fr           .8fr        .8fr
-  */
-
   grid-template-columns:
-    minmax(150px, 1.1fr)
-    minmax(150px, 1.1fr)
-    minmax(250px, 2fr)
-    minmax(105px, 0.8fr)
-    minmax(115px, 0.8fr);
-
+    minmax(0, 1.15fr)
+    minmax(0, 1.15fr)
+    minmax(0, 1.85fr)
+    minmax(0, 0.9fr)
+    minmax(0, 0.85fr)
+    minmax(0, 0.85fr);
   align-items: start;
-  gap: 24px;
+  gap: 14px;
 }
-
-/* =============================
-   INFORMATION
-============================= */
 
 .agreement-mentee,
 .agreement-mentor,
 .agreement-content,
+.agreement-registered,
 .agreement-deadline,
 .agreement-status {
   min-width: 0;
@@ -158,69 +163,113 @@
 .agreement-label {
   display: block;
   margin-bottom: 8px;
-  color: #9ca3af;
-  font-size: 11px;
-  font-weight: 600;
+  color: #98a2b3;
+  font-size: 10px;
+  font-weight: 700;
   letter-spacing: 0.04em;
+  line-height: 1.3;
   text-transform: uppercase;
 }
 
 .agreement-mentee strong,
 .agreement-mentor strong,
-.agreement-content strong,
-.agreement-deadline strong {
+.agreement-content strong {
   display: block;
   color: #1f2937;
-  font-size: 14px;
-  line-height: 1.4;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.45;
 }
 
-/* =============================
-   EMAILS
-============================= */
+/* =====================================================
+   DATOS DEL MENTEE Y MENTOR
+===================================================== */
+
+.agreement-mentee strong,
+.agreement-mentor strong {
+  overflow-wrap: anywhere;
+}
 
 .agreement-mentee span:not(.agreement-label),
 .agreement-mentor span:not(.agreement-label) {
   display: block;
-  margin-top: 3px;
+  margin-top: 4px;
   overflow: hidden;
-  color: #616774;
-  font-size: 12px;
+  color: #647080;
+  font-size: 11px;
+  line-height: 1.5;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* =============================
-   AGREEMENT CONTENT
-============================= */
+/* =====================================================
+   ACUERDO
+===================================================== */
 
 .agreement-content strong {
   overflow-wrap: anywhere;
   word-break: break-word;
-  white-space: normal;
 }
 
-.agreement-content p {
-  margin: 5px 0 0;
-  color: #616774;
+/* =====================================================
+   BOTÓN VER DETALLE
+===================================================== */
+
+.agreement-detail-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+  width: fit-content;
+  min-height: 30px;
+  margin-top: 7px;
+  padding: 3px 0;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: #87151b;
+  font-family: inherit;
   font-size: 12px;
-  line-height: 1.6;
-  white-space: normal;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+  font-weight: 650;
+  cursor: pointer;
 }
 
-/* =============================
-   DEADLINE
-============================= */
+.agreement-detail-button:hover {
+  color: #651015;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 
+.agreement-detail-button:focus-visible {
+  outline: 2px solid #87151b;
+  outline-offset: 3px;
+}
+
+/* =====================================================
+   FECHAS INDEPENDIENTES
+===================================================== */
+
+.agreement-registered,
+.agreement-deadline {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.agreement-registered strong,
 .agreement-deadline strong {
+  display: block;
+  color: #1f2937;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.45;
   white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
-/* =============================
-   STATUS
-============================= */
+/* =====================================================
+   ESTADOS
+===================================================== */
 
 .agreement-status {
   display: flex;
@@ -232,9 +281,10 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 6px 10px;
+  max-width: 100%;
+  padding: 6px 9px;
   border-radius: 20px;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   white-space: nowrap;
 }
@@ -259,9 +309,124 @@
   color: #b91c1c;
 }
 
-/* =============================
-   EMPTY / ERROR
-============================= */
+/* =====================================================
+   DETALLE DESPLEGABLE
+===================================================== */
+
+.agreement-detail {
+  margin-top: 16px;
+  padding: 17px 19px;
+  border: 1px solid #e9e5e6;
+  border-radius: 10px;
+  background: #faf9f9;
+}
+
+.agreement-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 28px;
+}
+
+.agreement-detail-field {
+  min-width: 0;
+}
+
+.agreement-detail-field h3 {
+  margin: 0 0 7px;
+  color: #293241;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.agreement-detail-field p {
+  margin: 0;
+  color: #5b6573;
+  font-size: 13px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* =====================================================
+   PAGINACIÓN
+===================================================== */
+
+.agreements-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 18px 22px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.agreements-pagination-text {
+  margin: 0;
+  color: #647080;
+  font-size: 13px;
+}
+
+.agreements-pagination-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.agreements-page-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 35px;
+  padding: 8px 11px;
+  border: 1px solid #e0e2e6;
+  border-radius: 8px;
+  background: #fff;
+  color: #374151;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.agreements-page-button:hover:not(:disabled) {
+  border-color: #d6b6b9;
+  background: #faf1f2;
+}
+
+.agreements-page-button:focus-visible {
+  outline: 2px solid #87151b;
+  outline-offset: 2px;
+}
+
+.agreements-page-button:disabled {
+  color: #9ca3af;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.agreements-page-number {
+  min-width: 35px;
+}
+
+.agreements-page-active,
+.agreements-page-active:hover:not(:disabled) {
+  border-color: #87151b;
+  background: #87151b;
+  color: #fff;
+}
+
+.agreements-page-ellipsis {
+  padding: 0 3px;
+  color: #88909c;
+}
+
+/* =====================================================
+   ESTADOS VACÍOS Y ERRORES
+===================================================== */
 
 .agreements-empty {
   display: flex;
@@ -294,9 +459,9 @@
   font-size: 14px;
 }
 
-/* =============================
-   RESPONSIVE
-============================= */
+/* =====================================================
+   RESPONSIVE - PANTALLAS INTERMEDIAS
+===================================================== */
 
 @media (max-width: 1150px) {
   .agreements-page {
@@ -305,32 +470,35 @@
 
   .agreement-main {
     grid-template-columns:
-      minmax(140px, 1fr)
-      minmax(140px, 1fr)
-      minmax(220px, 1.7fr)
-      minmax(105px, 0.7fr)
-      minmax(110px, 0.7fr);
+      minmax(0, 1fr)
+      minmax(0, 1fr)
+      minmax(0, 1.5fr)
+      minmax(0, 0.9fr)
+      minmax(0, 0.85fr)
+      minmax(0, 0.85fr);
+    gap: 10px;
+  }
 
-    gap: 18px;
+  .agreement-registered strong,
+  .agreement-deadline strong {
+    font-size: 11px;
   }
 }
 
 @media (max-width: 1000px) {
   .agreement-main {
-    grid-template-columns:
-      minmax(150px, 1fr)
-      minmax(150px, 1fr)
-      minmax(220px, 1.6fr);
-
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 20px;
   }
 
-  .agreement-deadline {
-    grid-column: 1 / 2;
+  .agreement-content {
+    grid-column: auto;
   }
 
+  .agreement-registered,
+  .agreement-deadline,
   .agreement-status {
-    grid-column: 2 / 3;
+    grid-column: auto;
   }
 }
 
@@ -338,6 +506,7 @@
   .agreements-toolbar {
     flex-direction: column;
     align-items: stretch;
+    gap: 15px;
   }
 
   .agreements-search-wrapper {
@@ -345,19 +514,29 @@
   }
 
   .agreement-main {
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
   }
 
   .agreement-content {
     grid-column: 1 / -1;
   }
 
+  .agreement-registered,
   .agreement-deadline,
   .agreement-status {
     grid-column: auto;
   }
+
+  .agreement-detail-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
 }
+
+/* =====================================================
+   RESPONSIVE - MÓVILES
+===================================================== */
 
 @media (max-width: 600px) {
   .agreements-page {
@@ -366,58 +545,86 @@
 
   .agreements-header {
     flex-direction: column;
+    gap: 16px;
   }
 
-  .agreement-main {
-    grid-template-columns: 1fr;
-    gap: 18px;
-  }
-
-  .agreement-content,
-  .agreement-deadline,
-  .agreement-status {
-    grid-column: auto;
+  .agreements-header h1 {
+    font-size: 26px;
   }
 
   .agreement-card {
     padding: 18px;
   }
 
+  .agreement-main {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 14px;
+  }
+
+  .agreement-mentee,
+  .agreement-mentor {
+    min-width: 0;
+  }
+
+  .agreement-content {
+    grid-column: 1 / -1;
+  }
+
+  .agreement-registered {
+    grid-column: 1;
+  }
+
+  .agreement-deadline {
+    grid-column: 2;
+  }
+
   .agreement-status {
+    grid-column: 1 / -1;
     align-items: flex-start;
+  }
+
+  .agreement-detail {
+    padding: 14px;
+  }
+
+  .agreements-pagination {
+    justify-content: center;
+    padding: 16px;
+  }
+
+  .agreements-pagination-text {
+    width: 100%;
+    text-align: center;
+  }
+
+  .agreements-pagination-controls {
+    justify-content: center;
   }
 }
 
-/* =============================
-   REPORT MODAL
-============================= */
+/* =====================================================
+   MODAL DE REPORTE
+===================================================== */
 
 .report-modal-overlay {
   position: fixed;
   inset: 0;
   z-index: 1000;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   padding: 20px;
-
   background: rgba(15, 23, 42, 0.45);
 }
 
 .report-modal {
   width: 100%;
   max-width: 500px;
-
+  overflow: hidden;
   background: #fff;
   border: 1px solid #d1d5db;
   border-radius: 16px;
-
-  box-shadow:
-    0 20px 45px rgba(15, 23, 42, 0.18);
-
-  overflow: hidden;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.18);
 }
 
 .report-modal-header {
@@ -425,17 +632,13 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 20px;
-
   padding: 24px;
-
   border-bottom: 1px solid #e5e7eb;
 }
 
 .report-modal-eyebrow {
   margin: 0 0 5px;
-
   color: var(--wine);
-
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -443,17 +646,13 @@
 
 .report-modal-header h2 {
   margin: 0 0 6px;
-
   color: #1f2937;
-
   font-size: 21px;
 }
 
 .report-modal-header p {
   margin: 0;
-
   color: #616774;
-
   font-size: 13px;
 }
 
@@ -461,21 +660,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
   width: 34px;
   height: 34px;
-
   flex-shrink: 0;
-
   border: none;
   border-radius: 8px;
-
   background: transparent;
   color: #6b7280;
-
   font-size: 25px;
   line-height: 1;
-
   cursor: pointer;
 }
 
@@ -484,14 +677,9 @@
   color: #1f2937;
 }
 
-/* =============================
-   BODY
-============================= */
-
 .report-modal-body {
   display: grid;
   gap: 20px;
-
   padding: 24px;
 }
 
@@ -502,7 +690,6 @@
 
 .report-date-field label {
   color: #374151;
-
   font-size: 13px;
   font-weight: 600;
 }
@@ -510,17 +697,12 @@
 .report-date-field input {
   width: 100%;
   min-height: 44px;
-
   box-sizing: border-box;
-
   padding: 0 12px;
-
   border: 1px solid #d1d5db;
   border-radius: 9px;
-
   background: #fff;
   color: #111827;
-
   font-size: 14px;
   outline: none;
 }
@@ -529,20 +711,14 @@
   border-color: var(--wine);
 }
 
-/* =============================
-   ACTIONS
-============================= */
-
 .report-action-section {
   display: grid;
   gap: 10px;
-
   margin-top: 4px;
 }
 
 .report-action-section > span {
   color: #374151;
-
   font-size: 13px;
   font-weight: 600;
 }
@@ -556,18 +732,13 @@
 .report-download-button {
   width: 100%;
   min-height: 44px;
-
   padding: 0 15px;
-
   border: none;
   border-radius: 9px;
-
   background: var(--wine);
   color: #fff;
-
   font-size: 13px;
   font-weight: 700;
-
   cursor: pointer;
 }
 
@@ -578,20 +749,13 @@
 /*
 .report-email-button {
   min-height: 44px;
-
   padding: 0 15px;
-
-  border: none;
+  border: 1px solid #d1d5db;
   border-radius: 9px;
-
   background: #f3f4f6;
   color: #374151;
-
-  border: 1px solid #d1d5db;
-
   font-size: 13px;
   font-weight: 700;
-
   cursor: pointer;
 }
 
@@ -600,33 +764,22 @@
 }
 */
 
-/* =============================
-   FOOTER
-============================= */
-
 .report-modal-footer {
   display: flex;
   justify-content: flex-end;
-
   padding: 16px 24px;
-
   border-top: 1px solid #e5e7eb;
 }
 
 .report-cancel-button {
   min-height: 40px;
-
   padding: 0 18px;
-
   border: 1px solid #d1d5db;
   border-radius: 8px;
-
   background: #fff;
   color: #4b5563;
-
   font-size: 13px;
   font-weight: 600;
-
   cursor: pointer;
 }
 
@@ -634,9 +787,29 @@
   background: #f9fafb;
 }
 
-/* =============================
-   RESPONSIVE
-============================= */
+/* =====================================================
+   BOTÓN GENERAR REPORTE
+===================================================== */
+
+.agreements-report-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 42px;
+  padding: 0 16px;
+  border: none;
+  border-radius: 9px;
+  background: var(--wine);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.agreements-report-button:hover {
+  opacity: 0.92;
+}
 
 @media (max-width: 550px) {
   .report-modal-overlay {
@@ -651,36 +824,6 @@
   .report-modal-footer {
     padding: 14px 20px;
   }
-}
-
-/* =============================
-   REPORT BUTTON
-============================= */
-
-.agreements-report-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-
-  min-height: 42px;
-
-  padding: 0 16px;
-
-  border: none;
-  border-radius: 9px;
-
-  background: var(--wine);
-  color: #fff;
-
-  font-size: 13px;
-  font-weight: 700;
-
-  cursor: pointer;
-}
-
-.agreements-report-button:hover {
-  opacity: 0.92;
 }
 
 @media (max-width: 600px) {

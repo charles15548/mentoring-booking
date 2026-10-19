@@ -1,0 +1,935 @@
+
+/* =========================================
+   REPORTE DE AVANCE - MENTOR PROUNI
+   ========================================= */
+
+.page {
+  min-width: 0;
+  padding-top: 12px;
+  padding-bottom: 40px;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  margin: 0;
+  color: #292929;
+  font-size: clamp(32px, 3vw, 44px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.2;
+}
+
+.header p {
+  margin: 9px 0 0;
+  color: #596574;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* =========================================
+   FILTROS
+   ========================================= */
+
+.filterCard {
+  padding: 22px;
+  margin-bottom: 22px;
+  border: 1px solid #e8e5e3;
+  border-radius: 15px;
+  background: #fff;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.025);
+}
+
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  color: #81111b;
+}
+
+.sectionTitle h2 {
+  margin: 0;
+  color: #30343b;
+  font-size: 18px;
+  font-weight: 750;
+}
+
+.periodTabs {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 18px;
+  border-radius: 10px;
+  background: #f3f2f1;
+}
+
+.periodTabs button {
+  padding: 9px 18px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #647080;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.periodTabs button.periodActive {
+  background: #fff;
+  color: #81111b;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
+}
+
+.filterFields {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  flex: 1;
+  min-width: 185px;
+}
+
+.field span {
+  color: #47515e;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.field input {
+  width: 100%;
+  min-height: 43px;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #dfe3e8;
+  border-radius: 9px;
+  outline: none;
+  background: #fff;
+  color: #30343b;
+  font: inherit;
+  font-size: 14px;
+}
+
+.field input:focus {
+  border-color: #a75d65;
+  box-shadow: 0 0 0 3px rgba(129, 17, 27, 0.08);
+}
+
+.searchButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 43px;
+  padding: 10px 20px;
+  border: 1px solid #81111b;
+  border-radius: 9px;
+  background: #81111b;
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.searchButton:hover:not(:disabled) {
+  background: #690d16;
+}
+
+.searchButton:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+/* =========================================
+   ESTADOS VACÍOS
+   ========================================= */
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 165px;
+  padding: 26px;
+  border: 1px solid #e8e5e3;
+  border-radius: 14px;
+  background: #fff;
+  color: #687480;
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.emptyState strong {
+  color: #30343b;
+  font-size: 17px;
+}
+
+.error {
+  margin: 12px 0;
+  padding: 12px 15px;
+  border: 1px solid #ebcdd0;
+  border-radius: 9px;
+  background: #fff4f5;
+  color: #81111b;
+  font-size: 14px;
+}
+
+/* =========================================
+   ENCABEZADO DE RESULTADOS
+   ========================================= */
+
+.reportHeading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 17px;
+}
+
+.eyebrow {
+  color: #81111b;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.055em;
+}
+
+.reportHeading h2 {
+  margin: 5px 0;
+  color: #30343b;
+  font-size: 22px;
+  font-weight: 800;
+  text-transform: capitalize;
+}
+
+.reportHeading p {
+  margin: 0;
+  color: #647080;
+  font-size: 13px;
+}
+
+.reportHeading p strong {
+  color: #354150;
+}
+
+/* =========================================
+   INDICADORES
+   ========================================= */
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.statCard {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 11px;
+  min-width: 0;
+  min-height: 128px;
+  box-sizing: border-box;
+  padding: 19px;
+  border: 1px solid #e8e5e3;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.025);
+}
+
+.statCard svg {
+  color: #81111b;
+}
+
+.statCard span {
+  color: #647080;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.statCard strong {
+  color: #30343b;
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* =========================================
+   DESGLOSE DE ESTADOS
+   ========================================= */
+
+.statusCard {
+  margin-bottom: 22px;
+  padding: 20px 22px;
+  border: 1px solid #e8e5e3;
+  border-radius: 14px;
+  background: #fff;
+}
+
+.statusGrid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.statusGrid > div {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: #596574;
+  font-size: 13px;
+}
+
+.statusGrid strong {
+  margin-left: auto;
+  color: #30343b;
+  font-size: 17px;
+  font-weight: 750;
+}
+
+.dotDone,
+.dotPending,
+.dotProgress,
+.dotCancelled {
+  display: inline-block;
+  flex-shrink: 0;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.dotDone {
+  background: #278451;
+}
+
+.dotPending {
+  background: #d9a039;
+}
+
+.dotProgress {
+  background: #5485cf;
+}
+
+.dotCancelled {
+  background: #9ba2ad;
+}
+
+/* =========================================
+   LISTA DE MENTORÍAS
+   ========================================= */
+
+.sessions {
+  min-width: 0;
+}
+
+.sessionHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  margin-bottom: 14px;
+}
+
+.sessionHeading h2 {
+  margin: 0;
+  color: #30343b;
+  font-size: 20px;
+  font-weight: 750;
+}
+
+.sessionHeading p {
+  margin: 5px 0 0;
+  color: #647080;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.sessionCount {
+  flex-shrink: 0;
+  color: #647080;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.sessionList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.sessionCard {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid #e8e5e3;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.025);
+}
+
+.sessionButton {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  min-width: 0;
+  padding: 17px 20px;
+  border: 0;
+  background: transparent;
+  color: #354150;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sessionButton:hover {
+  background: #fcfaf9;
+}
+
+.sessionButton > svg {
+  flex-shrink: 0;
+  margin-left: auto;
+  color: #647080;
+}
+
+.sessionInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.sessionInfo h3 {
+  margin: 0 0 4px;
+  color: #30343b;
+  font-size: 16px;
+  font-weight: 750;
+}
+
+.sessionInfo p {
+  margin: 0 0 5px;
+  color: #647080;
+  font-size: 13px;
+}
+
+.sessionInfo > span {
+  color: #81111b;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+/* =========================================
+   FOTOGRAFÍA CIRCULAR DEL MENTEE
+   ========================================= */
+
+.avatarFrame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 58px;
+  height: 58px;
+  padding: 3px;
+  box-sizing: border-box;
+  border: 1px solid #e8d3d6;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 0 0 2px #f5e9eb;
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #f6e9ea;
+  color: #81111b;
+}
+
+.avatar img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* =========================================
+   DETALLE DESPLEGABLE
+   ========================================= */
+
+.sessionDetail {
+  padding: 18px 20px 20px;
+  border-top: 1px solid #ece9e7;
+  background: #fff;
+}
+
+.detailSummary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.detailSummary span {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #f4f2f1;
+  color: #596574;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.agreementList {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.agreementItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+  padding: 13px 14px;
+  border: 1px solid #eae8e6;
+  border-radius: 10px;
+  background: #fafbfc;
+}
+
+.agreementNumber {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 25px;
+  height: 25px;
+  border-radius: 8px;
+  background: #f6e9ea;
+  color: #81111b;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.agreementInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.agreementInfo strong {
+  display: block;
+  color: #30343b;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.agreementInfo p {
+  margin: 6px 0 0;
+  color: #596574;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.statusBadge {
+  display: inline-flex;
+  flex-shrink: 0;
+  padding: 5px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.status_cumplido {
+  background: #e8f5ed;
+  color: #24764a;
+}
+
+.status_pendiente {
+  background: #fff4e1;
+  color: #94621d;
+}
+
+.status_en_progreso {
+  background: #e9f1ff;
+  color: #315eaa;
+}
+
+.status_cancelado {
+  background: #f1f2f4;
+  color: #656b74;
+}
+
+.noAgreements {
+  margin: 0;
+  color: #647080;
+  font-size: 13px;
+}
+
+.note {
+  margin: 17px 0 0;
+  color: #73808d;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* =========================================
+   ACCESIBILIDAD
+   ========================================= */
+
+.searchButton:focus-visible,
+.periodTabs button:focus-visible,
+.sessionButton:focus-visible {
+  outline: 2px solid #81111b;
+  outline-offset: 3px;
+}
+
+/* =========================================
+   RESPONSIVO
+   ========================================= */
+
+@media (max-width: 1100px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .statusGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
+    padding-top: 10px;
+  }
+
+  .header h1 {
+    font-size: 32px;
+  }
+
+  .filterCard,
+  .statusCard {
+    padding: 16px;
+  }
+
+  .periodTabs {
+    display: flex;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .periodTabs button {
+    flex: 1;
+  }
+
+  .filterFields {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .field {
+    flex: initial;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .searchButton {
+    width: 100%;
+  }
+
+  .statsGrid {
+    gap: 10px;
+  }
+
+  .statCard {
+    padding: 14px;
+    min-height: 118px;
+  }
+
+  .statCard strong {
+    font-size: 25px;
+  }
+
+  .statusGrid {
+    gap: 14px;
+  }
+
+  .sessionHeading {
+    align-items: flex-start;
+  }
+
+  .sessionButton {
+    padding: 15px;
+    gap: 12px;
+  }
+
+  .avatarFrame {
+    width: 49px;
+    height: 49px;
+  }
+
+  .sessionDetail {
+    padding: 14px;
+  }
+
+  .agreementItem {
+    flex-wrap: wrap;
+  }
+
+  .statusBadge {
+    margin-left: 37px;
+  }
+}
+
+/* ============================================
+   MODAL: DESCARGAR REPORTE DE AVANCE
+============================================ */
+
+.reportModalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  box-sizing: border-box;
+  background: rgba(24, 29, 39, 0.53);
+}
+
+.reportModal {
+  width: 100%;
+  max-width: 460px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  border: 1px solid #e7e8ed;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 20px 65px rgba(0, 0, 0, 0.2);
+  outline: none;
+}
+
+.reportModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 24px 6px;
+}
+
+.reportModalIcon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  background: #f8e9eb;
+  color: #81111b;
+}
+
+.reportModalClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 35px;
+  height: 35px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #6a7280;
+  cursor: pointer;
+}
+
+.reportModalClose:hover:not(:disabled) {
+  background: #f3f4f6;
+}
+
+.reportModalBody {
+  padding: 14px 24px 23px;
+}
+
+.reportModalBody h2 {
+  margin: 0;
+  color: #292e36;
+  font-size: 21px;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.reportModalDescription {
+  margin: 9px 0 20px;
+  color: #687380;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.reportModalSummary {
+  padding: 18px;
+  border: 1px solid #eceef0;
+  border-radius: 12px;
+  background: #f8f9fa;
+}
+
+.reportModalLabel {
+  display: block;
+  margin-bottom: 6px;
+  color: #687380;
+  font-size: 12px;
+}
+
+.reportModalPeriod {
+  display: block;
+  color: #30343b;
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 750;
+}
+
+.reportModalStats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 17px;
+  padding-top: 15px;
+  border-top: 1px solid #e2e4e8;
+}
+
+.reportModalStats > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.reportModalStats span {
+  color: #687380;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.reportModalStats strong {
+  color: #30343b;
+  font-size: 23px;
+  font-weight: 800;
+}
+
+.reportModalHint {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 17px 0 0;
+  color: #687380;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.reportModalHint svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.reportModalError {
+  margin: 14px 0 0;
+  padding: 11px;
+  border: 1px solid #e7c3c8;
+  border-radius: 8px;
+  background: #fff1f2;
+  color: #81111b;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.reportModalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 17px 24px;
+  border-top: 1px solid #eceef0;
+}
+
+.reportModalCancel,
+.reportModalDownload {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 41px;
+  padding: 10px 17px;
+  border-radius: 9px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.reportModalCancel {
+  border: 1px solid #dce0e5;
+  background: #fff;
+  color: #47515e;
+}
+
+.reportModalDownload {
+  border: 1px solid #81111b;
+  background: #81111b;
+  color: #fff;
+}
+
+.reportModalDownload:hover:not(:disabled) {
+  background: #690d16;
+}
+
+.reportModalCancel:disabled,
+.reportModalDownload:disabled,
+.reportModalClose:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.reportModalCancel:focus-visible,
+.reportModalDownload:focus-visible,
+.reportModalClose:focus-visible {
+  outline: 2px solid #81111b;
+  outline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+  .reportModalOverlay {
+    padding: 12px;
+  }
+
+  .reportModalHeader {
+    padding: 18px 18px 6px;
+  }
+
+  .reportModalBody {
+    padding: 12px 18px 20px;
+  }
+
+  .reportModalFooter {
+    padding: 15px 18px;
+  }
+
+  .reportModalDownload {
+    flex: 1;
+  }
+}

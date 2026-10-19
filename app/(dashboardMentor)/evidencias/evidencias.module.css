@@ -1,85 +1,438 @@
-.list {
-display: grid;
-gap: 16px;
+
+/* ==========================================
+   REPOSITORIO DE EVIDENCIAS DEL MENTOR
+   TARJETAS COMPACTAS
+   ========================================== */
+
+.page {
+  width: 100%;
+  min-width: 0;
+  padding-top: 14px;
+  padding-bottom: 30px;
 }
+
+/* ==========================================
+   ENCABEZADO
+   ========================================== */
+
+.header {
+  margin-bottom: 25px;
+}
+
+.heading {
+  margin: 0;
+  color: #292929;
+  font-size: clamp(30px, 3vw, 42px);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+}
+
+.description {
+  margin: 10px 0 0;
+  color: #485362;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+/* ==========================================
+   CUADRÍCULA DE DOS COLUMNAS
+   ========================================== */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  justify-items: start;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+}
+
+/* ==========================================
+   TARJETA PRINCIPAL
+   ========================================== */
 
 .card {
-display: flex;
-align-items: center;
-justify-content: space-between;
-gap: 24px;
-padding: 22px;
-border: 1px solid var(--line);
-border-radius: 12px;
-background: #fff;
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  max-width: 400px;
+  min-width: 0;
+  height: auto;
+  box-sizing: border-box;
+
+  padding: 12px 16px;
+
+  border: 1px solid #e7e3e0;
+  border-radius: 13px;
+  background: #ffffff;
+
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.025);
+
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease;
 }
 
-.content {
-min-width: 0;
+.card:hover {
+  border-color: #d7c7c7;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.045);
 }
 
-.content h2 {
-margin: 4px 0 4px;
-color: var(--text);
-font-size: 18px;
+/* ==========================================
+   INFORMACIÓN DEL MENTEE
+   ========================================== */
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ece9e7;
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 46px;
+  height: 46px;
+
+  overflow: hidden;
+  border-radius: 50%;
+
+  background: #f6e9ea;
+  color: #81111b;
+}
+
+.avatarImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 50%;
+}
+
+.studentInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  flex: 1;
+  min-width: 0;
+}
+
+.cardEyebrow {
+  color: #7b8591;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+}
+
+.studentName {
+  margin: 0;
+  color: #292d33;
+  font-size: 18px;
+  font-weight: 750;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .email {
-margin: 0;
-color: var(--muted);
-font-size: 14px;
+  margin: 0;
+  color: #657180;
+  font-size: 12px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 
-.info {
-display: grid;
-gap: 5px;
-margin-top: 14px;
+/* ==========================================
+   CUERPO DE LA TARJETA
+   ========================================== */
+
+.cardBody {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  gap: 8px;
+  min-width: 0;
+
+  padding: 9px 0 11px;
 }
 
-.info p {
-margin: 0;
-color: var(--muted);
-font-size: 13px;
+/* ==========================================
+   RESUMEN DE EVIDENCIAS
+   ========================================== */
+
+.evidenceSummary {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+
+  padding: 7px 10px;
+
+  border: 1px solid #ece9e7;
+  border-radius: 9px;
+  background: #faf9f8;
 }
 
-.info strong {
-color: var(--text);
+.summaryIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 32px;
+  height: 32px;
+
+  border-radius: 8px;
+  background: #f3e7e9;
+  color: #81111b;
 }
 
-.actions {
-flex-shrink: 0;
+.evidenceSummary > span {
+  flex: 1;
+  min-width: 0;
+
+  color: #46515f;
+  font-size: 13px;
+  font-weight: 650;
 }
+
+.evidenceSummary > strong {
+  flex-shrink: 0;
+
+  color: #81111b;
+  font-size: 23px;
+  font-weight: 800;
+  line-height: 1;
+
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================
+   FECHAS DE LA MENTORÍA
+   ========================================== */
+
+.metaList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.metaRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+
+  color: #647080;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.metaRow > svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: #7b8796;
+}
+
+.metaRow span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.metaRow b {
+  color: #384553;
+  font-weight: 700;
+}
+
+/* ==========================================
+   BOTÓN VER EVIDENCIAS
+   ========================================== */
 
 .viewButton {
-min-width: 150px;
-padding: 10px 16px;
-border: 1px solid var(--wine);
-border-radius: 8px;
-background: var(--wine);
-color: #fff;
-font: inherit;
-font-size: 14px;
-font-weight: 700;
-cursor: pointer;
-transition:
-background-color 160ms ease,
-border-color 160ms ease,
-transform 160ms ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  width: 100%;
+  min-height: 40px;
+
+  padding: 9px 12px;
+
+  border: 1px solid #81111b;
+  border-radius: 8px;
+
+  background: #81111b;
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.35;
+
+  text-decoration: none;
+  text-align: center;
+
+  transition: background-color 160ms ease;
 }
 
 .viewButton:hover {
-background: #641014;
-border-color: #641014;
-transform: translateY(-1px);
+  background: #690d16;
 }
 
-@media (max-width: 680px) {
-.card {
-align-items: stretch;
-flex-direction: column;
+.viewButton svg {
+  flex-shrink: 0;
 }
 
-.viewButton {
-width: 100%;
+/* ==========================================
+   ESTADO VACÍO Y CARGA
+   ========================================== */
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  min-height: 210px;
+  padding: 28px;
+
+  border: 1px solid #e7e3e0;
+  border-radius: 13px;
+
+  background: #ffffff;
+  color: #788391;
+
+  text-align: center;
 }
+
+.emptyState h2 {
+  margin: 5px 0 0;
+  color: #30343b;
+  font-size: 20px;
+}
+
+.emptyState p {
+  margin: 0;
+  color: #657180;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* ==========================================
+   PAGINACIÓN
+   ========================================== */
+
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.loadMoreButton {
+  min-height: 42px;
+  padding: 9px 24px;
+
+  border: 1px solid #d8dade;
+  border-radius: 8px;
+
+  background: #ffffff;
+  color: #81111b;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.loadMoreButton:hover:not(:disabled) {
+  background: #fcf8f9;
+}
+
+.loadMoreButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ==========================================
+   ACCESIBILIDAD
+   ========================================== */
+
+.viewButton:focus-visible,
+.loadMoreButton:focus-visible {
+  outline: 2px solid #81111b;
+  outline-offset: 3px;
+}
+
+/* ==========================================
+   RESPONSIVO
+   ========================================== */
+
+@media (max-width: 1100px) {
+  .card {
+    padding-left: 28px;
+    padding-right: 28px;
+  }
+}
+
+@media (max-width: 950px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .card {
+    width: 100%;
+    max-width: 460px;
+    padding: 12px 25px;
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
+    padding-top: 10px;
+  }
+
+  .heading {
+    font-size: 31px;
+  }
+
+  .description {
+    font-size: 15px;
+  }
+
+  .card {
+    max-width: 100%;
+    padding: 14px 16px;
+  }
+
+  .studentName {
+    font-size: 17px;
+  }
+
+  .avatar {
+    width: 43px;
+    height: 43px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .viewButton {
+    transition: none;
+  }
 }

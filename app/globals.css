@@ -2452,4 +2452,24 @@ select {
 
   box-shadow: none;
   transform: none;
+}/* Título exclusivo de Selección de Horarios */
+
+.page-content .welcome-row h1.mentores-page-title {
+  font-size: 42px;
+}
+
+/* Tablets */
+
+@media (max-width: 1200px) {
+  .page-content .welcome-row h1.mentores-page-title {
+    font-size: 27px;
+  }
+}
+
+/* Celulares */
+
+@media (max-width: 768px) {
+  .page-content .welcome-row h1.mentores-page-title {
+    font-size: 24px;
+  }
 }

@@ -1,0 +1,334 @@
+/* =========================================================
+   BITÁCORA MENTORING PROUNI
+   REPOSITORIO DE MENTORÍAS - MENTEE
+   ========================================================= */
+
+/* ---------- Encabezado ---------- */
+
+.repositoryWelcome {
+  margin-bottom: 0;
+}
+
+.repositoryTitle {
+  margin: 0;
+  color: #2c2c2c;
+  font-size: clamp(27px, 2.5vw, 35px);
+  font-weight: 750;
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+}
+
+.repositoryDescription {
+  margin: 11px 0 0;
+  color: #60646c;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+/* ---------- Listado ---------- */
+
+.repositoryList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.repositoryCard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 190px;
+  align-items: center;
+  gap: 24px;
+  min-height: 0;
+  padding: 19px 24px;
+  background: #ffffff;
+  border: 1px solid #e6e3e1;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(27, 31, 35, 0.025);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.repositoryCard:hover {
+  border-color: #d7c9cb;
+  box-shadow: 0 4px 14px rgba(27, 31, 35, 0.05);
+}
+
+/* ---------- Información del mentor ---------- */
+
+.repositoryInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.repositoryDate {
+  margin: 0 0 6px;
+  color: #777c85;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.4;
+}
+
+.repositoryName {
+  margin: 0 0 4px;
+  color: #262626;
+  font-size: 18px;
+  font-weight: 750;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+.repositoryEmail {
+  margin: 2px 0;
+  color: #626873;
+  font-size: 12px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Estado de acuerdos ---------- */
+
+.repositoryState {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 9px 0 0;
+  color: #565b63;
+  font-size: 12px;
+  font-weight: 550;
+  line-height: 1.5;
+}
+
+.repositoryState::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: #b0b3b8;
+}
+
+.repositoryStateWith::before {
+  background: #438b69;
+}
+
+.repositoryStateWithout::before {
+  background: #c2924c;
+}
+
+/* ---------- Horario y acciones ---------- */
+
+.repositorySide {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.repositorySchedule {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.repositorySchedule span {
+  color: #898b91;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.repositorySchedule strong {
+  color: #333842;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+a.repositoryAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 40px;
+  padding: 9px 12px;
+  border: 1px solid var(--wine);
+  border-radius: 8px;
+  background: var(--wine);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+a.repositoryAction:visited {
+  color: #ffffff;
+}
+
+a.repositoryAction:hover {
+  background: #6f0e17;
+  border-color: #6f0e17;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.repositoryNoAction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  color: #8b9097;
+  font-size: 12px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.repositoryCount {
+  margin: 22px 0 12px;
+  color: #777b82;
+  font-size: 12px;
+}
+
+/* =========================================================
+   SESIONES AGENDADAS
+   Solo estilos auxiliares para conservar las acciones
+   ========================================================= */
+
+.reservationActions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 180px;
+}
+
+.reservationActions time {
+  color: #333842;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.cancelButton {
+  min-width: 180px;
+  padding: 10px 16px;
+  border: 1px solid #dc2626;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #dc2626;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cancelButton:hover:not(:disabled) {
+  background: #fff7f7;
+}
+
+.cancelButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ---------- Accesibilidad ---------- */
+
+.repositoryAction:focus-visible,
+.cancelButton:focus-visible {
+  outline: 2px solid var(--wine);
+  outline-offset: 3px;
+}
+
+/* ---------- Diseño responsive ---------- */
+
+@media (max-width: 760px) {
+  .repositoryTitle {
+    font-size: 27px;
+  }
+
+  .repositoryCard {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 15px;
+    padding: 18px;
+  }
+
+  .repositoryName {
+    font-size: 17px;
+  }
+
+  .repositorySide {
+    padding-top: 13px;
+    border-top: 1px solid #f0f0f0;
+  }
+
+  .repositorySchedule {
+    align-items: flex-start;
+  }
+
+  .reservationActions {
+    min-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .repositoryCard {
+    transition: none;
+  }
+}
+
+/* Botón de cancelación no disponible */
+
+.cancelButton:disabled {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+  color: #9ca3af;
+  opacity: 1;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.cancelButton:disabled:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+  color: #9ca3af;
+}
+.cancelButton {
+  display: inline-flex !important;
+  visibility: visible !important;
+  align-items: center;
+  justify-content: center;
+  min-width: 180px;
+  min-height: 42px;
+}
+
+.cancelButton:disabled {
+  opacity: 1;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  color: #9ca3af;
+  cursor: not-allowed;
+}
+.repositoryWelcome > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.repositoryTitle {
+  margin: 0;
+}
+
+.repositoryDescription {
+  margin: 0;
+  text-align: left;
+}

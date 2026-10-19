@@ -3,8 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 
 import type { BookingSlot } from "@/models/booking.model";
-
 import ModalReserva from "./ModalReserva";
+import ProUniLoader from "@/components/ui/ProUniLoader";
 
 type Mentor = {
   id: string;
@@ -55,6 +55,10 @@ const SLOT_DURATION_MINUTES = 30;
 const BOOKING_MARGIN_MINUTES = 5;
 const LIMA_TIME_ZONE = "America/Lima";
 
+/* =========================================================
+   ICONOS
+========================================================= */
+
 function CalendarIcon({ size = 18 }: { size?: number }) {
   return (
     <svg
@@ -74,14 +78,12 @@ function CalendarIcon({ size = 18 }: { size?: number }) {
         stroke="currentColor"
         strokeWidth="1.7"
       />
-
       <path
         d="M8 3.5V6.5M16 3.5V6.5M3 9H21"
         stroke="currentColor"
         strokeWidth="1.7"
         strokeLinecap="round"
       />
-
       <path
         d="M7.5 13H7.51M12 13H12.01M16.5 13H16.51M7.5 17H7.51M12 17H12.01"
         stroke="currentColor"
@@ -103,7 +105,6 @@ function ClockIcon({ size = 18 }: { size?: number }) {
       aria-hidden="true"
     >
       <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.7" />
-
       <path
         d="M12 7.5V12L15 14"
         stroke="currentColor"
@@ -157,6 +158,10 @@ function ChevronRightIcon() {
   );
 }
 
+/* =========================================================
+   FECHAS Y ZONA HORARIA
+========================================================= */
+
 function parseGraphDateTime(value: string, timeZone?: string): Date {
   if (/(?:Z|[+-]\d{2}:?\d{2})$/i.test(value)) {
     return new Date(value);
@@ -193,6 +198,10 @@ function roundUpToNextSlot(timestamp: number) {
 
   return Math.ceil(timestamp / slotDurationMs) * slotDurationMs;
 }
+
+/* =========================================================
+   GENERACIÓN DE HORARIOS
+========================================================= */
 
 function createSlots(
   availabilityItems: AvailabilityItem[],
@@ -309,7 +318,6 @@ function createSlots(
       available,
 
       startAt: startDate.toISOString(),
-
       endAt: endDate.toISOString(),
 
       staffId,
@@ -320,6 +328,10 @@ function createSlots(
 
   return slots;
 }
+
+/* =========================================================
+   FUNCIONES DEL CALENDARIO
+========================================================= */
 
 function getDateKey(date: Date) {
   return new Intl.DateTimeFormat("en-CA", {
@@ -399,6 +411,10 @@ function getTodayKey() {
   return getDateKey(new Date());
 }
 
+/* =========================================================
+   COMPONENTE PRINCIPAL
+========================================================= */
+
 export default function Horarios({ mentor, onClose }: Props) {
   const [services, setServices] = useState<BookingService[]>([]);
 
@@ -411,12 +427,14 @@ export default function Horarios({ mentor, onClose }: Props) {
   const [selectedDay, setSelectedDay] = useState("");
 
   const [loading, setLoading] = useState(true);
-
   const [error, setError] = useState("");
-
   const [availabilityMessage, setAvailabilityMessage] = useState("");
 
   const [currentTimestamp, setCurrentTimestamp] = useState(() => Date.now());
+
+  /* =======================================================
+     ACTUALIZAR HORA ACTUAL
+  ======================================================= */
 
   useEffect(() => {
     const interval = window.setInterval(() => {
@@ -427,6 +445,10 @@ export default function Horarios({ mentor, onClose }: Props) {
       window.clearInterval(interval);
     };
   }, []);
+
+  /* =======================================================
+     CONSULTAR HORARIOS DE BOOKINGS
+  ======================================================= */
 
   useEffect(() => {
     async function cargar() {
@@ -467,9 +489,17 @@ export default function Horarios({ mentor, onClose }: Props) {
     void cargar();
   }, [mentor.id]);
 
+  /* =======================================================
+     SERVICIO SELECCIONADO
+  ======================================================= */
+
   const selectedService = services.find(
     (service) => service.id === selectedServiceId,
   );
+
+  /* =======================================================
+     CONSTRUIR INTERVALOS
+  ======================================================= */
 
   const slots = useMemo<AgendaSlot[]>(() => {
     return availability.flatMap((group) =>
@@ -515,7 +545,6 @@ export default function Horarios({ mentor, onClose }: Props) {
     const firstDate = new Date(slots[0].startAt);
 
     setCalendarMonth(firstDate.getUTCMonth() + 1);
-
     setCalendarYear(firstDate.getUTCFullYear());
   }, [slots.length]);
 
@@ -539,6 +568,10 @@ export default function Horarios({ mentor, onClose }: Props) {
     ? getCalendarDateInfo(selectedDay)
     : null;
 
+  /* =======================================================
+     INTERFAZ
+  ======================================================= */
+
   return (
     <section
       className="agenda-inline"
@@ -550,9 +583,9 @@ export default function Horarios({ mentor, onClose }: Props) {
         fontFamily: "inherit",
       }}
     >
-      {/* =============================
+      {/* ===================================================
           ENCABEZADO
-      ============================== */}
+      =================================================== */}
 
       <div
         style={{
@@ -569,12 +602,7 @@ export default function Horarios({ mentor, onClose }: Props) {
             flex: 1,
           }}
         >
-          <p
-            className="eyebrow"
-            style={{
-              marginBottom: "5px",
-            }}
-          >
+          <p className="eyebrow" style={{ marginBottom: "5px" }}>
             MENTORÍA
           </p>
 
@@ -603,15 +631,21 @@ export default function Horarios({ mentor, onClose }: Props) {
           className="outline-button"
           type="button"
           onClick={onClose}
-          style={{
-            flexShrink: 0,
-          }}
+          style={{ flexShrink: 0 }}
         >
           Cambiar mentor
         </button>
       </div>
 
-      {error && <p className="form-error">{error}</p>}
+      {/* ===================================================
+          MENSAJES
+      =================================================== */}
+
+      {error && (
+        <p className="form-error" role="alert">
+          {error}
+        </p>
+      )}
 
       {availabilityMessage && (
         <div
@@ -630,12 +664,18 @@ export default function Horarios({ mentor, onClose }: Props) {
         </div>
       )}
 
-      {loading ? (
-        <div className="empty-state compact-state">
-          <h2>Consultando disponibilidad...</h2>
+      {/* ===================================================
+          INDICADOR DE CARGA INSTITUCIONAL
+          ÚNICO CAMBIO VISUAL PRINCIPAL
+      =================================================== */}
 
-          <p>Estamos buscando los próximos horarios del mentor.</p>
-        </div>
+      {loading ? (
+        <ProUniLoader
+          icon="clock"
+          title="Consultando horarios disponibles"
+          description=" Un momento, estamos consultando la agenda de tu mentor."
+          compact
+        />
       ) : availableDays.length === 0 ? (
         <div className="empty-state compact-state">
           <h2>No hay horarios disponibles</h2>
@@ -651,9 +691,9 @@ export default function Horarios({ mentor, onClose }: Props) {
             margin: "0 auto",
           }}
         >
-          {/* =============================
+          {/* =================================================
               CONTENEDOR FECHA + HORA
-          ============================== */}
+          ================================================= */}
 
           <div
             className="schedule-columns"
@@ -664,9 +704,9 @@ export default function Horarios({ mentor, onClose }: Props) {
               alignItems: "stretch",
             }}
           >
-            {/* =============================
+            {/* ===============================================
                 BLOQUE FECHA
-            ============================== */}
+            =============================================== */}
 
             <div
               style={{
@@ -872,32 +912,40 @@ export default function Horarios({ mentor, onClose }: Props) {
                         }
 
                         setSelectedDay(dateKey);
-
                         setAvailabilityMessage("");
                       }}
                       style={{
                         height: "32px",
+
                         border: isSelected
                           ? "1px solid #222"
                           : "1px solid transparent",
+
                         borderRadius: "7px",
+
                         background: isSelected
                           ? "#222"
                           : hasSchedule && isCurrentMonth && !isPast
                             ? "#f6f6f6"
                             : "transparent",
+
                         color: isSelected
                           ? "#fff"
                           : isCurrentMonth && !isPast
                             ? "#222"
                             : "#c9c9c9",
+
                         cursor: isDisabled ? "default" : "pointer",
+
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
+
                         fontSize: "11px",
                         fontWeight: hasSchedule ? 600 : 400,
+
                         opacity: isCurrentMonth ? 1 : 0.35,
+
                         transition: "background 120ms ease, color 120ms ease",
                       }}
                     >
@@ -908,9 +956,9 @@ export default function Horarios({ mentor, onClose }: Props) {
               </div>
             </div>
 
-            {/* =============================
+            {/* ===============================================
                 BLOQUE HORA
-            ============================== */}
+            =============================================== */}
 
             <div
               style={{
@@ -919,6 +967,7 @@ export default function Horarios({ mentor, onClose }: Props) {
                 background: "#fff",
                 padding: "15px",
                 minHeight: "100%",
+
                 animation: selectedDay
                   ? "schedulePanelIn 180ms ease-out"
                   : "none",
@@ -1044,6 +1093,7 @@ export default function Horarios({ mentor, onClose }: Props) {
                     style={{
                       display: "grid",
                       gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+
                       gap: "5px",
                       maxHeight: "210px",
                       overflowY: "auto",
@@ -1064,12 +1114,10 @@ export default function Horarios({ mentor, onClose }: Props) {
                               setAvailabilityMessage(
                                 "No hay disponibilidad en este horario. Elija otro horario.",
                               );
-
                               return;
                             }
 
                             setAvailabilityMessage("");
-
                             setSelectedSlot(slot);
                           }}
                           title={
@@ -1081,15 +1129,21 @@ export default function Horarios({ mentor, onClose }: Props) {
                             minHeight: "32px",
                             padding: "5px 3px",
                             borderRadius: "6px",
+
                             cursor: unavailable ? "not-allowed" : "pointer",
+
                             fontSize: "11px",
                             fontWeight: 600,
                             textAlign: "center",
+
                             opacity: unavailable ? 0.4 : 1,
+
                             textDecoration: unavailable
                               ? "line-through"
                               : "none",
+
                             background: unavailable ? "#f5f5f5" : undefined,
+
                             border: unavailable ? "1px solid #ddd" : undefined,
                           }}
                         >
@@ -1124,6 +1178,10 @@ export default function Horarios({ mentor, onClose }: Props) {
           `}</style>
         </div>
       )}
+
+      {/* ===================================================
+          MODAL DE RESERVA
+      =================================================== */}
 
       {selectedSlot && selectedService && (
         <ModalReserva

@@ -1,0 +1,618 @@
+
+/* =========================================================
+   BITÁCORA MENTORING PROUNI
+   GESTIÓN DE ACUERDOS DE MENTORÍA
+   ========================================================= */
+
+/* ---------- Encabezado ---------- */
+
+.heading {
+  margin-bottom: 0;
+}
+
+.sectionLabel {
+  margin: 0 0 9px;
+  color: #82858b;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin: 17px 0 18px;
+  color: var(--wine);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  text-decoration: none;
+}
+
+.backLink:hover {
+  color: #6e1019;
+  text-decoration: underline;
+}
+
+/* =========================================================
+   FORMULARIO
+   ========================================================= */
+
+.formCard {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  margin: 0 0 25px;
+  padding: 25px 28px 27px;
+  background: #ffffff;
+  border: 1px solid #e7e4e2;
+  border-radius: 13px;
+  box-shadow: 0 2px 9px rgba(35, 30, 30, 0.025);
+}
+
+.formHeader {
+  margin-bottom: 20px;
+}
+
+.formHeader h2 {
+  margin: 0 0 5px;
+  color: #292929;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.015em;
+}
+
+.formHeader p {
+  margin: 0;
+  color: #787c84;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* ---------- Distribución de campos ---------- */
+
+.form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 20px;
+  row-gap: 17px;
+  width: 100%;
+  min-width: 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  color: #333842;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.wideField {
+  grid-column: 1 / -1;
+}
+
+/* ---------- Inputs y textarea ---------- */
+
+.field input,
+.field textarea {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 10px 13px;
+  background: #ffffff;
+  border: 1px solid #dce0e5;
+  border-radius: 8px;
+  color: #252b34;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.55;
+  outline: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.field input {
+  min-height: 42px;
+}
+
+.field textarea {
+  min-height: 68px;
+  resize: vertical;
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: #a0a6b0;
+  opacity: 1;
+}
+
+.field input:focus,
+.field textarea:focus {
+  border-color: var(--wine);
+  box-shadow: 0 0 0 3px rgba(125, 17, 27, 0.065);
+}
+
+.field input:disabled,
+.field textarea:disabled {
+  background: #f8f8f8;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   RECURSOS DE REFERENCIA
+   ========================================================= */
+
+.resourceSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  padding-top: 17px;
+  margin-top: 1px;
+  border-top: 1px solid #eeecea;
+}
+
+.resourceHeading {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.resourceHeading label {
+  color: #333842;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.resourceHeading p {
+  margin: 0;
+  color: #858991;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.resourceEntry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: stretch;
+}
+
+.resourceEntry input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 42px;
+  box-sizing: border-box;
+  padding: 10px 13px;
+  background: #ffffff;
+  border: 1px solid #dce0e5;
+  border-radius: 8px;
+  color: #252b34;
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+}
+
+.resourceEntry input::placeholder {
+  color: #a0a6b0;
+}
+
+.resourceEntry input:focus {
+  border-color: var(--wine);
+  box-shadow: 0 0 0 3px rgba(125, 17, 27, 0.065);
+}
+
+.addResourceButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 9px 16px;
+  background: #ffffff;
+  border: 1px solid #c9a4a8;
+  border-radius: 8px;
+  color: var(--wine);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.addResourceButton:hover:not(:disabled) {
+  background: #faf4f5;
+  border-color: var(--wine);
+}
+
+.addResourceButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.resourceError {
+  margin: 0;
+  color: #a52b35;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.resourceList {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  width: 100%;
+  min-width: 0;
+}
+
+.savedResources {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 17px;
+  padding-top: 14px;
+  border-top: 1px solid #eeecea;
+}
+
+.savedResources h4 {
+  margin: 0;
+  color: #41464e;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+/* =========================================================
+   BOTÓN PRINCIPAL
+   ========================================================= */
+
+.formActions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 2px;
+}
+
+.submitButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 10px 19px;
+  background: var(--wine);
+  border: 1px solid var(--wine);
+  border-radius: 8px;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.submitButton:hover:not(:disabled) {
+  background: #6e1019;
+  border-color: #6e1019;
+}
+
+.submitButton:disabled {
+  background: #c4c5c7;
+  border-color: #c4c5c7;
+  cursor: not-allowed;
+}
+
+/* =========================================================
+   ACUERDOS REGISTRADOS
+   ========================================================= */
+
+.agreementList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 0;
+}
+
+.listHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin: 0 0 6px;
+}
+
+.listHeader h2 {
+  margin: 0;
+  color: #2c2c2c;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.agreementCount {
+  color: #858991;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* ---------- Tarjetas de acuerdos ---------- */
+
+.agreementCard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 164px;
+  align-items: start;
+  column-gap: 26px;
+  min-width: 0;
+  padding: 21px 24px;
+  background: #ffffff;
+  border: 1px solid #e7e4e2;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(35, 30, 30, 0.025);
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.agreementCard:hover {
+  border-color: #d9ced0;
+  box-shadow: 0 4px 12px rgba(35, 30, 30, 0.04);
+}
+
+.agreementInfo {
+  min-width: 0;
+}
+
+.agreementInfo h3 {
+  margin: 7px 0 7px;
+  color: #292929;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: -0.012em;
+  overflow-wrap: anywhere;
+}
+
+.agreementDescription {
+  margin: 0 0 11px;
+  color: #565d67;
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.agreementMeta {
+  margin: 5px 0;
+  color: #6b7078;
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.agreementMeta strong {
+  color: #3d424a;
+  font-weight: 600;
+}
+
+/* =========================================================
+   ESTADOS
+   ========================================================= */
+
+.agreementStatus {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: #626872;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.agreementStatus::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: #a5a8ad;
+}
+
+.status_pendiente::before {
+  background: #bc9151;
+}
+
+.status_en_progreso::before {
+  background: #648bab;
+}
+
+.status_cumplido::before {
+  background: #438b69;
+}
+
+.status_cancelado::before {
+  background: #999da4;
+}
+
+/* =========================================================
+   ACCIONES DE ACUERDOS
+   ========================================================= */
+
+.agreementActions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+}
+
+.statusControl {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  color: #626872;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.statusControl select {
+  width: 100%;
+  min-height: 41px;
+  padding: 9px 11px;
+  background: #ffffff;
+  border: 1px solid #dce0e5;
+  border-radius: 8px;
+  color: #343942;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  outline: none;
+  cursor: pointer;
+}
+
+.statusControl select:focus {
+  border-color: var(--wine);
+}
+
+.deleteButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 39px;
+  padding: 9px 12px;
+  background: #ffffff;
+  border: 1px solid #e2c5c8;
+  border-radius: 8px;
+  color: #a02e39;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.deleteButton:hover {
+  background: #fcf5f5;
+  border-color: #c58a91;
+}
+
+/* =========================================================
+   ESTADOS DE CARGA Y SIN RESULTADOS
+   ========================================================= */
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 140px;
+  padding: 35px 24px;
+  background: #ffffff;
+  border: 1px solid #e7e4e2;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.emptyState h2 {
+  margin: 0 0 8px;
+  color: #303030;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.emptyState p {
+  margin: 0;
+  color: #7b8088;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* =========================================================
+   ACCESIBILIDAD
+   ========================================================= */
+
+.backLink:focus-visible,
+.submitButton:focus-visible,
+.addResourceButton:focus-visible,
+.deleteButton:focus-visible,
+.statusControl select:focus-visible {
+  outline: 2px solid var(--wine);
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 760px) {
+  .formCard {
+    padding: 20px 18px;
+    margin-bottom: 21px;
+  }
+
+  .form {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 15px;
+  }
+
+  .wideField,
+  .formActions {
+    grid-column: 1;
+  }
+
+  .resourceEntry {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .addResourceButton {
+    width: 100%;
+  }
+
+  .agreementCard {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: 18px;
+    padding: 19px 18px;
+  }
+
+  .agreementActions {
+    padding-top: 14px;
+    border-top: 1px solid #eeecea;
+  }
+
+  .listHeader h2 {
+    font-size: 17px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .agreementCard,
+  .field input,
+  .field textarea,
+  .submitButton,
+  .addResourceButton,
+  .deleteButton {
+    transition: none;
+  }
+}

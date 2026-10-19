@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
+import ProUniLoader from "@/components/ui/ProUniLoader";
 import styles from "./horarios.module.css";
 
 type TimeSlot = {
@@ -49,13 +50,15 @@ function emptyWeek(): WorkingDay[] {
 }
 
 export default function HorariosPage() {
-  const [mentorName, setMentorName] = useState("");
-  const [workingHours, setWorkingHours] =
-    useState<WorkingDay[]>(emptyWeek());
+  const [workingHours, setWorkingHours] = useState<WorkingDay[]>(emptyWeek());
 
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+
+  /* =========================================================
+     AUTENTICACIÓN
+  ========================================================= */
 
   async function getToken() {
     const {
@@ -68,6 +71,10 @@ export default function HorariosPage() {
 
     return session.access_token;
   }
+
+  /* =========================================================
+     CARGAR HORARIOS
+  ========================================================= */
 
   async function cargarHorarios() {
     try {
@@ -85,14 +92,10 @@ export default function HorariosPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          data.error || "No se pudieron obtener los horarios.",
-        );
+        throw new Error(data.error || "No se pudieron obtener los horarios.");
       }
 
       const schedule = data as ScheduleResponse;
-
-      setMentorName(schedule.name);
 
       const normalizedWeek = days.map((day) => {
         const existingDay = schedule.workingHours?.find(
@@ -123,6 +126,10 @@ export default function HorariosPage() {
     void cargarHorarios();
   }, []);
 
+  /* =========================================================
+     ACTIVAR O DESACTIVAR DÍA
+  ========================================================= */
+
   function toggleDay(day: WorkingDay["day"]) {
     setWorkingHours((current) =>
       current.map((item) => {
@@ -148,6 +155,10 @@ export default function HorariosPage() {
     );
   }
 
+  /* =========================================================
+     AGREGAR HORARIO
+  ========================================================= */
+
   function agregarHorario(day: WorkingDay["day"]) {
     setWorkingHours((current) =>
       current.map((item) =>
@@ -167,10 +178,11 @@ export default function HorariosPage() {
     );
   }
 
-  function eliminarHorario(
-    day: WorkingDay["day"],
-    index: number,
-  ) {
+  /* =========================================================
+     ELIMINAR HORARIO
+  ========================================================= */
+
+  function eliminarHorario(day: WorkingDay["day"], index: number) {
     setWorkingHours((current) =>
       current.map((item) =>
         item.day === day
@@ -184,6 +196,10 @@ export default function HorariosPage() {
       ),
     );
   }
+
+  /* =========================================================
+     MODIFICAR HORARIO
+  ========================================================= */
 
   function cambiarHora(
     day: WorkingDay["day"],
@@ -218,6 +234,10 @@ export default function HorariosPage() {
     return value.substring(0, 5);
   }
 
+  /* =========================================================
+     GUARDAR HORARIOS
+  ========================================================= */
+
   async function guardarHorarios() {
     try {
       setIsSaving(true);
@@ -249,9 +269,7 @@ export default function HorariosPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(
-          data.error || "No se pudieron guardar los horarios.",
-        );
+        throw new Error(data.error || "No se pudieron guardar los horarios.");
       }
 
       window.alert("Horarios actualizados correctamente.");
@@ -269,178 +287,157 @@ export default function HorariosPage() {
     }
   }
 
-  if (isLoading) {
-    return (
-      <div className="page-content">
-        <section className="empty-state">
-          <h2>Cargando tus horarios...</h2>
-        </section>
-      </div>
-    );
-  }
+  /* =========================================================
+     INTERFAZ PRINCIPAL
+  ========================================================= */
 
   return (
     <div className="page-content">
       <section className="welcome-row">
         <div>
-          <p className="eyebrow">MENTOR · PROUNI</p>
-
           <h1>Mi disponibilidad de horarios para mentoría</h1>
 
           <p className="intro">
-           Aquí puedes definir los días y horarios en los que estás disponible para brindar mentorías.
+            Aquí puedes definir los días y horarios en los que estás disponible
+            para brindar mentorías.
           </p>
-
-          {mentorName && (
-            <p className="intro">
-              Microsoft Bookings:{" "}
-              <strong>{mentorName}</strong>
-            </p>
-          )}
         </div>
       </section>
 
-      {errorMessage && (
-        <p className="form-error">
-          {errorMessage}
-        </p>
-      )}
+      {/* ============================================
+          INDICADOR DE CARGA
+      ============================================ */}
 
-      <section className={styles.scheduleCard}>
-        {days.map((dayData) => {
-          const day = workingHours.find(
-            (item) => item.day === dayData.key,
-          );
+      {isLoading ? (
+        <ProUniLoader
+          icon="clock"
+          title="Consultando tus horarios"
+          description="Estamos obteniendo tu disponibilidad."
+        />
+      ) : (
+        <>
+          {errorMessage && (
+            <p className="form-error" role="alert">
+              {errorMessage}
+            </p>
+          )}
 
-          if (!day) return null;
+          {/* ============================================
+              HORARIOS SEMANALES
+          ============================================ */}
 
-          const enabled = day.timeSlots.length > 0;
+          <section className={styles.scheduleCard}>
+            {days.map((dayData) => {
+              const day = workingHours.find((item) => item.day === dayData.key);
 
-          return (
-            <div
-              className={styles.scheduleDay}
-              key={dayData.key}
-            >
-              <div className={styles.scheduleDayHeader}>
-                <div>
-                  <strong>{dayData.label}</strong>
+              if (!day) return null;
 
-                  <span>
-                    {enabled
-                      ? "Disponible"
-                      : "No disponible"}
-                  </span>
-                </div>
+              const enabled = day.timeSlots.length > 0;
 
-                <label className={styles.scheduleSwitch}>
-                  <input
-                    type="checkbox"
-                    checked={enabled}
-                    onChange={() =>
-                      toggleDay(dayData.key)
-                    }
-                  />
+              return (
+                <div className={styles.scheduleDay} key={dayData.key}>
+                  <div className={styles.scheduleDayHeader}>
+                    <div>
+                      <strong>{dayData.label}</strong>
 
-                  <span />
-                </label>
-              </div>
+                      <span>{enabled ? "Disponible" : "No disponible"}</span>
+                    </div>
 
-              {enabled && (
-                <div className={styles.scheduleSlots}>
-                  {day.timeSlots.map((slot, index) => (
-                    <div
-                      className={styles.scheduleSlot}
-                      key={`${day.day}-${index}`}
-                    >
-                      <div>
-                        <label>Desde</label>
+                    <label className={styles.scheduleSwitch}>
+                      <input
+                        type="checkbox"
+                        checked={enabled}
+                        onChange={() => toggleDay(dayData.key)}
+                      />
 
-                        <input
-                          type="time"
-                          value={toInputTime(
-                            slot.startTime,
-                          )}
-                          onChange={(event) =>
-                            cambiarHora(
-                              day.day,
-                              index,
-                              "startTime",
-                              event.target.value,
-                            )
-                          }
-                        />
-                      </div>
+                      <span />
+                    </label>
+                  </div>
 
-                      <span
-                        className={styles.scheduleSeparator}
-                      >
-                        —
-                      </span>
+                  {enabled && (
+                    <div className={styles.scheduleSlots}>
+                      {day.timeSlots.map((slot, index) => (
+                        <div
+                          className={styles.scheduleSlot}
+                          key={`${day.day}-${index}`}
+                        >
+                          <div>
+                            <label>Desde</label>
 
-                      <div>
-                        <label>Hasta</label>
+                            <input
+                              type="time"
+                              value={toInputTime(slot.startTime)}
+                              onChange={(event) =>
+                                cambiarHora(
+                                  day.day,
+                                  index,
+                                  "startTime",
+                                  event.target.value,
+                                )
+                              }
+                            />
+                          </div>
 
-                        <input
-                          type="time"
-                          value={toInputTime(
-                            slot.endTime,
-                          )}
-                          onChange={(event) =>
-                            cambiarHora(
-                              day.day,
-                              index,
-                              "endTime",
-                              event.target.value,
-                            )
-                          }
-                        />
-                      </div>
+                          <span className={styles.scheduleSeparator}>—</span>
+
+                          <div>
+                            <label>Hasta</label>
+
+                            <input
+                              type="time"
+                              value={toInputTime(slot.endTime)}
+                              onChange={(event) =>
+                                cambiarHora(
+                                  day.day,
+                                  index,
+                                  "endTime",
+                                  event.target.value,
+                                )
+                              }
+                            />
+                          </div>
+
+                          <button
+                            type="button"
+                            className={styles.scheduleDelete}
+                            title="Eliminar tramo"
+                            aria-label={`Eliminar horario de ${dayData.label}`}
+                            onClick={() => eliminarHorario(day.day, index)}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
 
                       <button
                         type="button"
-                        className={styles.scheduleDelete}
-                        title="Eliminar tramo"
-                        onClick={() =>
-                          eliminarHorario(
-                            day.day,
-                            index,
-                          )
-                        }
+                        className={styles.scheduleAdd}
+                        onClick={() => agregarHorario(day.day)}
                       >
-                        ×
+                        + Agregar otro horario
                       </button>
                     </div>
-                  ))}
-
-                  <button
-                    type="button"
-                    className={styles.scheduleAdd}
-                    onClick={() =>
-                      agregarHorario(day.day)
-                    }
-                  >
-                    + Agregar otro horario
-                  </button>
+                  )}
                 </div>
-              )}
-            </div>
-          );
-        })}
-      </section>
+              );
+            })}
+          </section>
 
-      <div className={styles.scheduleActions}>
-        <button
-          className="primary-button"
-          disabled={isSaving}
-          onClick={() =>
-            void guardarHorarios()
-          }
-        >
-          {isSaving
-            ? "Guardando..."
-            : "Guardar horarios"}
-        </button>
-      </div>
+          {/* ============================================
+              GUARDAR CAMBIOS
+          ============================================ */}
+
+          <div className={styles.scheduleActions}>
+            <button
+              className="primary-button"
+              disabled={isSaving}
+              onClick={() => void guardarHorarios()}
+            >
+              {isSaving ? "Guardando..." : "Guardar horarios"}
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

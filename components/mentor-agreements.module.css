@@ -1,381 +1,686 @@
-.backLink,
-.manageLink {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 700;
-  text-decoration: none;
-  transition:
-    background-color 160ms ease,
-    color 160ms ease,
-    border-color 160ms ease,
-    transform 160ms ease;
-}
 
-.backLink {
-  margin: -14px 0 24px;
-  color: var(--wine);
-}
+/* =========================================================
+   MENTOR AGREEMENTS - PROUNI
+   ========================================================= */
 
-.backLink:hover {
-  text-decoration: underline;
-}
+/* ---------- Barra superior ---------- */
 
-.formCard {
-  display: block;
-  margin-bottom: 24px;
-}
-
-.form {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
-  margin-top: 18px;
-}
-
-.field,
-.field input,
-.field textarea,
-.field select {
-  min-width: 0;
-  width: 100%;
-}
-
-.field {
-  display: grid;
-  gap: 7px;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.wideField {
-  grid-column: 1 / -1;
-}
-
-.form input,
-.form textarea,
-.statusControl select {
-  box-sizing: border-box;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #fff;
-  color: var(--text);
-  font: inherit;
-  padding: 10px 12px;
-}
-
-.form textarea {
-  resize: vertical;
-}
-
-.form input:focus,
-.form textarea:focus,
-.statusControl select:focus {
-  outline: 2px solid color-mix(in srgb, var(--wine) 25%, transparent);
-  border-color: var(--wine);
-}
-
-.submitButton,
-.deleteButton {
-  width: fit-content;
-  min-width: 160px;
-  padding: 10px 16px;
-  border-radius: 8px;
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.submitButton {
-  border: 1px solid var(--wine);
-  background: var(--wine);
-  color: #fff;
-}
-
-.submitButton:hover:not(:disabled) {
-  background: #641014;
-  border-color: #641014;
-  transform: translateY(-1px);
-}
-
-.submitButton:disabled {
-  cursor: not-allowed;
-  opacity: 0.65;
-}
-
-.deleteButton {
-  border: 1px solid #d45a5a;
-  background: #fff;
-  color: #b42318;
-}
-
-.deleteButton:hover {
-  background: #fff5f5;
-}
-
-.agreementActions {
-  display: grid;
-  min-width: 170px;
-  gap: 12px;
-}
-
-.statusControl {
-  display: grid;
-  gap: 7px;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.statusControl select {
-  cursor: pointer;
-}
-
-.manageLink {
-  min-width: 180px;
-  padding: 10px 16px;
-  border: 1px solid var(--wine);
-  background: var(--wine);
-  color: #fff;
-}
-
-.manageLink:hover {
-  background: #641014;
-  border-color: #641014;
-}
-
-/* =====================================================
-   EVIDENCIAS
-===================================================== */
-
-.evidenceSection {
-  display: grid;
-  gap: 14px;
-  margin-top: 22px;
-  padding-top: 20px;
-  border-top: 1px solid var(--line);
-}
-
-.evidenceSection h3 {
-  margin: 0;
-  color: var(--text);
-  font-size: 16px;
-  font-weight: 800;
-}
-
-.evidenceSection h4 {
-  margin: 4px 0 0;
-  color: var(--text);
-  font-size: 14px;
-  font-weight: 800;
-}
-
-.evidenceSection > p {
-  margin: -6px 0 0;
-  color: var(--muted);
-  font-size: 13px;
-}
-
-/* Selector de archivo */
-
-.fileInput {
-  width: 100%;
-  box-sizing: border-box;
-  padding: 12px;
-  border: 1px dashed var(--line);
-  border-radius: 10px;
-  background: #fafafa;
-  color: var(--muted);
-  font: inherit;
-  cursor: pointer;
-  transition:
-    border-color 160ms ease,
-    background-color 160ms ease;
-}
-
-.fileInput:hover {
-  border-color: var(--wine);
-  background: #fff;
-}
-
-.fileInput:disabled {
-  cursor: not-allowed;
-  opacity: 0.65;
-}
-
-/* Archivo seleccionado */
-
-.selectedFile {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 11px 13px;
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  background: #fafafa;
-  color: var(--text);
-  font-size: 13px;
-}
-
-.selectedFileIcon {
-  flex-shrink: 0;
-  font-size: 17px;
-}
-
-.selectedFileName {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Botón subir */
-
-.uploadButton {
-  width: fit-content;
-  min-width: 180px;
-  padding: 10px 18px;
-  border: 1px solid var(--wine);
-  border-radius: 8px;
-  background: var(--wine);
-  color: #fff;
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
-  transition:
-    background-color 160ms ease,
-    border-color 160ms ease,
-    transform 160ms ease,
-    opacity 160ms ease;
-}
-
-.uploadButton:hover:not(:disabled) {
-  background: #641014;
-  border-color: #641014;
-  transform: translateY(-1px);
-}
-
-.uploadButton:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
-}
-
-/* Lista de evidencias */
-
-.evidenceList {
-  display: grid;
-  gap: 8px;
-  margin-top: 2px;
-}
-
-.evidenceItem {
+.toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 14px;
-  padding: 11px 13px;
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  background: #fff;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 8px 0 20px;
 }
 
-.evidenceFile {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  min-width: 0;
-  color: var(--text);
-  font-size: 13px;
+.count {
+  margin: 0;
+  font-size: 14px;
   font-weight: 600;
+  color: #4b5563;
 }
 
-.evidenceFileName {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.search {
+  width: 100%;
+  max-width: 320px;
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  background: #ffffff;
+  font-family: inherit;
+  font-size: 14px;
+  color: #111827;
 }
 
-.viewEvidenceButton {
-  flex-shrink: 0;
-  padding: 7px 11px;
-  border: 1px solid var(--wine);
-  border-radius: 7px;
-  background: #fff;
+.search:focus-visible {
+  outline: 2px solid var(--wine);
+  outline-offset: 2px;
+}
+
+/* ---------- Lista y grupos ---------- */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.groupTitle {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+
+/* ---------- Tarjetas generales ---------- */
+
+.card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 20px;
+  padding: 16px 20px;
+  background: #ffffff;
+  border: 1px solid #ececec;
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  transition:
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.card:hover {
+  border-color: #e0d3d5;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.dateBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 84px;
+  padding: 10px 12px;
+  background: #f8f4f4;
+  border-radius: 12px;
+  line-height: 1.1;
+}
+
+.dateDay {
+  font-size: 26px;
+  font-weight: 800;
   color: var(--wine);
-  font: inherit;
+}
+
+.dateMonth {
   font-size: 12px;
   font-weight: 700;
-  text-decoration: none;
-  transition:
-    background-color 160ms ease,
-    color 160ms ease;
+  text-transform: uppercase;
+  color: #6b7280;
 }
 
-.viewEvidenceButton:hover {
-  background: var(--wine);
-  color: #fff;
+.dateTime {
+  margin-top: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
 }
 
-/* Estado vacío */
+.info {
+  min-width: 0;
+}
 
-.emptyAgreementStatus {
+.titleRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.meta {
+  margin: 2px 0 0;
+  font-size: 14px;
+  color: #4b5563;
+  overflow-wrap: anywhere;
+}
+
+.metaMuted {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* ---------- Estados generales ---------- */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.badgeDone,
+.badgeConfirmed {
+  background: #e7f6ec;
+  color: #166534;
+}
+
+.badgePending {
+  background: #fff4dc;
+  color: #92400e;
+}
+
+.badgeExpired {
+  background: #f3f4f6;
+  color: #4b5563;
+}
+
+/* ---------- Acciones generales ---------- */
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  min-width: 190px;
+}
+
+.primaryButton,
+.secondaryButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 180px;
-  min-height: 42px;
-  box-sizing: border-box;
-  border: 1px dashed var(--line);
-  border-radius: 8px;
-  color: var(--muted);
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-family: inherit;
   font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.primaryButton {
+  border: 1px solid var(--wine);
+  background: var(--wine);
+  color: #ffffff;
+}
+
+.primaryButton:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.primaryButton:disabled {
+  border-color: #d1d5db;
+  background: #d1d5db;
+  cursor: not-allowed;
+}
+
+.secondaryButton {
+  border: 1px solid var(--wine);
+  background: transparent;
+  color: var(--wine);
+}
+
+.secondaryButton:hover {
+  background: var(--wine);
+  color: #ffffff;
+}
+
+.primaryButton:focus-visible,
+.secondaryButton:focus-visible {
+  outline: 2px solid var(--wine);
+  outline-offset: 2px;
+}
+
+/* ---------- Carga ---------- */
+
+.skeleton {
+  height: 108px;
+  border-radius: 16px;
+  background: linear-gradient(
+    90deg,
+    #f1f1f1 25%,
+    #fafafa 37%,
+    #f1f1f1 63%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0 50%;
+  }
+}
+
+/* =========================================================
+   REGISTRO Y CONFIRMACIÓN DE MENTORÍAS
+   ========================================================= */
+
+/* ---------- Encabezado ---------- */
+
+.appointmentWelcome {
+  margin-bottom: 0;
+}
+
+.appointmentHeading {
+  margin: 0;
+  font-size: clamp(26px, 2.5vw, 35px);
+  font-weight: 750;
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+  color: #2c2c2c;
+}
+
+.appointmentDescription {
+  margin: 11px 0 0;
+  font-size: 14px;
+  line-height: 1.65;
+  color: #60646c;
+}
+
+/* ---------- Filtros ---------- */
+
+.appointmentFilters {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 22px 0 18px;
+}
+
+.appointmentField,
+.appointmentFieldSearch {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.appointmentFieldSearch {
+  flex: 1 1 280px;
+}
+
+.appointmentField {
+  flex: 0 1 165px;
+}
+
+.appointmentFieldSearch .search,
+.appointmentInput {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 12px;
+  border: 1px solid #d9dde3;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #252c36;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 400;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+}
+
+.appointmentFieldSearch .search {
+  max-width: none;
+}
+
+.appointmentFieldSearch .search:focus,
+.appointmentInput:focus {
+  outline: none;
+  border-color: var(--wine);
+  box-shadow: 0 0 0 3px rgba(129, 17, 27, 0.08);
+}
+
+.appointmentClear {
+  min-height: 42px;
+  padding: 0 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--wine);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.appointmentClear:hover {
+  background: #f8f0f1;
+}
+
+/* ---------- Listado ---------- */
+
+.appointmentList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.appointmentCard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 190px;
+  align-items: center;
+  gap: 24px;
+  min-height: 0;
+  padding: 19px 24px;
+  border: 1px solid #e6e3e1;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(27, 31, 35, 0.025);
+}
+
+.appointmentCard:hover {
+  border-color: #d7c9cb;
+  box-shadow: 0 4px 14px rgba(27, 31, 35, 0.05);
+}
+
+/* ---------- Información de la reunión ---------- */
+
+.appointmentMain {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+.appointmentDate {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.4;
+  color: #777c85;
+}
+
+.appointmentName {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 750;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: #262626;
+}
+
+.appointmentMeta {
+  margin: 2px 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #626873;
+  overflow-wrap: anywhere;
+}
+
+.appointmentMeta strong {
+  color: #343942;
+  font-weight: 600;
+}
+
+.appointmentFootnote {
+  margin: 7px 0 0;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #92969d;
+}
+
+.appointmentStatusText {
+  font-weight: 600;
+  text-transform: capitalize;
+  color: #374151;
+}
+
+/* ---------- Estado de los acuerdos ---------- */
+
+.appointmentState {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 9px 0 0;
+  font-size: 12px;
+  line-height: 1.5;
+  font-weight: 550;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #565b63;
+}
+
+.appointmentState::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  flex: 0 0 7px;
+  border-radius: 50%;
+  background: #b0b3b8;
+}
+
+.appointmentStateWith::before {
+  background: #438b69;
+}
+
+.appointmentStateWithout::before {
+  background: #c2924c;
+}
+
+/* ---------- Hora y acciones ---------- */
+
+.appointmentSide {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.appointmentSchedule {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.appointmentScheduleLabel {
+  font-size: 11px;
+  font-weight: 500;
+  color: #898b91;
+}
+
+.appointmentScheduleTime {
+  font-size: 16px;
   font-weight: 700;
+  line-height: 1.4;
+  color: #333842;
+  white-space: nowrap;
 }
 
-@media (max-width: 680px) {
-  .form {
-    grid-template-columns: 1fr;
+/* La especificidad evita que estilos globales de
+   enlaces reemplacen el botón institucional. */
+
+.appointmentAction,
+a.appointmentAction,
+button.appointmentAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 40px;
+  margin: 0;
+  padding: 9px 12px;
+  border: 1px solid var(--wine);
+  border-radius: 8px;
+  background: var(--wine);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+a.appointmentAction:visited {
+  color: #ffffff;
+}
+
+.appointmentAction:hover:not(:disabled) {
+  background: #6f0e17;
+  border-color: #6f0e17;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.appointmentAction:disabled {
+  background: #d1d5db;
+  border-color: #d1d5db;
+  cursor: not-allowed;
+}
+
+a.secondaryButton.appointmentAction {
+  background: transparent;
+  color: var(--wine);
+}
+
+a.secondaryButton.appointmentAction:hover {
+  background: var(--wine);
+  color: #ffffff;
+}
+
+/* ---------- Paginación ---------- */
+
+.appointmentPagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 22px 0 12px;
+}
+
+.appointmentPaginationText {
+  margin: 0;
+  font-size: 12px;
+  color: #777b82;
+}
+
+.appointmentPageControls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.appointmentPageButton {
+  min-width: 36px;
+  min-height: 36px;
+  padding: 7px 11px;
+  border: 1px solid #e1e3e6;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #525760;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.appointmentPageButton:hover:not(:disabled) {
+  border-color: #c7a5a9;
+  color: var(--wine);
+}
+
+.appointmentPageActive,
+.appointmentPageActive:hover:not(:disabled) {
+  border-color: var(--wine);
+  background: var(--wine);
+  color: #ffffff;
+}
+
+.appointmentPageButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.appointmentEllipsis {
+  padding: 0 4px;
+  color: #9ca3af;
+}
+
+/* ---------- Accesibilidad ---------- */
+
+.appointmentClear:focus-visible,
+.appointmentAction:focus-visible,
+.appointmentPageButton:focus-visible {
+  outline: 2px solid var(--wine);
+  outline-offset: 3px;
+}
+
+/* ---------- Responsivo ---------- */
+
+@media (max-width: 760px) {
+  .appointmentHeading {
+    font-size: 27px;
   }
 
-  .wideField {
-    grid-column: auto;
+  .appointmentFilters {
+    gap: 12px;
   }
 
-  .agreementActions {
-    margin-top: 16px;
+  .appointmentFieldSearch {
+    flex: 1 1 100%;
   }
 
-  .submitButton,
-  .deleteButton,
-  .manageLink,
-  .emptyAgreementStatus,
-  .uploadButton {
-    width: 100%;
+  .appointmentField {
+    flex: 1 1 130px;
   }
 
-  .evidenceItem {
-    align-items: stretch;
-    flex-direction: column;
+  .appointmentCard {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 15px;
+    padding: 18px;
   }
 
-  .viewEvidenceButton {
-    width: 100%;
-    text-align: center;
+  .appointmentName {
+    font-size: 17px;
+  }
+
+  .appointmentSide {
+    padding-top: 13px;
+    border-top: 1px solid #f0f0f0;
+  }
+
+  .appointmentSchedule {
+    align-items: flex-start;
+  }
+
+  .appointmentAction {
+    white-space: normal;
+  }
+
+  .appointmentPagination {
+    align-items: flex-start;
   }
 }
 
-.evidenceFileInfo {
-display: grid;
-gap: 4px;
-min-width: 0;
-}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
 
-.evidenceDate {
-color: var(--muted);
-font-size: 12px;
-font-weight: 500;
+  .card,
+  .primaryButton,
+  .secondaryButton,
+  .appointmentInput,
+  .appointmentFieldSearch .search {
+    transition: none;
+  }
 }

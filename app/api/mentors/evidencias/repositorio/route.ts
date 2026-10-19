@@ -1,6 +1,10 @@
+
 import { NextRequest, NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabase-admin";
-import { getBookingBusinessId, graphRequest } from "@/lib/microsoft-graph";
+import {
+  getBookingBusinessId,
+  graphRequest,
+} from "@/lib/microsoft-graph";
 
 export const runtime = "nodejs";
 
@@ -43,8 +47,56 @@ type Appointment = {
   };
 };
 
-function errorResponse(message: string, status: number) {
-  return NextResponse.json({ error: message }, { status });
+type MenteeProfile = {
+  email: string | null;
+  foto_url: string | null;
+};
+
+type RepositoryItem = {
+  mentorship: {
+    id: string;
+    serviceName?: string;
+    menteeName?: string;
+    menteeEmail?: string;
+    menteeFotoUrl?: string | null;
+    startDateTime?: {
+      dateTime: string;
+    };
+  };
+  evidencias: Evidence[];
+};
+
+function errorResponse(
+  message: string,
+  status: number,
+) {
+  return NextResponse.json(
+    { error: message },
+    { status },
+  );
+}
+
+function normalizeEmail(value?: string | null) {
+  return (value ?? "").trim().toLowerCase();
+}
+
+function validPhotoUrl(value?: string | null) {
+  if (!value?.trim()) return null;
+
+  try {
+    const url = new URL(value.trim());
+
+    if (
+      url.protocol !== "https:" &&
+      url.protocol !== "http:"
+    ) {
+      return null;
+    }
+
+    return url.href;
+  } catch {
+    return null;
+  }
 }
 
 export async function GET(request: NextRequest) {
@@ -53,7 +105,8 @@ export async function GET(request: NextRequest) {
        1. AUTENTICACIÓN Y AUTORIZACIÓN
     ============================================ */
 
-    const authorization = request.headers.get("authorization");
+    const authorization =
+      request.headers.get("authorization");
 
     if (!authorization?.startsWith("Bearer ")) {
       return errorResponse("No autenticado.", 401);
@@ -70,7 +123,10 @@ export async function GET(request: NextRequest) {
       return errorResponse("Sesión no válida.", 401);
     }
 
-    const { data: mentor, error: mentorError } = await supabaseAdmin
+    const {
+      data: mentor,
+      error: mentorError,
+    } = await supabaseAdmin
       .from("profiles")
       .select("id, rol, activo, microsoft_staff_id")
       .eq("id", user.id)
@@ -87,16 +143,18 @@ export async function GET(request: NextRequest) {
     }
 
     /* ============================================
-       2. PARÁMETROS DE PAGINACIÓN
+       2. PAGINACIÓN
     ============================================ */
 
     const params = request.nextUrl.searchParams;
 
-    const rawOffset = params.get("offset") ?? "0";
-    const rawLimit = params.get("limit") ?? "20";
+    const offset = Number(
+      params.get("offset") ?? "0",
+    );
 
-    const offset = Number(rawOffset);
-    const limit = Number(rawLimit);
+    const limit = Number(
+      params.get("limit") ?? "20",
+    );
 
     if (
       !Number.isSafeInteger(offset) ||
@@ -105,16 +163,20 @@ export async function GET(request: NextRequest) {
       limit < 1 ||
       limit > PAGE_SIZE
     ) {
-      return errorResponse("Parámetros de paginación inválidos.", 400);
+      return errorResponse(
+        "Parámetros de paginación inválidos.",
+        400,
+      );
     }
 
     /* ============================================
-       3. BUSCAR SOLO CITAS CON EVIDENCIAS
+       3. CITAS CON EVIDENCIAS
     ============================================ */
 
-    // Pedimos un registro adicional para saber
-    // si existen más resultados.
-    const { data: rows, error: pageError } = await supabaseAdmin.rpc(
+    const {
+      data: rows,
+      error: pageError,
+    } = await supabaseAdmin.rpc(
       "obtener_mentorias_con_evidencias",
       {
         p_mentor_id: user.id,
@@ -124,9 +186,15 @@ export async function GET(request: NextRequest) {
     );
 
     if (pageError) {
-      console.error("[Repositorio] Error en consulta paginada:", pageError);
+      console.error(
+        "[Repositorio] Error en consulta paginada:",
+        pageError,
+      );
 
-      return errorResponse("No se pudieron consultar las mentorías.", 500);
+      return errorResponse(
+        "No se pudieron consultar las mentorías.",
+        500,
+      );
     }
 
     const candidates = (rows ?? []) as PageRow[];
@@ -142,13 +210,18 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    const bookingIds = page.map((row) => row.booking_id);
+    const bookingIds = page.map(
+      (row) => row.booking_id,
+    );
 
     /* ============================================
-       4. OBTENER ACUERDOS DE ESAS CITAS
+       4. ACUERDOS DEL MENTOR
     ============================================ */
 
-    const { data: agreementsData, error: agreementsError } = await supabaseAdmin
+    const {
+      data: agreementsData,
+      error: agreementsError,
+    } = await supabaseAdmin
       .from("acuerdos")
       .select("id, microsoft_booking_id")
       .eq("creado_por", user.id)
@@ -158,35 +231,47 @@ export async function GET(request: NextRequest) {
       throw new Error(agreementsError.message);
     }
 
-    const agreements = (agreementsData ?? []) as Agreement[];
-    const agreementIds = agreements.map((item) => item.id);
+    const agreements =
+      (agreementsData ?? []) as Agreement[];
+
+    const agreementIds = agreements.map(
+      (agreement) => agreement.id,
+    );
 
     if (!agreementIds.length) {
       return NextResponse.json({
         items: [],
         hasMore,
-        nextOffset: hasMore ? offset + page.length : null,
+        nextOffset: hasMore
+          ? offset + page.length
+          : null,
       });
     }
 
     /* ============================================
-       5. OBTENER EVIDENCIAS
+       5. EVIDENCIAS
     ============================================ */
 
-    const { data: evidencesData, error: evidencesError } = await supabaseAdmin
+    const {
+      data: evidencesData,
+      error: evidencesError,
+    } = await supabaseAdmin
       .from("evidencias")
       .select(
         "id, acuerdo_id, nombre_archivo, ruta_archivo, tipo_archivo, tamano, created_at",
       )
       .in("acuerdo_id", agreementIds)
-      .order("created_at", { ascending: false })
+      .order("created_at", {
+        ascending: false,
+      })
       .limit(1000);
 
     if (evidencesError) {
       throw new Error(evidencesError.message);
     }
 
-    const evidenceByBooking = new Map<string, Evidence[]>();
+    const evidenceByBooking =
+      new Map<string, Evidence[]>();
 
     const bookingByAgreement = new Map(
       agreements.map((agreement) => [
@@ -195,16 +280,23 @@ export async function GET(request: NextRequest) {
       ]),
     );
 
-    for (const evidence of (evidencesData ?? []) as Evidence[]) {
-      const bookingId = bookingByAgreement.get(evidence.acuerdo_id);
+    for (
+      const evidence of
+      (evidencesData ?? []) as Evidence[]
+    ) {
+      const bookingId = bookingByAgreement.get(
+        evidence.acuerdo_id,
+      );
 
       if (!bookingId) continue;
 
-      const { data: urlData } = supabaseAdmin.storage
-        .from(BUCKET_NAME)
-        .getPublicUrl(evidence.ruta_archivo);
+      const { data: urlData } =
+        supabaseAdmin.storage
+          .from(BUCKET_NAME)
+          .getPublicUrl(evidence.ruta_archivo);
 
-      const current = evidenceByBooking.get(bookingId) ?? [];
+      const current =
+        evidenceByBooking.get(bookingId) ?? [];
 
       current.push({
         ...evidence,
@@ -215,68 +307,71 @@ export async function GET(request: NextRequest) {
     }
 
     /* ============================================
-       6. VALIDAR CON MICROSOFT BOOKINGS
+       6. VALIDACIÓN CON MICROSOFT BOOKINGS
     ============================================ */
 
     const businessId = getBookingBusinessId();
 
-    type Item = {
-      mentorship: {
-        id: string;
-        serviceName?: string;
-        menteeName?: string;
-        menteeEmail?: string;
-        startDateTime?: {
-          dateTime: string;
-        };
-      };
-      evidencias: Evidence[];
-    };
+    const items: RepositoryItem[] = [];
 
-    const items: Item[] = [];
-
-    for (let i = 0; i < bookingIds.length; i += GRAPH_CONCURRENCY) {
-      const group = bookingIds.slice(i, i + GRAPH_CONCURRENCY);
+    for (
+      let i = 0;
+      i < bookingIds.length;
+      i += GRAPH_CONCURRENCY
+    ) {
+      const group = bookingIds.slice(
+        i,
+        i + GRAPH_CONCURRENCY,
+      );
 
       const groupResults = await Promise.all(
         group.map(async (bookingId) => {
           try {
-            const appointment = await graphRequest<Appointment>(
-              `/solutions/bookingBusinesses/${encodeURIComponent(
-                businessId,
-              )}/appointments/${encodeURIComponent(bookingId)}`,
-            );
+            const appointment =
+              await graphRequest<Appointment>(
+                `/solutions/bookingBusinesses/${encodeURIComponent(
+                  businessId,
+                )}/appointments/${encodeURIComponent(
+                  bookingId,
+                )}`,
+              );
 
-            // Bookings sigue siendo la fuente oficial
-            // de la asignación de la cita.
             if (
-              !appointment.staffMemberIds?.includes(mentor.microsoft_staff_id)
+              !appointment.staffMemberIds?.includes(
+                mentor.microsoft_staff_id,
+              )
             ) {
               return null;
             }
 
-            const evidencias = evidenceByBooking.get(bookingId) ?? [];
+            const evidencias =
+              evidenceByBooking.get(bookingId) ?? [];
 
             if (!evidencias.length) {
               return null;
             }
 
-            const mentee = appointment.customers?.[0];
+            const mentee =
+              appointment.customers?.[0];
 
-            return {
+            const result: RepositoryItem = {
               mentorship: {
                 id: bookingId,
                 serviceName: appointment.serviceName,
                 menteeName: mentee?.name,
                 menteeEmail: mentee?.emailAddress,
+                menteeFotoUrl: null,
                 startDateTime: appointment.startDateTime
                   ? {
-                      dateTime: appointment.startDateTime.dateTime,
+                      dateTime:
+                        appointment.startDateTime.dateTime,
                     }
                   : undefined,
               },
               evidencias,
             };
+
+            return result;
           } catch (error) {
             console.error(
               "[Repositorio] Error consultando cita:",
@@ -297,13 +392,78 @@ export async function GET(request: NextRequest) {
     }
 
     /* ============================================
-       7. ORDENAR RESULTADOS
+       7. FOTOGRAFÍAS DESDE SUPABASE
+
+       Una consulta adicional para todos los
+       mentees de esta página, no una por tarjeta.
+    ============================================ */
+
+    const menteeEmails = [
+      ...new Set(
+        items
+          .map((item) =>
+            normalizeEmail(item.mentorship.menteeEmail),
+          )
+          .filter(Boolean),
+      ),
+    ];
+
+    if (menteeEmails.length > 0) {
+      const {
+        data: profiles,
+        error: profilesError,
+      } = await supabaseAdmin
+        .from("profiles")
+        .select("email, foto_url")
+        .eq("rol", "mentee")
+        .in("email", menteeEmails);
+
+      if (profilesError) {
+        // Las evidencias deben seguir visibles aunque
+        // no se puedan recuperar las fotografías.
+        console.error(
+          "[Repositorio] Error consultando fotos:",
+          profilesError,
+        );
+      } else {
+        const photoByEmail = new Map<
+          string,
+          string | null
+        >();
+
+        for (
+          const profile of
+          (profiles ?? []) as MenteeProfile[]
+        ) {
+          photoByEmail.set(
+            normalizeEmail(profile.email),
+            validPhotoUrl(profile.foto_url),
+          );
+        }
+
+        for (const item of items) {
+          const email = normalizeEmail(
+            item.mentorship.menteeEmail,
+          );
+
+          item.mentorship.menteeFotoUrl =
+            photoByEmail.get(email) ?? null;
+        }
+      }
+    }
+
+    /* ============================================
+       8. ORDENAR RESULTADOS
     ============================================ */
 
     items.sort((a, b) => {
-      const dateA = new Date(a.evidencias[0].created_at).getTime();
+      const dateA = new Date(
+        a.evidencias[0].created_at,
+      ).getTime();
 
-      const dateB = new Date(b.evidencias[0].created_at).getTime();
+      const dateB = new Date(
+        b.evidencias[0].created_at,
+      ).getTime();
 
       return dateB - dateA;
     });
@@ -311,11 +471,19 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       items,
       hasMore,
-      nextOffset: hasMore ? offset + page.length : null,
+      nextOffset: hasMore
+        ? offset + page.length
+        : null,
     });
   } catch (error) {
-    console.error("[Repositorio] Error general:", error);
+    console.error(
+      "[Repositorio] Error general:",
+      error,
+    );
 
-    return errorResponse("No se pudo cargar el repositorio.", 500);
+    return errorResponse(
+      "No se pudo cargar el repositorio.",
+      500,
+    );
   }
 }

@@ -1,0 +1,1971 @@
+
+/* =====================================================
+   MIS ACUERDOS - MENTEE PROUNI
+   Carrusel con altura común automática
+   ===================================================== */
+
+/* CONTENEDOR */
+
+.menteePage {
+  min-width: 0;
+  padding-top: 12px;
+  padding-bottom: 18px;
+}
+
+/* ENCABEZADO */
+
+.header {
+  margin: 0 0 10px;
+}
+
+.eyebrow {
+  margin: 0 0 7px;
+  color: #738b90;
+  font-size: 12px;
+  font-weight: 750;
+  letter-spacing: 0.07em;
+}
+
+.heading {
+  margin: 0;
+  color: #292929;
+  font-size: clamp(34px, 3vw, 44px);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+}
+
+.description {
+  margin: 9px 0 0;
+  color: #46515f;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 13px;
+  color: #81111b;
+  font-size: 15px;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.backLink:hover {
+  text-decoration: underline;
+}
+
+/* =====================================================
+   CARRUSEL
+   ===================================================== */
+
+.carousel {
+  display: grid;
+  grid-template-columns:
+    42px minmax(0, 1fr) 42px;
+  grid-template-rows: auto auto;
+  column-gap: 6px;
+  width: 100%;
+  min-width: 0;
+}
+
+.viewport {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 15px;
+}
+
+/*
+  Todas las tarjetas ocupan la misma celda.
+  La fila adopta la altura que necesita la tarjeta
+  con más contenido, sin JavaScript ni valores fijos.
+*/
+
+.slidesGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: minmax(min-content, auto);
+  width: 100%;
+  min-width: 0;
+}
+
+.agreementSlide {
+  grid-column: 1;
+  grid-row: 1;
+
+  align-self: stretch;
+  min-width: 0;
+
+  visibility: hidden;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.agreementSlideActive {
+  visibility: visible;
+  pointer-events: auto;
+  opacity: 1;
+}
+
+/* FLECHAS LATERALES */
+
+.navButton {
+  position: relative;
+  z-index: 2;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+
+  width: 42px;
+  height: 42px;
+  padding: 0;
+
+  border: 1px solid #e1d8da;
+  border-radius: 50%;
+
+  background: #ffffff;
+  color: #81111b;
+
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.055);
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.navButton svg {
+  width: 24px;
+  height: 24px;
+}
+
+.navButton:hover:not(:disabled) {
+  background: #81111b;
+  color: #ffffff;
+  box-shadow:
+    0 5px 15px rgba(129, 17, 27, 0.12);
+}
+
+.navButton:disabled {
+  opacity: 0.32;
+  cursor: not-allowed;
+}
+
+.navLeft {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.navRight {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+/* ANIMACIÓN */
+
+.slideFromRight {
+  animation: enterRight 320ms
+    cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.slideFromLeft {
+  animation: enterLeft 320ms
+    cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes enterRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes enterLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* =====================================================
+   TARJETA PRINCIPAL
+   ===================================================== */
+
+.agreementCard {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 520px;
+
+  box-sizing: border-box;
+
+  padding: 20px 26px 22px;
+
+  border: 1px solid #e8e5e3;
+  border-radius: 15px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 3px 12px rgba(0, 0, 0, 0.035);
+}
+
+/* IDENTIFICADOR, TÍTULO Y ESTADO */
+
+.agreementInfo {
+  min-width: 0;
+}
+
+.agreementNumber {
+  display: block;
+  margin: 3px 0 13px;
+
+  color: #707985;
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+}
+
+.agreementHeadingRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 18px;
+  margin-bottom: 10px;
+}
+
+.agreementTitle {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+
+  color: #292d33;
+  font-size: 21px;
+  font-weight: 750;
+  line-height: 1.4;
+  letter-spacing: -0.02em;
+
+  overflow-wrap: anywhere;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  flex-shrink: 0;
+
+  padding: 7px 13px;
+  border-radius: 999px;
+
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.statusPending {
+  background: #fff4e1;
+  color: #94621d;
+}
+
+.statusProgress {
+  background: #e9f1ff;
+  color: #315eaa;
+}
+
+.statusDone {
+  background: #e8f5ed;
+  color: #24764a;
+}
+
+.statusCancelled {
+  background: #f1f2f4;
+  color: #656b74;
+}
+
+/* DESCRIPCIÓN */
+
+.agreementDescription {
+  margin: 0 0 10px;
+
+  color: #485362;
+  font-size: 16px;
+  line-height: 1.6;
+
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* INDICACIÓN DEL MENTOR */
+
+.observation {
+  margin: 9px 0;
+  padding: 11px 15px;
+
+  border-left: 3px solid #d9b9bd;
+  border-radius: 0 8px 8px 0;
+
+  background: #faf8f8;
+}
+
+.fieldLabel,
+.inputLabel {
+  display: block;
+  color: #47515e;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.observation p {
+  margin: 6px 0 0;
+
+  color: #485362;
+  font-size: 15px;
+  line-height: 1.6;
+
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* FECHA LÍMITE */
+
+.deadline {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  margin: 10px 0 13px;
+
+  color: #596574;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.deadline svg {
+  flex-shrink: 0;
+}
+
+.deadline strong {
+  color: #354150;
+  font-weight: 700;
+}
+
+/* =====================================================
+   COLUMNAS INFERIORES
+   ===================================================== */
+
+.contentGrid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  align-items: stretch;
+  flex: 1;
+
+  min-width: 0;
+  gap: 16px;
+
+  padding-top: 14px;
+  border-top: 1px solid #ece9e7;
+}
+
+.resourcesPanel,
+.evidencePanel {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+  padding: 15px 15px 18px;
+
+  border: 1px solid #eae8e6;
+  border-radius: 12px;
+
+  background: #ffffff;
+}
+
+.sectionHeading {
+  margin-bottom: 11px;
+}
+
+.sectionHeadingTitle {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  color: #81111b;
+}
+
+.sectionHeadingTitle h3 {
+  margin: 0;
+
+  color: #30343b;
+  font-size: 17px;
+  font-weight: 750;
+  line-height: 1.4;
+}
+
+.sectionHeading p {
+  margin: 6px 0 0;
+
+  color: #505966;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* =====================================================
+   RECURSOS DEL MENTOR
+   ===================================================== */
+
+.emptyResources {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 58px;
+  padding: 12px;
+
+  border: 1px dashed #e4e0de;
+  border-radius: 9px;
+
+  background: #faf9f8;
+  color: #66717e;
+
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.resourceList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.resourceCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  min-width: 0;
+  padding: 10px;
+
+  border: 1px solid #e6e8eb;
+  border-radius: 10px;
+
+  background: #ffffff;
+  color: #68717e;
+  text-decoration: none;
+
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.resourceCard:hover {
+  border-color: #c9adb1;
+  background: #fcf8f9;
+}
+
+.resourceThumbnail {
+  width: 80px;
+  height: 49px;
+  flex: 0 0 80px;
+
+  border-radius: 6px;
+
+  object-fit: cover;
+  background: #ededed;
+}
+
+.resourceIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+
+  border-radius: 8px;
+  background: #f8f0f1;
+  color: #81111b;
+}
+
+.resourceText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  min-width: 0;
+  gap: 5px;
+}
+
+.resourceText strong {
+  color: #30343b;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.resourceText span {
+  overflow: hidden;
+
+  color: #65707d;
+  font-size: 13px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =====================================================
+   EVIDENCIAS ENVIADAS
+   ===================================================== */
+
+.evidenceList {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+
+  margin-bottom: 12px;
+}
+
+.evidenceListTitle {
+  margin: 0;
+
+  color: #47515e;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.evidenceItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  min-width: 0;
+  min-height: 60px;
+  padding: 11px;
+
+  border: 1px solid #e6e8eb;
+  border-radius: 9px;
+
+  background: #fafbfc;
+  color: #626d7b;
+  text-decoration: none;
+}
+
+.evidenceItem:hover {
+  border-color: #c9adb1;
+  background: #fcf8f9;
+}
+
+.evidenceItem > svg {
+  flex-shrink: 0;
+}
+
+.evidenceText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  min-width: 0;
+  gap: 5px;
+}
+
+.evidenceText strong {
+  display: block;
+  overflow: hidden;
+
+  color: #35404d;
+  font-size: 14px;
+  font-weight: 600;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.evidenceText small {
+  color: #687480;
+  font-size: 12px;
+}
+
+/* =====================================================
+   ADJUNTAR NUEVA EVIDENCIA
+   ===================================================== */
+
+
+/* Controles directamente debajo de las evidencias */
+
+.uploadArea {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  flex-shrink: 0;
+
+  gap: 7px;
+  margin-top: 12px;
+  padding: 0;
+}
+
+
+/* BOTONES EN LA MISMA FILA */
+
+.uploadActions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+
+  gap: 9px;
+  min-width: 0;
+}
+
+/* INPUT REAL OCULTO VISUALMENTE */
+
+.hiddenFileInput {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+
+  padding: 0;
+  margin: -1px;
+
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* SELECCIONAR ARCHIVO */
+
+.selectFileButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  min-height: 42px;
+  padding: 9px 12px;
+
+  border: 1px solid #d8dbe0;
+  border-radius: 8px;
+
+  background: #ffffff;
+  color: #414852;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.selectFileButton:hover {
+  background: #f8f9fa;
+  border-color: #bfc4cc;
+}
+
+.hiddenFileInput:focus-visible + .selectFileButton {
+  outline: 2px solid #81111b;
+  outline-offset: 3px;
+}
+
+.hiddenFileInput:disabled + .selectFileButton {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+/* SUBIR EVIDENCIA */
+
+.uploadButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  min-height: 42px;
+  padding: 9px 13px;
+  margin: 0;
+
+  border: 1px solid #81111b;
+  border-radius: 8px;
+
+  background: #81111b;
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.uploadButton:hover:not(:disabled) {
+  background: #690d16;
+}
+
+.uploadButton:disabled {
+  border-color: #d9dce1;
+  background: #eff0f2;
+  color: #818995;
+  cursor: not-allowed;
+}
+
+/* NOMBRE DEL ARCHIVO */
+
+.fileStatus {
+  display: block;
+  width: 100%;
+  min-height: 20px;
+  margin: 0;
+
+  overflow: hidden;
+
+  color: #687480;
+  font-size: 13px;
+  line-height: 1.5;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* =====================================================
+   PAGINACIÓN
+   ===================================================== */
+
+.pagination {
+  grid-column: 2;
+  grid-row: 2;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.pagination > span {
+  color: #586575;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  padding: 0;
+
+  border: 0;
+  border-radius: 999px;
+
+  background: #d5d5d5;
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    width 0.2s ease;
+}
+
+.dotActive {
+  width: 27px;
+  background: #81111b;
+}
+
+/* =====================================================
+   ACCESIBILIDAD
+   ===================================================== */
+
+.navButton:focus-visible,
+.dot:focus-visible,
+.backLink:focus-visible,
+.resourceCard:focus-visible,
+.evidenceItem:focus-visible,
+.uploadButton:focus-visible,
+.hiddenFileInput:focus-visible + .selectFileButton {
+  outline: 2px solid #81111b;
+  outline-offset: 3px;
+}
+
+/* =====================================================
+   PANTALLAS INTERMEDIAS
+   ===================================================== */
+
+@media (max-width: 1100px) {
+  .carousel {
+    grid-template-columns:
+      38px minmax(0, 1fr) 38px;
+    column-gap: 5px;
+  }
+
+  .navButton {
+    width: 38px;
+    height: 38px;
+  }
+
+  .agreementCard {
+    padding: 19px;
+  }
+
+  .resourcesPanel,
+  .evidencePanel {
+    padding: 13px;
+  }
+
+  .uploadActions {
+    gap: 8px;
+  }
+}
+
+/* =====================================================
+   TABLET Y MÓVIL
+   ===================================================== */
+
+@media (max-width: 760px) {
+  .menteePage {
+    padding-top: 10px;
+  }
+
+  .heading {
+    font-size: 34px;
+  }
+
+  .description {
+    font-size: 15px;
+  }
+
+  .carousel {
+    grid-template-columns:
+      28px minmax(0, 1fr) 28px;
+    column-gap: 4px;
+  }
+
+  .navButton {
+    width: 28px;
+    height: 38px;
+    border-radius: 9px;
+  }
+
+  .navButton svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .agreementCard {
+    min-height: 0;
+    padding: 17px 14px;
+  }
+
+  .agreementHeadingRow {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .agreementTitle {
+    flex-basis: 100%;
+    font-size: 19px;
+  }
+
+  .agreementDescription {
+    font-size: 15px;
+  }
+
+  .contentGrid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 13px;
+  }
+
+  .resourcesPanel,
+  .evidencePanel {
+    padding: 13px;
+  }
+
+  .resourceThumbnail {
+    width: 68px;
+    height: 44px;
+    flex-basis: 68px;
+  }
+
+  .uploadArea {
+    margin-top: 10px;
+  }
+}
+
+@media (max-width: 420px) {
+  .uploadActions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .selectFileButton,
+  .uploadButton {
+    width: 100%;
+  }
+}
+
+/* =====================================================
+   MOVIMIENTO REDUCIDO
+   ===================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  .slideFromRight,
+  .slideFromLeft {
+    animation: none;
+  }
+
+  .navButton,
+  .dot,
+  .resourceCard {
+    transition: none;
+  }
+}
+
+/* =====================================================
+   ARCHIVO SELECCIONADO - MENTEE
+   Permite quitar una selección antes de subirla
+   ===================================================== */
+
+.selectedFileRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  min-width: 0;
+  min-height: 44px;
+  padding: 6px 8px 6px 12px;
+
+  border: 1px solid #dfe3e8;
+  border-radius: 8px;
+  background: #f8f9fa;
+}
+
+.selectedFileInfo {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+
+  color: #4b5563;
+}
+
+.selectedFileInfo svg {
+  flex-shrink: 0;
+}
+
+.selectedFileInfo span {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+
+  color: #35404d;
+  font-size: 13px;
+  font-weight: 500;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.clearFileButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 32px;
+  height: 32px;
+  padding: 0;
+
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #697382;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.clearFileButton:hover:not(:disabled) {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.clearFileButton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.clearFileButton:focus-visible {
+  outline: 2px solid #81111b;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .clearFileButton {
+    transition: none;
+  }
+}
+
+/* =====================================================
+   NOTIFICACIÓN DE CONFIRMACIÓN
+   Evidencias del mentee
+   ===================================================== */
+
+.successToast {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  min-height: 56px;
+  padding: 13px 14px;
+
+  border: 1px solid #cce6d4;
+  border-radius: 11px;
+
+  background: #ffffff;
+  color: #275c3d;
+
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.12);
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+
+  animation: toastAppear 220ms ease-out both;
+}
+
+.successToastIcon {
+  flex-shrink: 0;
+  color: #278451;
+}
+
+.dismissToast {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 30px;
+  height: 30px;
+  margin-left: 8px;
+  padding: 0;
+
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: #687480;
+
+  cursor: pointer;
+}
+
+.dismissToast:hover {
+  background: #f1f3f4;
+  color: #30343b;
+}
+
+.dismissToast:focus-visible {
+  outline: 2px solid #81111b;
+  outline-offset: 2px;
+}
+
+@keyframes toastAppear {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .successToast {
+    right: 16px;
+    bottom: 16px;
+    left: 16px;
+    width: auto;
+  }
+
+  .successToast span {
+    flex: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .successToast {
+    animation: none;
+  }
+}
+
+/* =====================================================
+   VER TODAS LAS EVIDENCIAS
+   ===================================================== */
+
+.viewAllEvidence {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  gap: 8px;
+
+  min-height: 34px;
+  margin-top: 2px;
+  padding: 6px 2px;
+
+  border: 0;
+  background: transparent;
+  color: #81111b;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: left;
+
+  cursor: pointer;
+}
+
+.viewAllEvidence:hover:not(:disabled) {
+  color: #650b14;
+  text-decoration: underline;
+}
+
+.viewAllEvidence:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.viewAllEvidence:focus-visible {
+  outline: 2px solid #81111b;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* =====================================================
+   MODAL DE HISTORIAL
+   ===================================================== */
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 24px;
+
+  background: rgba(19, 24, 33, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+.evidenceModal {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  max-width: 680px;
+  max-height: min(760px, calc(100dvh - 48px));
+
+  overflow: hidden;
+
+  border: 1px solid #e5e5e5;
+  border-radius: 16px;
+
+  background: #ffffff;
+
+  box-shadow:
+    0 22px 65px rgba(0, 0, 0, 0.2);
+
+  animation: evidenceModalAppear 200ms ease-out both;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+
+  flex-shrink: 0;
+
+  padding: 24px 26px 20px;
+  border-bottom: 1px solid #ece9e7;
+}
+
+.modalHeading {
+  flex: 1;
+  min-width: 0;
+}
+
+.modalEyebrow {
+  display: block;
+  margin-bottom: 7px;
+
+  color: #81111b;
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.07em;
+}
+
+.modalHeading h2 {
+  margin: 0;
+
+  color: #292d33;
+  font-size: 23px;
+  font-weight: 750;
+  line-height: 1.3;
+}
+
+.modalHeading p {
+  margin: 8px 0 0;
+
+  color: #65707d;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.modalClose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 36px;
+  height: 36px;
+  padding: 0;
+
+  border: 1px solid #e4e6e9;
+  border-radius: 9px;
+
+  background: #ffffff;
+  color: #596574;
+  cursor: pointer;
+}
+
+.modalClose:hover {
+  background: #f7f7f8;
+  color: #81111b;
+}
+
+/* El historial puede desplazarse, no la tarjeta principal. */
+
+.modalBody {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  padding: 20px 26px 24px;
+}
+
+.modalCount {
+  margin: 0 0 13px;
+
+  color: #65707d;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.modalEvidenceList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modalEvidenceItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  min-width: 0;
+  padding: 13px 14px;
+
+  border: 1px solid #e6e8eb;
+  border-radius: 10px;
+
+  background: #ffffff;
+  color: #647080;
+  text-decoration: none;
+
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease;
+}
+
+.modalEvidenceItem:hover {
+  border-color: #d9b9bd;
+  background: #fcf9f9;
+}
+
+.modalEvidenceIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 40px;
+  height: 40px;
+
+  border-radius: 9px;
+  background: #f8f0f1;
+  color: #81111b;
+}
+
+.modalEvidenceInfo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.modalEvidenceInfo strong {
+  color: #35404d;
+  font-size: 14px;
+  font-weight: 650;
+
+  overflow-wrap: anywhere;
+}
+
+.modalEvidenceInfo span {
+  color: #687480;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.modalEvidenceItem > svg {
+  flex-shrink: 0;
+}
+
+.latestEvidenceBadge {
+  display: inline-flex;
+  flex-shrink: 0;
+
+  padding: 5px 8px;
+
+  border-radius: 999px;
+  background: #eaf5ee;
+  color: #287249;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.modalFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  flex-shrink: 0;
+
+  padding: 14px 26px;
+  border-top: 1px solid #ece9e7;
+  background: #ffffff;
+}
+
+.modalDone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 40px;
+  padding: 9px 20px;
+
+  border: 1px solid #81111b;
+  border-radius: 8px;
+
+  background: #81111b;
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.modalDone:hover {
+  background: #690d16;
+}
+
+.modalClose:focus-visible,
+.modalDone:focus-visible,
+.modalEvidenceItem:focus-visible {
+  outline: 2px solid #81111b;
+  outline-offset: 3px;
+}
+
+@keyframes evidenceModalAppear {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* =====================================================
+   MODAL RESPONSIVO
+   ===================================================== */
+
+@media (max-width: 600px) {
+  .modalOverlay {
+    padding: 12px;
+  }
+
+  .evidenceModal {
+    max-height: calc(100dvh - 24px);
+    border-radius: 13px;
+  }
+
+  .modalHeader {
+    padding: 20px 16px 16px;
+  }
+
+  .modalHeading h2 {
+    font-size: 20px;
+  }
+
+  .modalBody {
+    padding: 16px;
+  }
+
+  .modalEvidenceItem {
+    padding: 11px;
+    gap: 9px;
+  }
+
+  .modalEvidenceIcon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .latestEvidenceBadge {
+    display: none;
+  }
+
+  .modalFooter {
+    padding: 12px 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .evidenceModal {
+    animation: none;
+  }
+
+  .modalEvidenceItem {
+    transition: none;
+  }
+}
+
+/* Estado vacío: no existen evidencias enviadas */
+
+.emptyEvidence {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 58px;
+  padding: 12px;
+
+  border: 1px dashed #e4e0de;
+  border-radius: 9px;
+
+  background: #faf9f8;
+  color: #66717e;
+
+  font-size: 14px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+/* =========================================
+   ELIMINACIÓN DE EVIDENCIAS ENVIADAS
+   ========================================= */
+
+/* Archivo y papelera en la tarjeta */
+
+.evidenceItemWithDelete {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  min-width: 0;
+}
+
+.evidenceItemWithDelete .evidenceItem {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Papelera independiente del enlace */
+
+.deleteEvidenceButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 42px;
+  min-height: 42px;
+  padding: 0;
+
+  border: 1px solid #efdadd;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #a52c38;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.deleteEvidenceButton:hover:not(:disabled) {
+  border-color: #ecc4ca;
+  background: #fff1f2;
+  color: #8b111c;
+}
+
+.deleteEvidenceButton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.deleteEvidenceButton:focus-visible {
+  outline: 2px solid #81111b;
+  outline-offset: 3px;
+}
+
+/* Filas del historial con papelera */
+
+.modalEvidenceRow {
+  display: flex;
+  align-items: stretch;
+  gap: 9px;
+  min-width: 0;
+}
+
+.modalEvidenceRow .modalEvidenceItem {
+  flex: 1;
+  min-width: 0;
+}
+
+.modalEvidenceRow .deleteEvidenceButton {
+  align-self: center;
+}
+
+/* =========================================
+   MODAL DE CONFIRMACIÓN
+   ========================================= */
+
+.deleteOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 3000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+  background: rgba(19, 24, 33, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+.deleteDialog {
+  width: 100%;
+  max-width: 460px;
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+
+  padding: 24px;
+
+  border: 1px solid #e9e3e4;
+  border-radius: 15px;
+  background: #ffffff;
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.deleteDialogHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.deleteDialogIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: 43px;
+  height: 43px;
+
+  border-radius: 11px;
+  background: #fff0f1;
+  color: #a5212f;
+}
+
+.deleteDialogHeader h2 {
+  margin: 0 0 7px;
+
+  color: #292d33;
+  font-size: 20px;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+.deleteDialogHeader p {
+  margin: 0;
+
+  color: #596574;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Nombre del archivo que será eliminado */
+
+.deleteFilePreview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+
+  margin-top: 20px;
+  padding: 13px;
+
+  border: 1px solid #e5e7eb;
+  border-radius: 9px;
+  background: #fafbfc;
+  color: #596574;
+}
+
+.deleteFilePreview svg {
+  flex-shrink: 0;
+}
+
+.deleteFilePreview span {
+  min-width: 0;
+  overflow: hidden;
+
+  color: #35404d;
+  font-size: 14px;
+  font-weight: 600;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.deleteError {
+  margin: 14px 0 0;
+  color: #a5212f;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Acciones del diálogo */
+
+.deleteDialogActions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  margin-top: 24px;
+}
+
+.cancelDeleteButton,
+.confirmDeleteButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  min-height: 42px;
+  padding: 10px 15px;
+
+  border-radius: 8px;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+.cancelDeleteButton {
+  border: 1px solid #d8dbe0;
+  background: #ffffff;
+  color: #47515e;
+}
+
+.cancelDeleteButton:hover:not(:disabled) {
+  background: #f6f7f8;
+}
+
+.confirmDeleteButton {
+  border: 1px solid #a5212f;
+  background: #a5212f;
+  color: #ffffff;
+}
+
+.confirmDeleteButton:hover:not(:disabled) {
+  border-color: #81111b;
+  background: #81111b;
+}
+
+.cancelDeleteButton:disabled,
+.confirmDeleteButton:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.cancelDeleteButton:focus-visible,
+.confirmDeleteButton:focus-visible {
+  outline: 2px solid #81111b;
+  outline-offset: 3px;
+}
+
+/* =========================================
+   RESPONSIVO
+   ========================================= */
+
+@media (max-width: 600px) {
+  .deleteOverlay {
+    padding: 12px;
+  }
+
+  .deleteDialog {
+    padding: 19px 16px;
+    max-height: calc(100dvh - 24px);
+  }
+
+  .deleteDialogHeader h2 {
+    font-size: 19px;
+  }
+
+  .deleteDialogActions {
+    flex-direction: column-reverse;
+    align-items: stretch;
+  }
+
+  .cancelDeleteButton,
+  .confirmDeleteButton {
+    width: 100%;
+  }
+
+  .modalEvidenceRow .deleteEvidenceButton {
+    width: 38px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deleteEvidenceButton {
+    transition: none;
+  }
+}
+
+/* Mostrar enlace y papelera en el historial */
+
+.modalEvidenceRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+}
+
+.modalEvidenceRow .modalEvidenceItem {
+  flex: 1 1 0;
+  min-width: 0;
+  width: auto;
+}
+
+.modalEvidenceRow .deleteEvidenceButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 42px;
+
+  width: 42px;
+  height: 42px;
+  min-height: 42px;
+
+  border: 1px solid #efdadd;
+  border-radius: 9px;
+  background: #fff;
+  color: #a5212f;
+
+  cursor: pointer;
+}
+
+.modalEvidenceRow .deleteEvidenceButton:hover {
+  background: #fff0f1;
+}
+
+/* Fila que agrupa el archivo y el botón eliminar */
+
+.modalEvidenceRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 42px;
+  align-items: stretch;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+}
+
+.modalEvidenceRow .modalEvidenceItem {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Botón eliminar */
+
+.modalEvidenceRow .deleteEvidenceButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 42px;
+  height: 42px;
+  min-height: 42px;
+  align-self: center;
+
+  padding: 0;
+  border: 1px solid #efdadd;
+  border-radius: 9px;
+
+  background: #ffffff;
+  color: #a5212f;
+
+  cursor: pointer;
+}
+
+.modalEvidenceRow .deleteEvidenceButton:hover {
+  background: #fff0f1;
+  border-color: #e7b3bc;
+}
+
+.modalEvidenceRow .deleteEvidenceButton svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  .modalEvidenceRow {
+    grid-template-columns: minmax(0, 1fr) 38px;
+    gap: 7px;
+  }
+
+  .modalEvidenceRow .deleteEvidenceButton {
+    width: 38px;
+    height: 38px;
+    min-height: 38px;
+  }
+}
+/* Confirmación de eliminación dentro del modal */
+
+.modalSuccessMessage {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-bottom: 14px;
+  padding: 12px 14px;
+
+  border: 1px solid #d2e7d8;
+  border-radius: 9px;
+
+  background: #f0f8f2;
+  color: #276442;
+
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.modalSuccessMessage svg {
+  flex-shrink: 0;
+  color: #278451;
+}
+/* Confirmación dentro del historial de evidencias */
+
+.modalSuccessMessage {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin-bottom: 14px;
+  padding: 12px 14px;
+
+  border: 1px solid #d2e7d8;
+  border-radius: 9px;
+
+  background: #f0f8f2;
+  color: #276442;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.modalSuccessMessage svg {
+  flex-shrink: 0;
+  color: #278451;
+}

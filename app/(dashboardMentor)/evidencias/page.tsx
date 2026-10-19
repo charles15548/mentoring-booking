@@ -2,19 +2,25 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import {
+  ArrowRight,
+  CalendarDays,
+  Clock3,
+  FileText,
+  FolderOpen,
+  UserRound,
+} from "lucide-react";
 
 import { supabase } from "@/lib/supabase";
+import ProUniLoader from "@/components/ui/ProUniLoader";
 import styles from "./evidencias.module.css";
-
-/* =====================================================
-   TIPOS
-===================================================== */
 
 type Mentorship = {
   id: string;
   serviceName?: string;
   menteeName?: string;
   menteeEmail?: string;
+  menteeFotoUrl?: string | null;
   startDateTime?: {
     dateTime: string;
   };
@@ -42,20 +48,10 @@ type RepositoryResponse = {
   nextOffset: number | null;
 };
 
-/* =====================================================
-   CONFIGURACIÓN
-===================================================== */
-
 const PAGE_SIZE = 20;
 
-/* =====================================================
-   FUNCIONES AUXILIARES
-===================================================== */
-
 function formatDate(value?: string) {
-  if (!value) {
-    return "Fecha por confirmar";
-  }
+  if (!value) return "Fecha por confirmar";
 
   const date = new Date(value);
 
@@ -84,26 +80,62 @@ function isAbortError(error: unknown) {
 }
 
 /* =====================================================
-   PÁGINA PRINCIPAL
+   AVATAR DEL MENTEE
+===================================================== */
+
+function MenteeAvatar({
+  name,
+  photoUrl,
+}: {
+  name: string;
+  photoUrl?: string | null;
+}) {
+  const [failedUrl, setFailedUrl] = useState<string | null>(null);
+
+  const showPhoto = Boolean(photoUrl) && failedUrl !== photoUrl;
+
+  return (
+    <div className={styles.avatar}>
+      {showPhoto && photoUrl ? (
+        <img
+          src={photoUrl}
+          alt={`Foto de ${name}`}
+          className={styles.avatarImage}
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          onError={() => setFailedUrl(photoUrl)}
+        />
+      ) : (
+        <UserRound size={21} aria-hidden="true" />
+      )}
+    </div>
+  );
+}
+
+/* =====================================================
+   REPOSITORIO
 ===================================================== */
 
 export default function EvidenciasPage() {
   const [items, setItems] = useState<EvidenceMentorship[]>([]);
 
   const [loading, setLoading] = useState(true);
+
   const [loadingMore, setLoadingMore] = useState(false);
 
   const [error, setError] = useState("");
 
   const [hasMore, setHasMore] = useState(false);
+
   const [nextOffset, setNextOffset] = useState<number | null>(null);
 
   const loadingMoreRef = useRef(false);
   const mountedRef = useRef(false);
+
   const requestsRef = useRef<Set<AbortController>>(new Set());
 
   /* =====================================================
-     CARGAR REPOSITORIO PAGINADO
+     CARGA PAGINADA
   ===================================================== */
 
   const loadEvidenceMentorships = useCallback(
@@ -121,10 +153,6 @@ export default function EvidenciasPage() {
       const inicio = performance.now();
 
       try {
-        /* ============================================
-           1. OBTENER SESIÓN ACTIVA
-        ============================================ */
-
         const {
           data: { session },
           error: sessionError,
@@ -137,10 +165,6 @@ export default function EvidenciasPage() {
         if (sessionError || !session?.access_token) {
           throw new Error("No se encontró la sesión activa.");
         }
-
-        /* ============================================
-           2. CONSULTAR API PAGINADA
-        ============================================ */
 
         const response = await fetch(
           `/api/mentors/evidencias/repositorio?limit=${PAGE_SIZE}&offset=${offset}`,
@@ -169,10 +193,6 @@ export default function EvidenciasPage() {
           throw new Error(message);
         }
 
-        /* ============================================
-           3. VALIDAR FORMATO DE RESPUESTA
-        ============================================ */
-
         if (
           !data ||
           typeof data !== "object" ||
@@ -191,19 +211,13 @@ export default function EvidenciasPage() {
 
         const newItems = repository.items.filter(
           (item) =>
-            item.mentorship?.id &&
+            Boolean(item.mentorship?.id) &&
             Array.isArray(item.evidencias) &&
             item.evidencias.length > 0,
         );
 
-        /* ============================================
-           4. ACTUALIZAR RESULTADOS
-        ============================================ */
-
         setItems((previous) => {
-          if (!append) {
-            return newItems;
-          }
+          if (!append) return newItems;
 
           const existingIds = new Set(
             previous.map((item) => item.mentorship.id),
@@ -225,17 +239,9 @@ export default function EvidenciasPage() {
 
         setError("");
 
-        /* ============================================
-           5. MEDIR RENDIMIENTO
-        ============================================ */
-
         console.log("[Repositorio] Página cargada:", {
           offset,
           registrosRecibidos: newItems.length,
-          totalEvidencias: newItems.reduce(
-            (total, item) => total + item.evidencias.length,
-            0,
-          ),
           hasMore: repository.hasMore,
           nextOffset: repository.nextOffset,
           tiempoMs: Math.round(performance.now() - inicio),
@@ -277,6 +283,7 @@ export default function EvidenciasPage() {
     mountedRef.current = true;
 
     const controller = new AbortController();
+
     requestsRef.current.add(controller);
 
     void loadEvidenceMentorships(0, false, controller.signal).finally(() => {
@@ -295,16 +302,13 @@ export default function EvidenciasPage() {
     };
   }, [loadEvidenceMentorships]);
 
-  /* =====================================================
-     CARGAR MÁS
-  ===================================================== */
-
   function loadMore() {
     if (loading || loadingMoreRef.current || !hasMore || nextOffset === null) {
       return;
     }
 
     const controller = new AbortController();
+
     requestsRef.current.add(controller);
 
     void loadEvidenceMentorships(nextOffset, true, controller.signal).finally(
@@ -314,25 +318,17 @@ export default function EvidenciasPage() {
     );
   }
 
-  /* =====================================================
-     INTERFAZ
-  ===================================================== */
-
   return (
-    <main className="page-content">
-      <section className="welcome-row">
-        <div>
-          <p className="eyebrow">SEGUIMIENTO A LOS MENTEES BAJO DE MENTORIA</p>
+    <main className={`page-content ${styles.page}`}>
+      <header className={styles.header}>
+        <h1 className={styles.heading}>
+          Repositorio de Evidencias de mis Mentees
+        </h1>
 
-          <h1>Repositorio de Evidencias de mis Mentees</h1>
-
-          <p className="intro">
-            Revisa las evidencias de avance enviadas por tus mentees.
-          </p>
-        </div>
-      </section>
-
-      {/* MENSAJE DE ERROR */}
+        <p className={styles.description}>
+          Revisa las evidencias de avance enviadas por tus mentees.
+        </p>
+      </header>
 
       {error && (
         <p className="form-error" role="alert">
@@ -340,89 +336,108 @@ export default function EvidenciasPage() {
         </p>
       )}
 
-      {/* ESTADO DE CARGA INICIAL */}
+      {/* =====================================================
+          INDICADOR INSTITUCIONAL DE CARGA
+      ===================================================== */}
 
       {loading ? (
-        <div className="empty-state">
-          <h2>Cargando evidencias...</h2>
-
-          <p>Estamos revisando las mentorías realizadas.</p>
-        </div>
+        <ProUniLoader
+          icon="clipboard"
+          title="Consultando evidencias"
+          description="Un momento, estamos obteniendo las evidencias de tus mentees."
+        />
       ) : items.length === 0 ? (
-        /* SIN EVIDENCIAS */
+        <div className={styles.emptyState}>
+          <FolderOpen size={28} />
 
-        <div className="empty-state">
           <h2>No hay evidencias todavía</h2>
 
           <p>Cuando un mentee envíe una evidencia, aparecerá aquí.</p>
         </div>
       ) : (
         <>
-          {/* ============================================
-              LISTADO DE EVIDENCIAS
-          ============================================ */}
-
-          <section className={styles.list}>
+          <section
+            className={styles.grid}
+            aria-label="Mentorías con evidencias"
+          >
             {items.map(({ mentorship, evidencias }) => {
-              const latestEvidence = getLatestEvidence(evidencias);
+              const latest = getLatestEvidence(evidencias);
+
+              const name = mentorship.menteeName || "Mentee PROUNI";
 
               return (
-                <article className={styles.card} key={mentorship.id}>
-                  <div className={styles.content}>
-                    <p className="eyebrow">EVIDENCIAS DE AVANCE DEL MENTEE:</p>
+                <article key={mentorship.id} className={styles.card}>
+                  <div className={styles.cardHeader}>
+                    <MenteeAvatar
+                      name={name}
+                      photoUrl={mentorship.menteeFotoUrl}
+                    />
 
-                    <h2>{mentorship.menteeName || "Mentee PROUNI"}</h2>
+                    <div className={styles.studentInfo}>
+                      <span className={styles.cardEyebrow}>MENTEE</span>
 
-                    {mentorship.menteeEmail && (
-                      <p className={styles.email}>{mentorship.menteeEmail}</p>
-                    )}
+                      <h2 className={styles.studentName}>{name}</h2>
 
-                    <div className={styles.info}>
-                      <p>
-                        <strong>Enviado el:</strong>{" "}
-                        {formatDate(latestEvidence.created_at)}
-                      </p>
-
-                      <p>
-                        <strong>Fecha de la cita:</strong>{" "}
-                        {formatDate(mentorship.startDateTime?.dateTime)}
-                      </p>
-
-                      <p>
-                        <strong>Evidencias:</strong> {evidencias.length}
-                      </p>
+                      {mentorship.menteeEmail && (
+                        <p
+                          className={styles.email}
+                          title={mentorship.menteeEmail}
+                        >
+                          {mentorship.menteeEmail}
+                        </p>
+                      )}
                     </div>
                   </div>
 
-                  <div className={styles.actions}>
-                    <Link
-                      className={styles.viewButton}
-                      href={`/evidencias/${encodeURIComponent(mentorship.id)}`}
-                    >
-                      Ver evidencias
-                    </Link>
+                  <div className={styles.cardBody}>
+                    <div className={styles.evidenceSummary}>
+                      <div className={styles.summaryIcon}>
+                        <FileText size={17} />
+                      </div>
+
+                      <span>Evidencias enviadas</span>
+
+                      <strong>{evidencias.length}</strong>
+                    </div>
+
+                    <div className={styles.metaList}>
+                      <div className={styles.metaRow}>
+                        <CalendarDays size={15} />
+
+                        <span>
+                          <b>Mentoría:</b>{" "}
+                          {formatDate(mentorship.startDateTime?.dateTime)}
+                        </span>
+                      </div>
+
+                      <div className={styles.metaRow}>
+                        <Clock3 size={15} />
+
+                        <span>
+                          <b>Último envío:</b> {formatDate(latest.created_at)}
+                        </span>
+                      </div>
+                    </div>
                   </div>
+
+                  <Link
+                    className={styles.viewButton}
+                    href={`/evidencias/${encodeURIComponent(mentorship.id)}`}
+                  >
+                    <FolderOpen size={16} />
+                    Ver evidencias
+                    <ArrowRight size={15} />
+                  </Link>
                 </article>
               );
             })}
           </section>
 
-          {/* ============================================
-              PAGINACIÓN
-          ============================================ */}
-
           {hasMore && (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                marginTop: 24,
-                paddingBottom: 20,
-              }}
-            >
+            <div className={styles.pagination}>
               <button
                 type="button"
-                className="primary-button"
+                className={styles.loadMoreButton}
                 onClick={loadMore}
                 disabled={loadingMore}
               >

@@ -1,0 +1,180 @@
+
+/* =========================================================
+   PROUNI - INDICADOR INSTITUCIONAL DE CARGA
+========================================================= */
+
+.loader {
+  --loader-primary: #87151b;
+  --loader-muted: #69646a;
+  --loader-track: #eee8e8;
+
+  width: 100%;
+  min-height: 180px;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+
+  padding: 32px 24px;
+
+  background: #ffffff;
+  border: 1px solid #eae6e5;
+  border-radius: 18px;
+
+  box-shadow: 0 5px 18px rgba(30, 20, 20, 0.035);
+
+  text-align: center;
+}
+
+.iconContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 56px;
+  height: 56px;
+  margin-bottom: 17px;
+
+  color: var(--loader-primary);
+  background: #f8f2f2;
+
+  border: 1px solid #f0e5e6;
+  border-radius: 14px;
+}
+
+.iconContainer svg {
+  flex-shrink: 0;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+
+  max-width: 440px;
+}
+
+.title {
+  margin: 0;
+
+  color: #292525;
+  font-size: 16px;
+  font-weight: 650;
+  line-height: 1.45;
+}
+
+.description {
+  margin: 0;
+
+  color: var(--loader-muted);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+.progressTrack {
+  position: relative;
+  overflow: hidden;
+
+  width: 185px;
+  max-width: 100%;
+  height: 3px;
+
+  margin-top: 22px;
+
+  background: var(--loader-track);
+  border-radius: 999px;
+}
+
+.progressIndicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  width: 34%;
+  height: 100%;
+
+  background: var(--loader-primary);
+  border-radius: inherit;
+
+  animation: prouniLoading 2.4s ease-in-out infinite;
+}
+
+/* Versión reducida para un panel dentro de otra pantalla */
+
+.compact {
+  min-height: 160px;
+  padding: 20px 16px;
+
+  border: none;
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+.compact .iconContainer {
+  width: 46px;
+  height: 46px;
+  margin-bottom: 12px;
+}
+
+.compact .iconContainer svg {
+  width: 26px;
+  height: 26px;
+}
+
+.compact .title {
+  font-size: 14px;
+}
+
+.compact .progressTrack {
+  margin-top: 16px;
+}
+
+/* Movimiento horizontal, sin saltos ni destellos */
+
+@keyframes prouniLoading {
+  0% {
+    transform: translateX(-105%);
+  }
+
+  50% {
+    transform: translateX(195%);
+  }
+
+  100% {
+    transform: translateX(-105%);
+  }
+}
+
+/* Accesibilidad */
+
+@media (prefers-reduced-motion: reduce) {
+  .progressIndicator {
+    animation: none;
+    transform: translateX(95%);
+  }
+}
+
+@media (max-width: 640px) {
+  .loader {
+    min-height: 165px;
+    padding: 25px 16px;
+  }
+
+  .iconContainer {
+    width: 50px;
+    height: 50px;
+  }
+
+  .title {
+    font-size: 15px;
+  }
+
+  .description {
+    font-size: 12px;
+  }
+}

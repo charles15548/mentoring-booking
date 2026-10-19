@@ -1,0 +1,98 @@
+
+/* =========================================================
+   PROUNI - ESTADOS VISUALES DE RESERVAS Y REPOSITORIO
+========================================================= */
+
+/* Entrada discreta del contenido real */
+
+.contentEntrance {
+  animation: contentFadeIn 220ms ease-out both;
+}
+
+/* Estado de error */
+
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+
+  padding: 28px;
+
+  background: #ffffff;
+  border: 1px solid #ece8e7;
+  border-radius: 16px;
+}
+
+.errorContainer h2 {
+  margin: 0;
+
+  color: #292525;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.errorContainer p {
+  margin: 0;
+
+  color: #625c5c;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.retryButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 40px;
+  padding: 10px 22px;
+
+  background: #87151b;
+  color: #ffffff;
+
+  border: 1px solid #87151b;
+  border-radius: 9px;
+
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.retryButton:hover {
+  background: #6d1116;
+  border-color: #6d1116;
+}
+
+.retryButton:focus-visible {
+  outline: 3px solid rgba(135, 21, 27, 0.3);
+  outline-offset: 3px;
+}
+
+/* Transición sobria */
+
+@keyframes contentFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Accesibilidad */
+
+@media (prefers-reduced-motion: reduce) {
+  .contentEntrance {
+    animation: none;
+  }
+
+  .retryButton {
+    transition: none;
+  }
+}

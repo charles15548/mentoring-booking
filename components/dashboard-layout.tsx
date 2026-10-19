@@ -1,3 +1,4 @@
+
 "use client";
 
 import "./MenteeLayout.css";
@@ -10,9 +11,11 @@ import type { ReactNode } from "react";
 
 import {
   Box,
+  CalendarClock,
   CalendarDays,
   CheckCircle2,
   Clock3,
+  FileBarChart2,
   FileCheck2,
   LayoutDashboard,
   LogOut,
@@ -22,15 +25,22 @@ import {
 } from "lucide-react";
 
 import { supabase } from "@/lib/supabase";
-import { getCurrentProfile, signOut } from "@/services/auth.service";
+import {
+  getCurrentProfile,
+  signOut,
+} from "@/services/auth.service";
 
 import ChangePasswordModal from "@/app/(dashboard)/perfil/ChangePasswordModal";
 
 /* =====================================================
-CONFIGURACIÓN DE MENÚS
+   CONFIGURACIÓN DE MENÚS
 ===================================================== */
 
 const menus = {
+  /* ===================================================
+     MENTEE
+  =================================================== */
+
   mentee: [
     {
       href: "/perfil",
@@ -40,7 +50,7 @@ const menus = {
     {
       href: "/mentores",
       label: "Selección de Horarios",
-      icon: Users,
+      icon: CalendarClock,
     },
     {
       href: "/reservas",
@@ -53,6 +63,10 @@ const menus = {
       icon: CheckCircle2,
     },
   ],
+
+  /* ===================================================
+     MENTOR
+  =================================================== */
 
   mentor: [
     {
@@ -80,7 +94,16 @@ const menus = {
       label: "Repositorio de evidencias",
       icon: FileCheck2,
     },
+    {
+      href: "/reportes",
+      label: "Reporte de avance",
+      icon: FileBarChart2,
+    },
   ],
+
+  /* ===================================================
+     COORDINADOR
+  =================================================== */
 
   coordinador: [
     {
@@ -116,31 +139,59 @@ const menus = {
   ],
 };
 
-type AccessStatus = "loading" | "ready" | "required" | "error";
+/* =====================================================
+   TIPOS
+===================================================== */
 
-export default function MenteeLayout({ children }: { children: ReactNode }) {
+type AccessStatus =
+  | "loading"
+  | "ready"
+  | "required"
+  | "error";
+
+/* =====================================================
+   COMPONENTE PRINCIPAL
+===================================================== */
+
+export default function MenteeLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   const router = useRouter();
   const pathname = usePathname();
 
   const [name, setName] = useState("Cargando...");
   const [rol, setRol] = useState("");
-  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
 
-  const [accessStatus, setAccessStatus] = useState<AccessStatus>("loading");
+  const [photoUrl, setPhotoUrl] =
+    useState<string | null>(null);
+
+  const [accessStatus, setAccessStatus] =
+    useState<AccessStatus>("loading");
 
   const [loadError, setLoadError] = useState("");
-  const [changingPassword, setChangingPassword] = useState(false);
-  const [passwordError, setPasswordError] = useState("");
+
+  const [
+    changingPassword,
+    setChangingPassword,
+  ] = useState(false);
+
+  const [passwordError, setPasswordError] =
+    useState("");
 
   /* =====================================================
-  ACTUALIZAR PERFIL Y COMPROBAR PRIMER INGRESO
+     ACTUALIZAR PERFIL Y COMPROBAR PRIMER INGRESO
   ===================================================== */
 
   async function loadProfile() {
     try {
       setLoadError("");
 
-      const { data, error: authError } = await supabase.auth.getUser();
+      const {
+        data,
+        error: authError,
+      } = await supabase.auth.getUser();
 
       if (authError || !data.user) {
         setAccessStatus("loading");
@@ -148,18 +199,24 @@ export default function MenteeLayout({ children }: { children: ReactNode }) {
         return;
       }
 
-      const { data: profile, error: profileError } = await getCurrentProfile(
-        data.user.id,
-      );
+      const {
+        data: profile,
+        error: profileError,
+      } = await getCurrentProfile(data.user.id);
 
       if (profileError || !profile) {
-        setLoadError("No se pudo comprobar el perfil. Vuelve a intentarlo.");
+        setLoadError(
+          "No se pudo comprobar el perfil. Vuelve a intentarlo.",
+        );
+
         setAccessStatus("error");
         return;
       }
 
       setName(
-        [profile.nombres, profile.apellidos].filter(Boolean).join(" ") ||
+        [profile.nombres, profile.apellidos]
+          .filter(Boolean)
+          .join(" ") ||
           profile.email ||
           "Usuario",
       );
@@ -168,21 +225,31 @@ export default function MenteeLayout({ children }: { children: ReactNode }) {
       setPhotoUrl(profile.foto_url);
 
       const requiereCambio =
-        (profile.rol === "mentor" || profile.rol === "mentee") &&
+        (
+          profile.rol === "mentor" ||
+          profile.rol === "mentee"
+        ) &&
         profile.debe_cambiar_password === true;
 
-      setAccessStatus(requiereCambio ? "required" : "ready");
+      setAccessStatus(
+        requiereCambio ? "required" : "ready",
+      );
     } catch (error) {
-      console.error("No se pudo cargar el perfil:", error);
+      console.error(
+        "No se pudo cargar el perfil:",
+        error,
+      );
 
-      setLoadError("No se pudo comprobar tu cuenta. Vuelve a intentarlo.");
+      setLoadError(
+        "No se pudo comprobar tu cuenta. Vuelve a intentarlo.",
+      );
 
       setAccessStatus("error");
     }
   }
 
   /* =====================================================
-  CARGA INICIAL + ACTUALIZACIÓN AUTOMÁTICA
+     CARGA INICIAL + ACTUALIZACIÓN AUTOMÁTICA
   ===================================================== */
 
   useEffect(() => {
@@ -192,22 +259,31 @@ export default function MenteeLayout({ children }: { children: ReactNode }) {
       void loadProfile();
     }
 
-    window.addEventListener("profile-updated", handleProfileUpdated);
+    window.addEventListener(
+      "profile-updated",
+      handleProfileUpdated,
+    );
 
     return () => {
-      window.removeEventListener("profile-updated", handleProfileUpdated);
+      window.removeEventListener(
+        "profile-updated",
+        handleProfileUpdated,
+      );
     };
   }, [router]);
 
   /* =====================================================
-  CAMBIO INICIAL OBLIGATORIO
+     CAMBIO INICIAL OBLIGATORIO
   ===================================================== */
 
   async function changeInitialPassword(
     _currentPassword: string,
     newPassword: string,
   ) {
-    if (accessStatus !== "required" || changingPassword) {
+    if (
+      accessStatus !== "required" ||
+      changingPassword
+    ) {
       return;
     }
 
@@ -220,34 +296,46 @@ export default function MenteeLayout({ children }: { children: ReactNode }) {
       } = await supabase.auth.getSession();
 
       if (!session?.access_token) {
-        throw new Error("Tu sesión ha finalizado. Inicia sesión nuevamente.");
+        throw new Error(
+          "Tu sesión ha finalizado. Inicia sesión nuevamente.",
+        );
       }
 
-      const response = await fetch("/api/perfil/password-inicial", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${session.access_token}`,
+      const response = await fetch(
+        "/api/perfil/password-inicial",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization:
+              `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({
+            newPassword,
+          }),
         },
-        body: JSON.stringify({
-          newPassword,
-        }),
-      });
+      );
 
       const result: {
         error?: string;
         debe_cambiar_password?: boolean;
       } = await response.json();
 
-      if (!response.ok || result.debe_cambiar_password !== false) {
+      if (
+        !response.ok ||
+        result.debe_cambiar_password !== false
+      ) {
         throw new Error(
-          result.error || "No se pudo completar el cambio de contraseña.",
+          result.error ||
+            "No se pudo completar el cambio de contraseña.",
         );
       }
 
       setAccessStatus("ready");
 
-      window.dispatchEvent(new Event("profile-updated"));
+      window.dispatchEvent(
+        new Event("profile-updated"),
+      );
     } catch (error) {
       setPasswordError(
         error instanceof Error
@@ -260,7 +348,7 @@ export default function MenteeLayout({ children }: { children: ReactNode }) {
   }
 
   /* =====================================================
-  CERRAR SESIÓN
+     CERRAR SESIÓN
   ===================================================== */
 
   async function logout() {
@@ -269,28 +357,25 @@ export default function MenteeLayout({ children }: { children: ReactNode }) {
   }
 
   /* =====================================================
-  RUTA ACTIVA
+     IDENTIFICAR RUTA ACTIVA
   ===================================================== */
 
   function active(path: string) {
-    return pathname === path || pathname.startsWith(`${path}/`);
+    return (
+      pathname === path ||
+      pathname.startsWith(`${path}/`)
+    );
   }
 
   /* =====================================================
-  MENÚ SEGÚN ROL
+     MENÚ SEGÚN ROL
   ===================================================== */
 
-  const currentMenu = menus[rol as keyof typeof menus] ?? [];
+  const currentMenu =
+    menus[rol as keyof typeof menus] ?? [];
 
   /* =====================================================
-  TÍTULO AUTOMÁTICO
-  ===================================================== */
-
-  const currentTitle =
-    currentMenu.find((item) => active(item.href))?.label ?? "";
-
-  /* =====================================================
-  INICIALES
+     INICIALES DEL USUARIO
   ===================================================== */
 
   const initials =
@@ -305,7 +390,7 @@ export default function MenteeLayout({ children }: { children: ReactNode }) {
       : "...";
 
   /* =====================================================
-  NOMBRE DEL ROL
+     NOMBRE DEL ROL
   ===================================================== */
 
   const roleLabels: Record<string, string> = {
@@ -314,25 +399,43 @@ export default function MenteeLayout({ children }: { children: ReactNode }) {
     coordinador: "Admin",
   };
 
+  /* =====================================================
+     INTERFAZ
+  ===================================================== */
+
   return (
     <main className="app-shell mentee-shell">
-      {/* SIDEBAR */}
+      {/* =====================================
+          SIDEBAR
+          LogoProUni.jpg se coloca arriba
+      ===================================== */}
 
       <aside className="sidebar">
         <div className="brand-lockup">
           <Image
-            src="/logoPrincipal.jpeg"
-            alt="Logo"
-            width={180}
-            height={60}
+            src="/LogoProUni.jpg"
+            alt="Logo de ProUni"
+            width={165}
+            height={85}
             className="brand-logo"
+            style={{
+              width: "165px",
+              height: "auto",
+              maxWidth: "100%",
+              objectFit: "contain",
+            }}
             priority
           />
         </div>
 
-        {/* MENÚ AUTOMÁTICO */}
+        {/* ==================================
+            MENÚ AUTOMÁTICO POR ROL
+        ================================== */}
 
-        <nav className="main-nav" aria-label="Navegación principal">
+        <nav
+          className="main-nav"
+          aria-label="Navegación principal"
+        >
           {accessStatus === "ready" &&
             currentMenu.map((item) => {
               const Icon = item.icon;
@@ -341,7 +444,9 @@ export default function MenteeLayout({ children }: { children: ReactNode }) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`nav-item ${active(item.href) ? "active" : ""}`}
+                  className={`nav-item ${
+                    active(item.href) ? "active" : ""
+                  }`}
                 >
                   <Icon size={19} />
                   <span>{item.label}</span>
@@ -350,19 +455,13 @@ export default function MenteeLayout({ children }: { children: ReactNode }) {
             })}
         </nav>
 
-        {/* PARTE INFERIOR DEL SIDEBAR */}
+        {/* ==================================
+            PARTE INFERIOR DEL SIDEBAR
+            Se elimina el logo duplicado.
+            Se conserva el botón Salir.
+        ================================== */}
 
         <div className="sidebar-bottom">
-          <div className="prouni-logo">
-            <Image
-              src="/LogoProUni.jpg"
-              alt="ProUni"
-              width={140}
-              height={50}
-              className="prouni-logo-image"
-            />
-          </div>
-
           <button
             type="button"
             className="nav-item logout-item"
@@ -374,18 +473,47 @@ export default function MenteeLayout({ children }: { children: ReactNode }) {
         </div>
       </aside>
 
-      {/* CONTENIDO */}
+      {/* =====================================
+          CONTENIDO PRINCIPAL
+      ===================================== */}
 
       <section className="content-area">
+        {/* ==================================
+            BARRA SUPERIOR GLOBAL
+
+            logoPrincipal.jpeg reemplaza
+            los títulos automáticos.
+
+            Se aplica a todos los roles.
+        ================================== */}
+
         <header className="topbar">
           <div className="topbar-page-info">
-            <h1>{currentTitle}</h1>
+            <Image
+              src="/logoPrincipal.jpeg"
+              alt="Bitácora Mentoring ProUni"
+              width={180}
+              height={60}
+              priority
+              style={{
+                display: "block",
+                width: "180px",
+                height: "auto",
+                maxWidth: "100%",
+                maxHeight: "60px",
+                objectFit: "contain",
+                objectPosition: "left center",
+              }}
+            />
           </div>
 
           <div className="topbar-actions">
             <div className="status-pill">
               <CheckCircle2 size={15} />
-              <span>Microsoft Bookings conectado</span>
+
+              <span>
+                Microsoft Bookings conectado
+              </span>
             </div>
 
             <div className="header-divider" />
@@ -398,26 +526,38 @@ export default function MenteeLayout({ children }: { children: ReactNode }) {
                   className="avatar avatar-image"
                 />
               ) : (
-                <div className="avatar">{initials}</div>
+                <div className="avatar">
+                  {initials}
+                </div>
               )}
 
               <div className="header-profile-info">
                 <strong>{name}</strong>
-                <span>{roleLabels[rol] ?? "Cargando..."}</span>
+
+                <span>
+                  {roleLabels[rol] ?? "Cargando..."}
+                </span>
               </div>
             </div>
           </div>
         </header>
 
+        {/* ==================================
+            VISTA SEGÚN RUTA
+        ================================== */}
+
         {accessStatus === "ready" && children}
 
         {accessStatus === "loading" && (
-          <p className="page-content">Verificando cuenta...</p>
+          <p className="page-content">
+            Verificando cuenta...
+          </p>
         )}
 
         {accessStatus === "required" && (
           <p className="page-content">
-            Establece tu contraseña personal para continuar.
+            Establece tu contraseña personal
+            para continuar.
           </p>
         )}
 
@@ -436,7 +576,9 @@ export default function MenteeLayout({ children }: { children: ReactNode }) {
         )}
       </section>
 
-      {/* CAMBIO OBLIGATORIO */}
+      {/* =====================================
+          CAMBIO OBLIGATORIO DE CONTRASEÑA
+      ===================================== */}
 
       <ChangePasswordModal
         isOpen={accessStatus === "required"}

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { supabase } from "@/lib/supabase";
+import ProUniLoader from "@/components/ui/ProUniLoader";
 
 import ModalGestionMentee from "./ModalGestionMentee";
 import ModalImportarMentees from "./ModalImportarMentees";
@@ -139,11 +140,12 @@ export default function GestionMenteePage() {
     setModalImportarOpen(false);
 
     /*
-      Al cerrar la importación, se vuelve a consultar
-      la lista para mostrar las cuentas recién creadas.
+       Al cerrar la importación, se vuelve a consultar
+       la lista para mostrar las cuentas recién creadas.
 
-      No recargamos la página completa.
+       No recargamos la página completa.
     */
+
     void cargarMentees();
   }
 
@@ -223,9 +225,13 @@ export default function GestionMenteePage() {
       : "Mentee registrado correctamente, pero el correo de activación está pendiente de envío.";
   }
 
+  /* ======================================================
+     REENVIAR ACTIVACIÓN
+  ====================================================== */
+
   async function reenviarActivacion(mentee: Mentee) {
     if (!mentee.profileId) {
-      window.alert("Este mentee no tiene una cuenta vinculada en Supabase.");
+      window.alert("Este mentee no tiene una cuenta vinculada.");
       return;
     }
 
@@ -259,7 +265,7 @@ export default function GestionMenteePage() {
       }
 
       window.alert(
-        `Se solicitó el envío de un nuevo enlace a ${mentee.email}.\n\nRevisa la bandeja de entrada y Spam.`,
+        `Se solicitó el envío de un nuevo enlace a ${mentee.email}.\n\nRevisa la bandeja de entrada y la carpeta de correo no deseado.`,
       );
     } catch (error) {
       window.alert(
@@ -315,7 +321,7 @@ export default function GestionMenteePage() {
   }
 
   /* ======================================================
-     UI
+     INTERFAZ
   ====================================================== */
 
   return (
@@ -350,19 +356,29 @@ export default function GestionMenteePage() {
         </button>
       </section>
 
-      {errorMessage && <p className="form-error">{errorMessage}</p>}
+      {errorMessage && (
+        <p className="form-error" role="alert">
+          {errorMessage}
+        </p>
+      )}
+
+      {/* ======================================================
+          INDICADOR INSTITUCIONAL DE CARGA
+      ====================================================== */}
 
       {isLoading ? (
+        <ProUniLoader
+          icon="users"
+          title="Consultando mentees"
+          description="Un momento, estamos obteniendo la información de los mentees."
+        />
+      ) : mentees.length === 0 && !errorMessage ? (
         <section className="empty-state">
-          <h2>Cargando mentees...</h2>
-        </section>
-      ) : mentees.length === 0 ? (
-        <section className="empty-state">
-          <h2>No hay mentees en Microsoft Bookings</h2>
+          <h2>No hay mentees registrados</h2>
 
           <p>Registra al primer participante que recibirá mentorías.</p>
         </section>
-      ) : (
+      ) : mentees.length > 0 ? (
         <section className="mentor-management-list">
           {mentees.map((mentee) => (
             <article key={mentee.customerId} className="mentor-management-card">
@@ -400,7 +416,7 @@ export default function GestionMenteePage() {
                     ? mentee.activo
                       ? "Cuenta vinculada"
                       : "Cuenta inactiva"
-                    : "Solo Bookings"}
+                    : "Sin cuenta vinculada"}
                 </span>
 
                 {mentee.tieneCuenta && mentee.activo && (
@@ -426,7 +442,7 @@ export default function GestionMenteePage() {
             </article>
           ))}
         </section>
-      )}
+      ) : null}
 
       {/* MODAL CREAR / EDITAR */}
 

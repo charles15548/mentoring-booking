@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 
 import Horarios from "./Horarios";
 import { supabase } from "@/lib/supabase";
+import ProUniLoader from "@/components/ui/ProUniLoader";
 
 type Mentor = {
   id: string;
@@ -24,9 +25,12 @@ export default function MentoresPage() {
     async function cargarMentores() {
       try {
         setIsLoading(true);
+        setError("");
+
         const {
           data: { session },
         } = await supabase.auth.getSession();
+
         const response = await fetch("/api/mentors", {
           cache: "no-store",
           headers: {
@@ -55,23 +59,18 @@ export default function MentoresPage() {
     void cargarMentores();
   }, []);
 
-  if (isLoading) {
-    return (
-      <div className="page-content">
-        <section className="empty-state">
-          <h2>Cargando mentores...</h2>
-        </section>
-      </div>
-    );
-  }
-
   return (
     <div className="page-content">
+      {/* =====================================================
+          CABECERA
+          Siempre visible, incluso durante la carga
+      ===================================================== */}
+
       <section className="welcome-row">
         <div>
-          <p className="eyebrow">PROUNI · MENTORÍAS</p>
-
-          <h1>Elige el horario según la disponibilidad del Mentor</h1>
+          <h1 className="mentores-page-title">
+            Elige uno de los horarios disponibles de tu mentor
+          </h1>
 
           <p className="intro">
             Selecciona fecha y hora según disponibilidad del mentor.
@@ -79,9 +78,22 @@ export default function MentoresPage() {
         </div>
       </section>
 
-      {error && <p className="form-error">{error}</p>}
+      {/* =====================================================
+          CONTENIDO
+          Solo esta sección cambia durante la consulta
+      ===================================================== */}
 
-      {mentores.length === 0 ? (
+      {isLoading ? (
+        <ProUniLoader
+          icon="calendar-clock"
+          title="Consultando mentores disponibles"
+          description="Un momento, estamos preparando la información para agendar tu mentoría."
+        />
+      ) : error ? (
+        <p className="form-error" role="alert">
+          {error}
+        </p>
+      ) : mentores.length === 0 ? (
         <section className="empty-state">
           <h2>No hay mentores disponibles</h2>
         </section>
@@ -90,6 +102,7 @@ export default function MentoresPage() {
           {mentores.map((mentor) => (
             <button
               key={mentor.id}
+              type="button"
               className={`mentor-option ${
                 selectedMentor?.id === mentor.id ? "selected" : ""
               }`}
@@ -142,7 +155,11 @@ export default function MentoresPage() {
         </section>
       )}
 
-      {selectedMentor && (
+      {/* =====================================================
+          CALENDARIO DEL MENTOR SELECCIONADO
+      ===================================================== */}
+
+      {!isLoading && !error && selectedMentor && (
         <Horarios
           mentor={selectedMentor}
           onClose={() => setSelectedMentor(null)}
