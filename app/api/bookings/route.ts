@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
+
 import type { CreateBookingInput } from "@/models/booking.model";
+
 import {
   getBookingBusinessId,
   graphRequest,
   toGraphLocalDateTime,
 } from "@/lib/microsoft-graph";
+
 import { supabase } from "@/lib/supabase";
 import { supabaseAdmin } from "@/lib/supabase-admin";
 import { notificarMentoria } from "@/lib/mentoria-mail";
@@ -72,48 +75,39 @@ interface GraphCollection<T> {
 
 async function getAllGraphItems<T>(path: string): Promise<T[]> {
   const items: T[] = [];
-
   let nextPath: string | null = path;
-
   const seen = new Set<string>();
 
-  while (nextPath) {
-    if (seen.has(nextPath)) {
-      throw new Error(
-        "Microsoft Graph devolvió una paginación circular.",
-      );
+  while (nextPath !== null) {
+    const currentPath: string = nextPath;
+
+    if (seen.has(currentPath)) {
+      throw new Error("Microsoft Graph devolvió una paginación circular.");
     }
 
-    seen.add(nextPath);
+    seen.add(currentPath);
 
-    const page: GraphCollection<T> =
-      await graphRequest<GraphCollection<T>>(nextPath);
+    const graphPage: GraphCollection<T> =
+      await graphRequest<GraphCollection<T>>(currentPath);
 
-    items.push(...(page.value ?? []));
+    items.push(...(graphPage.value ?? []));
 
-    const nextLink: string | undefined = page["@odata.nextLink"];
+    const nextLink: string | undefined = graphPage["@odata.nextLink"];
 
     if (!nextLink) {
       break;
     }
 
-    const url = new URL(
-      nextLink,
-      "https://graph.microsoft.com/v1.0/",
-    );
+    const url = new URL(nextLink, "https://graph.microsoft.com/v1.0/");
 
     if (
       url.origin !== "https://graph.microsoft.com" ||
       !url.pathname.startsWith("/v1.0/")
     ) {
-      throw new Error(
-        "La paginación de Microsoft Graph no es válida.",
-      );
+      throw new Error("La paginación de Microsoft Graph no es válida.");
     }
 
-    nextPath = `${
-      url.pathname.replace(/^\/v1\.0/, "")
-    }${url.search}`;
+    nextPath = `${url.pathname.replace(/^\/v1\.0/, "")}${url.search}`;
   }
 
   return items;
@@ -139,67 +133,39 @@ export async function GET(request: Request) {
 
     const businessId = getBookingBusinessId();
 
-    const base =
-      `/solutions/bookingBusinesses/${encodeURIComponent(businessId)}`;
+    const base = `/solutions/bookingBusinesses/${encodeURIComponent(businessId)}`;
 
-    const [
-      appointments,
-      staffMembers,
-      customers,
-    ] = await Promise.all([
-      getAllGraphItems<GraphAppointment>(
-        `${base}/appointments`,
-      ),
+    const [appointments, staffMembers, customers] = await Promise.all([
+      getAllGraphItems<GraphAppointment>(`${base}/appointments`),
 
-      getAllGraphItems<GraphStaffMember>(
-        `${base}/staffMembers`,
-      ),
+      getAllGraphItems<GraphStaffMember>(`${base}/staffMembers`),
 
-      getAllGraphItems<GraphCustomer>(
-        `${base}/customers`,
-      ),
+      getAllGraphItems<GraphCustomer>(`${base}/customers`),
     ]);
 
-    const staffMap = new Map(
-      staffMembers.map((staff) => [
-        staff.id,
-        staff,
-      ]),
-    );
+    const staffMap = new Map(staffMembers.map((staff) => [staff.id, staff]));
 
     const customersMap = new Map(
-      customers.map((customer) => [
-        customer.id,
-        customer,
-      ]),
+      customers.map((customer) => [customer.id, customer]),
     );
 
     /* =====================================================
        FILTRAR RESERVAS DEL MENTEE
     ===================================================== */
 
-    const userAppointments = appointments.filter(
-      (appointment) => {
-        const customerById = appointment.customerId
-          ? customersMap.get(appointment.customerId)
-          : undefined;
+    const userAppointments = appointments.filter((appointment) => {
+      const customerById = appointment.customerId
+        ? customersMap.get(appointment.customerId)
+        : undefined;
 
-        if (
-          customerById?.emailAddress
-            ?.trim()
-            .toLowerCase() === email
-        ) {
-          return true;
-        }
+      if (customerById?.emailAddress?.trim().toLowerCase() === email) {
+        return true;
+      }
 
-        return appointment.customers?.some(
-          (customer) =>
-            customer.emailAddress
-              ?.trim()
-              .toLowerCase() === email,
-        );
-      },
-    );
+      return appointment.customers?.some(
+        (customer) => customer.emailAddress?.trim().toLowerCase() === email,
+      );
+    });
 
     /* =====================================================
        RECUPERAR MENTORES NO ENCONTRADOS
@@ -208,23 +174,17 @@ export async function GET(request: Request) {
     const missingStaffIds = [
       ...new Set(
         userAppointments
-          .flatMap(
-            (appointment) =>
-              appointment.staffMemberIds ?? [],
-          )
-          .filter(
-            (staffId) => !staffMap.has(staffId),
-          ),
+          .flatMap((appointment) => appointment.staffMemberIds ?? [])
+          .filter((staffId) => !staffMap.has(staffId)),
       ),
     ];
 
     await Promise.all(
       missingStaffIds.map(async (staffId) => {
         try {
-          const staff =
-            await graphRequest<GraphStaffMember>(
-              `${base}/staffMembers/${encodeURIComponent(staffId)}`,
-            );
+          const staff = await graphRequest<GraphStaffMember>(
+            `${base}/staffMembers/${encodeURIComponent(staffId)}`,
+          );
 
           if (staff.id) {
             staffMap.set(staff.id, staff);
@@ -243,9 +203,7 @@ export async function GET(request: Request) {
        CONSULTAR CONFIRMACIONES Y ACUERDOS
     ===================================================== */
 
-    const bookingIds = userAppointments.map(
-      (appointment) => appointment.id,
-    );
+    const bookingIds = userAppointments.map((appointment) => appointment.id);
 
     let confirmationsData: Array<{
       microsoft_booking_id: string;
@@ -261,26 +219,18 @@ export async function GET(request: Request) {
     if (bookingIds.length > 0) {
       const { data: confirmations } = await supabase
         .from("appointment_confirmations")
-        .select(
-          "microsoft_booking_id, confirmed_at, confirmed_by, status",
-        )
+        .select("microsoft_booking_id, confirmed_at, confirmed_by, status")
         .in("microsoft_booking_id", bookingIds);
 
       confirmationsData = confirmations || [];
 
-      const {
-        data: agreements,
-        error: agreementsError,
-      } = await supabaseAdmin
+      const { data: agreements, error: agreementsError } = await supabaseAdmin
         .from("acuerdos")
         .select("microsoft_booking_id")
         .in("microsoft_booking_id", bookingIds);
 
       if (agreementsError) {
-        console.error(
-          "Error contando acuerdos:",
-          agreementsError,
-        );
+        console.error("Error contando acuerdos:", agreementsError);
       }
 
       agreementsData = agreements || [];
@@ -293,17 +243,12 @@ export async function GET(request: Request) {
       ]),
     );
 
-    const agreementCountMap =
-      new Map<string, number>();
+    const agreementCountMap = new Map<string, number>();
 
     for (const agreement of agreementsData) {
       agreementCountMap.set(
         agreement.microsoft_booking_id,
-        (
-          agreementCountMap.get(
-            agreement.microsoft_booking_id,
-          ) ?? 0
-        ) + 1,
+        (agreementCountMap.get(agreement.microsoft_booking_id) ?? 0) + 1,
       );
     }
 
@@ -311,102 +256,73 @@ export async function GET(request: Request) {
        CONSTRUIR RESPUESTA
     ===================================================== */
 
-    const reservations = userAppointments.map(
-      (appointment) => {
-        const mentorId =
-          appointment.staffMemberIds?.[0];
+    const reservations = userAppointments.map((appointment) => {
+      const mentorId = appointment.staffMemberIds?.[0];
 
-        const mentor = mentorId
-          ? staffMap.get(mentorId)
-          : undefined;
+      const mentor = mentorId ? staffMap.get(mentorId) : undefined;
 
-        if (!mentor) {
-          console.warn(
-            "[bookings GET] Reserva sin datos del mentor:",
-            {
-              bookingId: appointment.id,
-              staffMemberIds:
-                appointment.staffMemberIds ?? [],
+      if (!mentor) {
+        console.warn("[bookings GET] Reserva sin datos del mentor:", {
+          bookingId: appointment.id,
+          staffMemberIds: appointment.staffMemberIds ?? [],
+          motivo: mentorId
+            ? "El staffMemberId no pudo resolverse en Microsoft Graph."
+            : "La reserva no tiene staffMemberIds.",
+        });
+      }
 
-              motivo: mentorId
-                ? "El staffMemberId no pudo resolverse en Microsoft Graph."
-                : "La reserva no tiene staffMemberIds.",
-            },
-          );
-        }
+      const customer = appointment.customerId
+        ? customersMap.get(appointment.customerId)
+        : undefined;
 
-        const customer = appointment.customerId
-          ? customersMap.get(appointment.customerId)
-          : undefined;
+      const appointmentCustomer = appointment.customers?.find(
+        (item) => item.emailAddress?.trim().toLowerCase() === email,
+      );
 
-        const appointmentCustomer =
-          appointment.customers?.find(
-            (item) =>
-              item.emailAddress
-                ?.trim()
-                .toLowerCase() === email,
-          );
+      const confirmation = confirmationsMap.get(appointment.id);
 
-        const confirmation =
-          confirmationsMap.get(appointment.id);
+      return {
+        id: appointment.id,
 
-        return {
-          id: appointment.id,
+        serviceName: appointment.serviceName || "Sesión de mentoría",
 
-          serviceName:
-            appointment.serviceName ||
-            "Sesión de mentoría",
+        customerName:
+          customer?.displayName ??
+          appointment.customerName ??
+          appointmentCustomer?.name,
 
-          customerName:
-            customer?.displayName ??
-            appointment.customerName ??
-            appointmentCustomer?.name,
+        customerEmail:
+          customer?.emailAddress ??
+          appointment.customerEmailAddress ??
+          appointmentCustomer?.emailAddress,
 
-          customerEmail:
-            customer?.emailAddress ??
-            appointment.customerEmailAddress ??
-            appointmentCustomer?.emailAddress,
+        customerId:
+          appointment.customerId ??
+          appointmentCustomer?.customerId ??
+          customer?.id ??
+          null,
 
-          customerId:
-            appointment.customerId ??
-            appointmentCustomer?.customerId ??
-            customer?.id ??
-            null,
+        mentorId,
 
-          mentorId,
+        mentorName: mentor?.displayName || null,
 
-          mentorName:
-            mentor?.displayName || null,
+        mentorEmail: mentor?.emailAddress || null,
 
-          mentorEmail:
-            mentor?.emailAddress || null,
+        startDateTime: appointment.startDateTime,
 
-          startDateTime:
-            appointment.startDateTime,
+        endDateTime: appointment.endDateTime,
 
-          endDateTime:
-            appointment.endDateTime,
+        confirmedAt: confirmation?.confirmed_at ?? null,
 
-          confirmedAt:
-            confirmation?.confirmed_at ?? null,
+        status: confirmation?.status ?? "pendiente",
 
-          status:
-            confirmation?.status ?? "pendiente",
-
-          agreementCount:
-            agreementCountMap.get(
-              appointment.id,
-            ) ?? 0,
-        };
-      },
-    );
+        agreementCount: agreementCountMap.get(appointment.id) ?? 0,
+      };
+    });
 
     return NextResponse.json(reservations);
   } catch (error) {
-    console.error(
-      "Error consultando reservas:",
-      error,
-    );
+    console.error("Error consultando reservas:", error);
 
     return NextResponse.json(
       {
@@ -426,20 +342,16 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const body =
-      (await request.json()) as CreateBookingInput;
+    const body = (await request.json()) as CreateBookingInput;
 
     const businessId = getBookingBusinessId();
 
-    const customerEmail = body.customerEmail
-      ?.trim()
-      .toLowerCase();
+    const customerEmail = body.customerEmail?.trim().toLowerCase();
 
     if (!customerEmail) {
       return NextResponse.json(
         {
-          error:
-            "El correo del mentee es obligatorio.",
+          error: "El correo del mentee es obligatorio.",
         },
         { status: 400 },
       );
@@ -457,13 +369,9 @@ export async function POST(request: Request) {
       )}/customers`,
     );
 
-    const bookingCustomer = (
-      customersData.value || []
-    ).find(
+    const bookingCustomer = (customersData.value || []).find(
       (customer) =>
-        customer.emailAddress
-          ?.trim()
-          .toLowerCase() === customerEmail,
+        customer.emailAddress?.trim().toLowerCase() === customerEmail,
     );
 
     if (!bookingCustomer) {
@@ -476,16 +384,11 @@ export async function POST(request: Request) {
       );
     }
 
-    console.log(
-      "[booking-create] Customer encontrado:",
-      {
-        customerId: bookingCustomer.id,
-        displayName:
-          bookingCustomer.displayName,
-        emailAddress:
-          bookingCustomer.emailAddress,
-      },
-    );
+    console.log("[booking-create] Customer encontrado:", {
+      customerId: bookingCustomer.id,
+      displayName: bookingCustomer.displayName,
+      emailAddress: bookingCustomer.emailAddress,
+    });
 
     /* =====================================================
        CREAR RESERVA EN MICROSOFT BOOKINGS
@@ -501,8 +404,7 @@ export async function POST(request: Request) {
         method: "POST",
 
         body: JSON.stringify({
-          "@odata.type":
-            "#microsoft.graph.bookingAppointment",
+          "@odata.type": "#microsoft.graph.bookingAppointment",
 
           serviceId: body.serviceId,
 
@@ -512,37 +414,26 @@ export async function POST(request: Request) {
 
           customerId: bookingCustomer.id,
 
-          customerName:
-            bookingCustomer.displayName ||
-            body.customerName,
+          customerName: bookingCustomer.displayName || body.customerName,
 
-          customerEmailAddress:
-            bookingCustomer.emailAddress ||
-            customerEmail,
+          customerEmailAddress: bookingCustomer.emailAddress || customerEmail,
 
-          customerTimeZone:
-            "SA Pacific Standard Time",
+          customerTimeZone: "SA Pacific Standard Time",
 
           startDateTime: {
-            "@odata.type":
-              "#microsoft.graph.dateTimeTimeZone",
+            "@odata.type": "#microsoft.graph.dateTimeTimeZone",
 
-            dateTime:
-              toGraphLocalDateTime(body.startAt),
+            dateTime: toGraphLocalDateTime(body.startAt),
 
-            timeZone:
-              "SA Pacific Standard Time",
+            timeZone: "SA Pacific Standard Time",
           },
 
           endDateTime: {
-            "@odata.type":
-              "#microsoft.graph.dateTimeTimeZone",
+            "@odata.type": "#microsoft.graph.dateTimeTimeZone",
 
-            dateTime:
-              toGraphLocalDateTime(body.endAt),
+            dateTime: toGraphLocalDateTime(body.endAt),
 
-            timeZone:
-              "SA Pacific Standard Time",
+            timeZone: "SA Pacific Standard Time",
           },
 
           "customers@odata.type":
@@ -550,154 +441,192 @@ export async function POST(request: Request) {
 
           customers: [
             {
-              "@odata.type":
-                "#microsoft.graph.bookingCustomerInformation",
+              "@odata.type": "#microsoft.graph.bookingCustomerInformation",
 
-              customerId:
-                bookingCustomer.id,
+              customerId: bookingCustomer.id,
 
-              name:
-                bookingCustomer.displayName ||
-                body.customerName,
+              name: bookingCustomer.displayName || body.customerName,
 
-              emailAddress:
-                bookingCustomer.emailAddress ||
-                customerEmail,
+              emailAddress: bookingCustomer.emailAddress || customerEmail,
 
-              phone:
-                bookingCustomer.phones?.[0]
-                  ?.number,
+              phone: bookingCustomer.phones?.[0]?.number,
 
-              timeZone:
-                "SA Pacific Standard Time",
+              timeZone: "SA Pacific Standard Time",
             },
           ],
         }),
       },
     );
 
-    console.log(
-      "[booking-create] Reserva creada:",
-      {
-        appointmentId: appointment.id,
-        customerId: bookingCustomer.id,
-      },
-    );
+    console.log("[booking-create] Reserva creada:", {
+      appointmentId: appointment.id,
+      customerId: bookingCustomer.id,
+    });
+
+    /* =====================================================
+       DIAGNÓSTICO: VARIABLES DE EJECUCIÓN
+
+       No registra contraseñas ni tokens.
+    ===================================================== */
+
+    console.log("[booking-mail] Configuración de ejecución", {
+      bookingId: appointment.id,
+
+      activo: process.env.PRUNI_NOTIFICACIONES_ACTIVAS === "true",
+
+      solicitudMentee: process.env.PRUNI_CORREO_SOLICITUD_MENTEE === "true",
+
+      solicitudMentor: process.env.PRUNI_CORREO_SOLICITUD_MENTOR === "true",
+
+      smtpHostDisponible: Boolean(process.env.PRUNI_SMTP_HOST),
+
+      smtpUserDisponible: Boolean(process.env.PRUNI_SMTP_USER),
+
+      smtpPasswordDisponible: Boolean(process.env.PRUNI_SMTP_PASSWORD),
+
+      fromDisponible: Boolean(process.env.PRUNI_MAIL_FROM),
+    });
 
     /* =====================================================
        REGISTRAR ESTADO PENDIENTE EN SUPABASE
+
+       Se conserva el comportamiento actual.
+       El error RLS se corregirá por separado.
     ===================================================== */
 
-    const { error: confirmationError } =
-      await supabase
-        .from("appointment_confirmations")
-        .insert({
-          microsoft_booking_id:
-            appointment.id,
+    const { error: confirmationError } = await supabase
+      .from("appointment_confirmations")
+      .insert({
+        microsoft_booking_id: appointment.id,
 
-          status: "pendiente",
-        });
+        status: "pendiente",
+      });
 
     if (confirmationError) {
-      console.error(
-        "Error guardando confirmación:",
-        confirmationError,
-      );
+      console.error("Error guardando confirmación:", confirmationError);
     }
 
     /* =====================================================
        CORREOS INSTITUCIONALES
     ===================================================== */
 
-    if (
-      process.env.PRUNI_NOTIFICACIONES_ACTIVAS ===
-      "true"
-    ) {
+    if (process.env.PRUNI_NOTIFICACIONES_ACTIVAS === "true") {
+      console.log("[booking-mail] Notificaciones habilitadas", {
+        bookingId: appointment.id,
+      });
+
       try {
-        const startLocal =
-          toGraphLocalDateTime(body.startAt);
+        /* =================================================
+           PREPARAR FECHA
+        ================================================= */
+
+        console.log("[booking-mail] Preparando fecha", {
+          bookingId: appointment.id,
+        });
+
+        const startLocal = toGraphLocalDateTime(body.startAt);
 
         const horario = fechaHoraMentoria({
           dateTime: startLocal,
-
-          timeZone:
-            "SA Pacific Standard Time",
+          timeZone: "SA Pacific Standard Time",
         });
 
-        const staffResponse =
-          await graphRequest<{
-            value?: Array<{
-              id: string;
-              displayName?: string;
-              emailAddress?: string;
-            }>;
-          }>(
-            `/solutions/bookingBusinesses/${encodeURIComponent(
-              businessId,
-            )}/staffMembers`,
-          );
+        /* =================================================
+           CONSULTAR DATOS DEL MENTOR
+        ================================================= */
 
-        const staffData =
-          staffResponse.value?.find(
-            (staff) =>
-              staff.id === body.staffId,
-          );
+        console.log("[booking-mail] Consultando datos del mentor", {
+          bookingId: appointment.id,
+        });
+
+        const staffResponse = await graphRequest<{
+          value?: Array<{
+            id: string;
+            displayName?: string;
+            emailAddress?: string;
+          }>;
+        }>(
+          `/solutions/bookingBusinesses/${encodeURIComponent(
+            businessId,
+          )}/staffMembers`,
+        );
+
+        const staffData = staffResponse.value?.find(
+          (staff) => staff.id === body.staffId,
+        );
+
+        console.log("[booking-mail] Consulta de mentor completada", {
+          bookingId: appointment.id,
+
+          encontrado: Boolean(staffData),
+
+          emailMentorDisponible: Boolean(staffData?.emailAddress),
+
+          fechaInterpretada: Boolean(horario),
+        });
+
+        /* =================================================
+           ENVIAR NOTIFICACIONES
+        ================================================= */
 
         if (horario) {
           const datos = {
-            mentorNombre:
-              staffData?.displayName ||
-              "Mentor ProUni",
+            mentorNombre: staffData?.displayName || "Mentor ProUni",
 
             menteeNombre:
               bookingCustomer.displayName ||
               body.customerName ||
               "Mentee ProUni",
 
-            menteeEmail:
-              customerEmail,
+            menteeEmail: customerEmail,
 
             fecha: horario.fecha,
 
             hora: horario.hora,
           };
 
-          const results =
-            await Promise.allSettled([
-              notificarMentoria({
-                bookingId: appointment.id,
+          console.log("[booking-mail] Iniciando notificaciones", {
+            bookingId: appointment.id,
 
-                event:
-                  "solicitud-mentee",
+            destinatarioMenteeDisponible: Boolean(customerEmail),
 
-                recipient:
-                  customerEmail,
+            destinatarioMentorDisponible: Boolean(staffData?.emailAddress),
+          });
 
-                data: datos,
-              }),
+          const results = await Promise.allSettled([
+            notificarMentoria({
+              bookingId: appointment.id,
 
-              ...(staffData?.emailAddress
-                ? [
-                    notificarMentoria({
-                      bookingId:
-                        appointment.id,
+              event: "solicitud-mentee",
 
-                      event:
-                        "solicitud-mentor" as const,
+              recipient: customerEmail,
 
-                      recipient:
-                        staffData.emailAddress,
+              data: datos,
+            }),
 
-                      data: datos,
-                    }),
-                  ]
-                : []),
-            ]);
+            ...(staffData?.emailAddress
+              ? [
+                  notificarMentoria({
+                    bookingId: appointment.id,
+
+                    event: "solicitud-mentor" as const,
+
+                    recipient: staffData.emailAddress,
+
+                    data: datos,
+                  }),
+                ]
+              : []),
+          ]);
+
+          console.log("[booking-mail] Resultado de las funciones", {
+            bookingId: appointment.id,
+
+            resultados: results.map((result) => result.status),
+          });
 
           for (const result of results) {
-            if (
-              result.status === "rejected"
-            ) {
+            if (result.status === "rejected") {
               console.error(
                 "[booking-create] Error de notificación:",
                 result.reason,
@@ -710,11 +639,22 @@ export async function POST(request: Request) {
           );
         }
       } catch (mailError) {
+        console.error("[booking-mail] Preparación fallida", {
+          bookingId: appointment.id,
+
+          mensaje:
+            mailError instanceof Error ? mailError.message : String(mailError),
+        });
+
         console.error(
           "[booking-create] Reserva creada; error preparando correos:",
           mailError,
         );
       }
+    } else {
+      console.warn("[booking-mail] Notificaciones desactivadas en runtime", {
+        bookingId: appointment.id,
+      });
     }
 
     /* =====================================================
@@ -727,16 +667,12 @@ export async function POST(request: Request) {
 
         appointment,
 
-        customerId:
-          bookingCustomer.id,
+        customerId: bookingCustomer.id,
       },
       { status: 201 },
     );
   } catch (error) {
-    console.error(
-      "Error creando reserva:",
-      error,
-    );
+    console.error("Error creando reserva:", error);
 
     return NextResponse.json(
       {
@@ -761,53 +697,38 @@ export async function DELETE(request: Request) {
       email?: string;
     };
 
-    const microsoftBookingId =
-      body.microsoftBookingId;
+    const microsoftBookingId = body.microsoftBookingId;
 
     if (!microsoftBookingId) {
       return NextResponse.json(
         {
-          error:
-            "Falta microsoftBookingId.",
+          error: "Falta microsoftBookingId.",
         },
         { status: 400 },
       );
     }
 
-    const { data: confirmation } =
-      await supabase
-        .from("appointment_confirmations")
-        .select(
-          "microsoft_booking_id, status",
-        )
-        .eq(
-          "microsoft_booking_id",
-          microsoftBookingId,
-        )
-        .maybeSingle();
+    const { data: confirmation } = await supabase
+      .from("appointment_confirmations")
+      .select("microsoft_booking_id, status")
+      .eq("microsoft_booking_id", microsoftBookingId)
+      .maybeSingle();
 
-    if (
-      confirmation?.status?.toLowerCase() ===
-      "confirmada"
-    ) {
+    if (confirmation?.status?.toLowerCase() === "confirmada") {
       return NextResponse.json(
         {
-          error:
-            "Esta mentoría ya fue confirmada y no se puede cancelar.",
+          error: "Esta mentoría ya fue confirmada y no se puede cancelar.",
         },
         { status: 409 },
       );
     }
 
-    const businessId =
-      getBookingBusinessId();
+    const businessId = getBookingBusinessId();
 
     await graphRequest(
       `/solutions/bookingBusinesses/${encodeURIComponent(
         businessId,
-      )}/appointments/${encodeURIComponent(
-        microsoftBookingId,
-      )}/cancel`,
+      )}/appointments/${encodeURIComponent(microsoftBookingId)}/cancel`,
       {
         method: "POST",
 
@@ -823,16 +744,12 @@ export async function DELETE(request: Request) {
       .update({
         status: "cancelada",
       })
-      .eq(
-        "microsoft_booking_id",
-        microsoftBookingId,
-      );
+      .eq("microsoft_booking_id", microsoftBookingId);
 
     return NextResponse.json({
       success: true,
 
-      message:
-        "La reserva fue cancelada correctamente.",
+      message: "La reserva fue cancelada correctamente.",
     });
   } catch (error) {
     const err = error as Error;
