@@ -1,22 +1,27 @@
-
 import { NextRequest, NextResponse } from "next/server";
 import { timingSafeEqual } from "node:crypto";
 
-import {
-  getBookingBusinessId,
-  graphRequest,
-} from "@/lib/microsoft-graph";
+import { getBookingBusinessId, graphRequest } from "@/lib/microsoft-graph";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /* =========================================================
-   DIAGNÓSTICO DE NOTIFICACIONES DEL MENTOR
+   DIAGNÓSTICO DE MICROSOFT BOOKINGS
 
-   - Solo funciona en desarrollo.
-   - Requiere una clave privada.
-   - Solo consulta información.
-   - No modifica Microsoft Bookings.
+   GET:
+   - Consulta personal y roles.
+   - Consulta servicios y personal asignado.
+   - Identifica la cuenta CEA Patronato.
+   - No modifica información.
+
+   POST:
+   - Conserva el diagnóstico de notificaciones
+     del mentor César Pongo.
+
+   SEGURIDAD:
+   - Solo disponible en desarrollo.
+   - Requiere BOOKINGS_DIAGNOSTIC_KEY.
 ========================================================= */
 
 type BookingStaff = {
@@ -28,16 +33,30 @@ type BookingStaff = {
   availabilityIsAffectedByPersonalCalendar?: boolean;
 };
 
-type StaffResponse = {
-  value?: BookingStaff[];
+type BookingService = {
+  id: string;
+  displayName?: string;
+  staffMemberIds?: string[];
 };
 
-function authorized(request: NextRequest): boolean {
-  const expected =
-    process.env.BOOKINGS_DIAGNOSTIC_KEY;
+type StaffResponse = {
+  value?: BookingStaff[];
+  "@odata.nextLink"?: string;
+};
 
-  const provided =
-    request.headers.get("x-diagnostic-key");
+type ServicesResponse = {
+  value?: BookingService[];
+  "@odata.nextLink"?: string;
+};
+
+/* =========================================================
+   SEGURIDAD
+========================================================= */
+
+function authorized(request: NextRequest): boolean {
+  const expected = process.env.BOOKINGS_DIAGNOSTIC_KEY;
+
+  const provided = request.headers.get("x-diagnostic-key");
 
   if (!expected || !provided) {
     return false;
@@ -46,22 +65,12 @@ function authorized(request: NextRequest): boolean {
   const left = Buffer.from(expected);
   const right = Buffer.from(provided);
 
-  return (
-    left.length === right.length &&
-    timingSafeEqual(left, right)
-  );
+  return left.length === right.length && timingSafeEqual(left, right);
 }
 
-/* =========================================================
-   POST: VERIFICAR CONFIGURACIÓN DEL MENTOR
-========================================================= */
-
-export async function POST(request: NextRequest) {
+function validateRequest(request: NextRequest): NextResponse | null {
   if (process.env.NODE_ENV !== "development") {
-    return NextResponse.json(
-      { error: "Ruta no disponible." },
-      { status: 404 },
-    );
+    return NextResponse.json({ error: "Ruta no disponible." }, { status: 404 });
   }
 
   if (!authorized(request)) {
@@ -71,38 +80,137 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  return null;
+}
+
+/* =========================================================
+   GET: DIAGNÓSTICO GENERAL DE BOOKINGS
+========================================================= */
+
+export async function GET(request: NextRequest) {
+  const validation = validateRequest(request);
+
+  if (validation) {
+    return validation;
+  }
+
   try {
-    const businessId =
-      getBookingBusinessId();
+    const businessId = getBookingBusinessId();
 
-    /*
-       1. CONSULTAR PERSONAL DEL CALENDARIO
-    */
-
-    const staffResponse =
-      await graphRequest<StaffResponse>(
+    const [staffResponse, servicesResponse] = await Promise.all([
+      graphRequest<StaffResponse>(
         `/solutions/bookingBusinesses/${encodeURIComponent(
           businessId,
         )}/staffMembers`,
-      );
+      ),
 
-    /*
-       2. IDENTIFICAR A CÉSAR PONGO
+      graphRequest<ServicesResponse>(
+        `/solutions/bookingBusinesses/${encodeURIComponent(
+          businessId,
+        )}/services`,
+      ),
+    ]);
 
-       Usamos el correo registrado en Bookings
-       para evitar consultar a otro mentor.
-    */
+    const staff = staffResponse.value ?? [];
+    const services = servicesResponse.value ?? [];
 
-    const mentorEmail =
-      "formacion.virtual.peru@gmail.com";
+    const staffMap = new Map(staff.map((member) => [member.id, member]));
 
-    const mentor = (
-      staffResponse.value ?? []
-    ).find(
-      (staff) =>
-        staff.emailAddress
-          ?.trim()
-          .toLowerCase() === mentorEmail,
+    const personal = staff.map((member) => ({
+      id: member.id,
+      nombre: member.displayName ?? "",
+      correo: member.emailAddress ?? "",
+      rol: member.role ?? "No informado",
+    }));
+
+    const servicios = services.map((service) => {
+      const assignedIds = service.staffMemberIds ?? [];
+
+      return {
+        id: service.id,
+        nombre: service.displayName ?? "",
+        totalPersonalAsignado: assignedIds.length,
+
+        personalAsignado: assignedIds.map((id) => ({
+          id,
+          nombre: staffMap.get(id)?.displayName ?? "Personal no encontrado",
+          correo: staffMap.get(id)?.emailAddress ?? "",
+        })),
+      };
+    });
+
+    const administradores = personal.filter(
+      (member) => member.rol.toLowerCase() === "administrator",
+    );
+
+    const cea = personal.filter((member) =>
+      member.correo.toLowerCase().startsWith("intranet@"),
+    );
+
+    return NextResponse.json(
+      {
+        success: true,
+        businessId,
+
+        resumen: {
+          totalPersonal: personal.length,
+          totalServicios: servicios.length,
+          totalAdministradores: administradores.length,
+          personalCompleto: !staffResponse["@odata.nextLink"],
+          serviciosCompletos: !servicesResponse["@odata.nextLink"],
+        },
+
+        ceaPatronato: cea,
+        administradores,
+        personal,
+        servicios,
+
+        cambiosRealizados: false,
+      },
+      {
+        headers: {
+          "Cache-Control": "no-store",
+        },
+      },
+    );
+  } catch (error) {
+    console.error("[diagnostico-bookings][GET] Error:", error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        error:
+          "No se pudo consultar la configuración de Microsoft Bookings. Revisa los registros del servidor.",
+      },
+      { status: 500 },
+    );
+  }
+}
+
+/* =========================================================
+   POST: DIAGNÓSTICO DE NOTIFICACIONES DE CÉSAR PONGO
+========================================================= */
+
+export async function POST(request: NextRequest) {
+  const validation = validateRequest(request);
+
+  if (validation) {
+    return validation;
+  }
+
+  try {
+    const businessId = getBookingBusinessId();
+
+    const staffResponse = await graphRequest<StaffResponse>(
+      `/solutions/bookingBusinesses/${encodeURIComponent(
+        businessId,
+      )}/staffMembers`,
+    );
+
+    const mentorEmail = "formacion.virtual.peru@gmail.com";
+
+    const mentor = (staffResponse.value ?? []).find(
+      (staff) => staff.emailAddress?.trim().toLowerCase() === mentorEmail,
     );
 
     if (!mentor) {
@@ -116,25 +224,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    /*
-       3. OBTENER CONFIGURACIÓN DETALLADA
-    */
+    const staff = await graphRequest<BookingStaff>(
+      `/solutions/bookingBusinesses/${encodeURIComponent(
+        businessId,
+      )}/staffMembers/${encodeURIComponent(mentor.id)}`,
+    );
 
-    const staff =
-      await graphRequest<BookingStaff>(
-        `/solutions/bookingBusinesses/${encodeURIComponent(
-          businessId,
-        )}/staffMembers/${encodeURIComponent(
-          mentor.id,
-        )}`,
-      );
-
-    /*
-       4. INTERPRETAR LA PROPIEDAD
-    */
-
-    const value =
-      staff.isEmailNotificationEnabled;
+    const value = staff.isEmailNotificationEnabled;
 
     let diagnostico: string;
 
@@ -149,14 +245,11 @@ export async function POST(request: NextRequest) {
         "Microsoft Graph no devolvió la propiedad isEmailNotificationEnabled. No podemos determinar su estado.";
     }
 
-    console.log(
-      "[diagnostico-bookings] Resultado:",
-      {
-        staffId: staff.id,
-        isEmailNotificationEnabled: value,
-        role: staff.role,
-      },
-    );
+    console.log("[diagnostico-bookings][POST] Resultado:", {
+      staffId: staff.id,
+      isEmailNotificationEnabled: value,
+      role: staff.role,
+    });
 
     return NextResponse.json({
       success: true,
@@ -165,22 +258,16 @@ export async function POST(request: NextRequest) {
         id: staff.id,
         nombre: staff.displayName,
         rol: staff.role,
-        notificacionesCorreo:
-          value ?? null,
+        notificacionesCorreo: value ?? null,
         calendarioPersonalAfectaDisponibilidad:
-          staff.availabilityIsAffectedByPersonalCalendar ??
-          null,
+          staff.availabilityIsAffectedByPersonalCalendar ?? null,
       },
 
       diagnostico,
-
       cambiosRealizados: false,
     });
   } catch (error) {
-    console.error(
-      "[diagnostico-bookings] Error:",
-      error,
-    );
+    console.error("[diagnostico-bookings][POST] Error:", error);
 
     return NextResponse.json(
       {

@@ -402,11 +402,10 @@ export default function MentorEvidenceDetail({
       {/* ENCABEZADO */}
 
       <header className={styles.pageHeader}>
-        <h1 className={styles.pageTitle}>Evidencias del Mentee</h1>
+        <h1 className={styles.pageTitle}>Revisión de acuerdos y evidencias</h1>
 
         <p className={styles.pageDescription}>
-          Consulta los archivos enviados por el estudiante y los acuerdos a los
-          que corresponden.
+          Se revisa los acuerdos y las evidencias enviadas por el Mentee.
         </p>
       </header>
 
@@ -479,6 +478,7 @@ export default function MentorEvidenceDetail({
                 <strong>{detail.totalEvidencias}</strong>
 
                 <span>
+
                   {detail.totalEvidencias === 1 ? "Evidencia" : "Evidencias"}
                 </span>
               </div>
@@ -626,7 +626,7 @@ export default function MentorEvidenceDetail({
                       {agreement.observacion && (
                         <div className={styles.observation}>
                           <span className={styles.fieldLabel}>
-                            Indicación del mentor
+                            Acuerdo del mentor con el mentee
                           </span>
 
                           <p>{agreement.observacion}</p>

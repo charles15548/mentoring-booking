@@ -1,4 +1,3 @@
-
 "use client";
 
 import "./MenteeLayout.css";
@@ -25,10 +24,7 @@ import {
 } from "lucide-react";
 
 import { supabase } from "@/lib/supabase";
-import {
-  getCurrentProfile,
-  signOut,
-} from "@/services/auth.service";
+import { getCurrentProfile, signOut } from "@/services/auth.service";
 
 import ChangePasswordModal from "@/app/(dashboard)/perfil/ChangePasswordModal";
 
@@ -91,7 +87,7 @@ const menus = {
     },
     {
       href: "/evidencias",
-      label: "Repositorio de evidencias",
+      label: "Revisión de acuerdos y evidencias",
       icon: FileCheck2,
     },
     {
@@ -143,42 +139,28 @@ const menus = {
    TIPOS
 ===================================================== */
 
-type AccessStatus =
-  | "loading"
-  | "ready"
-  | "required"
-  | "error";
+type AccessStatus = "loading" | "ready" | "required" | "error";
 
 /* =====================================================
    COMPONENTE PRINCIPAL
 ===================================================== */
 
-export default function MenteeLayout({
-  children,
-}: {
-  children: ReactNode;
-}) {
+export default function MenteeLayout({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
   const [name, setName] = useState("Cargando...");
   const [rol, setRol] = useState("");
 
-  const [photoUrl, setPhotoUrl] =
-    useState<string | null>(null);
+  const [photoUrl, setPhotoUrl] = useState<string | null>(null);
 
-  const [accessStatus, setAccessStatus] =
-    useState<AccessStatus>("loading");
+  const [accessStatus, setAccessStatus] = useState<AccessStatus>("loading");
 
   const [loadError, setLoadError] = useState("");
 
-  const [
-    changingPassword,
-    setChangingPassword,
-  ] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
 
-  const [passwordError, setPasswordError] =
-    useState("");
+  const [passwordError, setPasswordError] = useState("");
 
   /* =====================================================
      ACTUALIZAR PERFIL Y COMPROBAR PRIMER INGRESO
@@ -188,10 +170,7 @@ export default function MenteeLayout({
     try {
       setLoadError("");
 
-      const {
-        data,
-        error: authError,
-      } = await supabase.auth.getUser();
+      const { data, error: authError } = await supabase.auth.getUser();
 
       if (authError || !data.user) {
         setAccessStatus("loading");
@@ -199,24 +178,19 @@ export default function MenteeLayout({
         return;
       }
 
-      const {
-        data: profile,
-        error: profileError,
-      } = await getCurrentProfile(data.user.id);
+      const { data: profile, error: profileError } = await getCurrentProfile(
+        data.user.id,
+      );
 
       if (profileError || !profile) {
-        setLoadError(
-          "No se pudo comprobar el perfil. Vuelve a intentarlo.",
-        );
+        setLoadError("No se pudo comprobar el perfil. Vuelve a intentarlo.");
 
         setAccessStatus("error");
         return;
       }
 
       setName(
-        [profile.nombres, profile.apellidos]
-          .filter(Boolean)
-          .join(" ") ||
+        [profile.nombres, profile.apellidos].filter(Boolean).join(" ") ||
           profile.email ||
           "Usuario",
       );
@@ -225,24 +199,14 @@ export default function MenteeLayout({
       setPhotoUrl(profile.foto_url);
 
       const requiereCambio =
-        (
-          profile.rol === "mentor" ||
-          profile.rol === "mentee"
-        ) &&
+        (profile.rol === "mentor" || profile.rol === "mentee") &&
         profile.debe_cambiar_password === true;
 
-      setAccessStatus(
-        requiereCambio ? "required" : "ready",
-      );
+      setAccessStatus(requiereCambio ? "required" : "ready");
     } catch (error) {
-      console.error(
-        "No se pudo cargar el perfil:",
-        error,
-      );
+      console.error("No se pudo cargar el perfil:", error);
 
-      setLoadError(
-        "No se pudo comprobar tu cuenta. Vuelve a intentarlo.",
-      );
+      setLoadError("No se pudo comprobar tu cuenta. Vuelve a intentarlo.");
 
       setAccessStatus("error");
     }
@@ -259,16 +223,10 @@ export default function MenteeLayout({
       void loadProfile();
     }
 
-    window.addEventListener(
-      "profile-updated",
-      handleProfileUpdated,
-    );
+    window.addEventListener("profile-updated", handleProfileUpdated);
 
     return () => {
-      window.removeEventListener(
-        "profile-updated",
-        handleProfileUpdated,
-      );
+      window.removeEventListener("profile-updated", handleProfileUpdated);
     };
   }, [router]);
 
@@ -280,10 +238,7 @@ export default function MenteeLayout({
     _currentPassword: string,
     newPassword: string,
   ) {
-    if (
-      accessStatus !== "required" ||
-      changingPassword
-    ) {
+    if (accessStatus !== "required" || changingPassword) {
       return;
     }
 
@@ -296,46 +251,34 @@ export default function MenteeLayout({
       } = await supabase.auth.getSession();
 
       if (!session?.access_token) {
-        throw new Error(
-          "Tu sesión ha finalizado. Inicia sesión nuevamente.",
-        );
+        throw new Error("Tu sesión ha finalizado. Inicia sesión nuevamente.");
       }
 
-      const response = await fetch(
-        "/api/perfil/password-inicial",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization:
-              `Bearer ${session.access_token}`,
-          },
-          body: JSON.stringify({
-            newPassword,
-          }),
+      const response = await fetch("/api/perfil/password-inicial", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
         },
-      );
+        body: JSON.stringify({
+          newPassword,
+        }),
+      });
 
       const result: {
         error?: string;
         debe_cambiar_password?: boolean;
       } = await response.json();
 
-      if (
-        !response.ok ||
-        result.debe_cambiar_password !== false
-      ) {
+      if (!response.ok || result.debe_cambiar_password !== false) {
         throw new Error(
-          result.error ||
-            "No se pudo completar el cambio de contraseña.",
+          result.error || "No se pudo completar el cambio de contraseña.",
         );
       }
 
       setAccessStatus("ready");
 
-      window.dispatchEvent(
-        new Event("profile-updated"),
-      );
+      window.dispatchEvent(new Event("profile-updated"));
     } catch (error) {
       setPasswordError(
         error instanceof Error
@@ -361,18 +304,14 @@ export default function MenteeLayout({
   ===================================================== */
 
   function active(path: string) {
-    return (
-      pathname === path ||
-      pathname.startsWith(`${path}/`)
-    );
+    return pathname === path || pathname.startsWith(`${path}/`);
   }
 
   /* =====================================================
      MENÚ SEGÚN ROL
   ===================================================== */
 
-  const currentMenu =
-    menus[rol as keyof typeof menus] ?? [];
+  const currentMenu = menus[rol as keyof typeof menus] ?? [];
 
   /* =====================================================
      INICIALES DEL USUARIO
@@ -432,10 +371,7 @@ export default function MenteeLayout({
             MENÚ AUTOMÁTICO POR ROL
         ================================== */}
 
-        <nav
-          className="main-nav"
-          aria-label="Navegación principal"
-        >
+        <nav className="main-nav" aria-label="Navegación principal">
           {accessStatus === "ready" &&
             currentMenu.map((item) => {
               const Icon = item.icon;
@@ -444,9 +380,7 @@ export default function MenteeLayout({
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`nav-item ${
-                    active(item.href) ? "active" : ""
-                  }`}
+                  className={`nav-item ${active(item.href) ? "active" : ""}`}
                 >
                   <Icon size={19} />
                   <span>{item.label}</span>
@@ -511,9 +445,7 @@ export default function MenteeLayout({
             <div className="status-pill">
               <CheckCircle2 size={15} />
 
-              <span>
-                Microsoft Bookings conectado
-              </span>
+              <span>Microsoft Bookings conectado</span>
             </div>
 
             <div className="header-divider" />
@@ -526,17 +458,13 @@ export default function MenteeLayout({
                   className="avatar avatar-image"
                 />
               ) : (
-                <div className="avatar">
-                  {initials}
-                </div>
+                <div className="avatar">{initials}</div>
               )}
 
               <div className="header-profile-info">
                 <strong>{name}</strong>
 
-                <span>
-                  {roleLabels[rol] ?? "Cargando..."}
-                </span>
+                <span>{roleLabels[rol] ?? "Cargando..."}</span>
               </div>
             </div>
           </div>
@@ -549,15 +477,12 @@ export default function MenteeLayout({
         {accessStatus === "ready" && children}
 
         {accessStatus === "loading" && (
-          <p className="page-content">
-            Verificando cuenta...
-          </p>
+          <p className="page-content">Verificando cuenta...</p>
         )}
 
         {accessStatus === "required" && (
           <p className="page-content">
-            Establece tu contraseña personal
-            para continuar.
+            Establece tu contraseña personal para continuar.
           </p>
         )}
 

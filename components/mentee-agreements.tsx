@@ -856,7 +856,7 @@ export default function MenteeAgreements({
                       {agreement.observacion && (
                         <div className={styles.observation}>
                           <span className={styles.fieldLabel}>
-                            Indicación del mentor
+                            Acuerdo del mentor
                           </span>
                           <p>{agreement.observacion}</p>
                         </div>

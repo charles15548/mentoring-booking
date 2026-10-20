@@ -631,39 +631,54 @@ export default function MentorAppointments({ view }: MentorAppointmentsProps) {
   /* =====================================================
      INTERFAZ
   ===================================================== */
+return (
+  <div className="page-content">
+    <section
+      className={styles.appointmentWelcome}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        gap: "8px",
+        width: "100%",
+      }}
+    >
+      <h1
+        className={styles.appointmentHeading}
+        style={{ margin: 0 }}
+      >
+        {title}
+      </h1>
 
-  return (
-    <div className="page-content">
-      <section className={`welcome-row ${styles.appointmentWelcome}`}>
-        <div>
-          <h1 className={styles.appointmentHeading}>{title}</h1>
+      <p
+        className={styles.appointmentDescription}
+        style={{ margin: 0 }}
+      >
+        {description}
+      </p>
+    </section>
 
-          <p className={styles.appointmentDescription}>{description}</p>
-        </div>
-      </section>
+    {/* MENSAJES */}
 
-      {/* MENSAJES */}
+    {error && (
+      <p className="form-error" role="alert">
+        {error}
+      </p>
+    )}
 
-      {error && (
-        <p className="form-error" role="alert">
-          {error}
-        </p>
-      )}
-
-      {success && (
-        <p
-          role="status"
-          style={{
-            margin: "12px 0",
-            color: "#24764a",
-            fontSize: 14,
-            fontWeight: 600,
-          }}
-        >
-          {success}
-        </p>
-      )}
-
+    {success && (
+      <p
+        role="status"
+        style={{
+          margin: "12px 0",
+          color: "#24764a",
+          fontSize: 14,
+          fontWeight: 600,
+        }}
+      >
+        {success}
+      </p>
+    )}
       {/* ======================================
           FILTROS
       ====================================== */}

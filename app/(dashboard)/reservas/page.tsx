@@ -248,7 +248,7 @@ export default function ReservasPage({ view = "reservas" }: ReservasPageProps) {
     });
 
   const title = isMentoriasView
-    ? "Repositorio de sesiones de mentoría"
+    ? "Revisar acuerdos y evidencias coordinadas con mi mentor"
     : "Accediendo a mis sesiones de mentoría";
 
   const description = isMentoriasView

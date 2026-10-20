@@ -1,4 +1,3 @@
-
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
@@ -302,18 +301,6 @@ export default function PerfilPage() {
     return (
       <main className={`page-content ${styles.page}`}>
         <div className={styles.adminProfile}>
-          <header className={styles.adminHeader}>
-            <div>
-              <span className={styles.adminEyebrow}>CUENTA</span>
-
-              <h1>Mi Perfil</h1>
-
-              <p>
-                Administra tu información personal y los datos de tu cuenta.
-              </p>
-            </div>
-          </header>
-
           {error && (
             <p className="form-error" role="alert">
               {error}
@@ -330,7 +317,6 @@ export default function PerfilPage() {
             <div className={styles.sectionHeader}>
               <div>
                 <h2>Información personal</h2>
-
                 <p>Actualiza los datos que aparecen en tu cuenta.</p>
               </div>
 
@@ -440,7 +426,6 @@ export default function PerfilPage() {
 
               <div className={styles.securityInfo}>
                 <strong>Contraseña</strong>
-
                 <p>
                   Puedes actualizar la contraseña de tu cuenta cuando lo
                   necesites.

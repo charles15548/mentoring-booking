@@ -1,0 +1,304 @@
+/* ============================================
+   BOTÓN EDITAR
+============================================ */
+
+.editButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 39px;
+  padding: 9px 12px;
+  background: #ffffff;
+  border: 1px solid #c9a4a8;
+  border-radius: 8px;
+  color: var(--wine);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.editButton:hover:not(:disabled) {
+  background: #faf4f5;
+  border-color: var(--wine);
+}
+
+.editButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   MENSAJES
+============================================ */
+
+.successMessage {
+  margin: 12px 0;
+  color: #24764a;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ============================================
+   FONDO DEL MODAL
+============================================ */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(20, 22, 28, 0.55);
+  box-sizing: border-box;
+}
+
+/* ============================================
+   CONTENEDOR
+============================================ */
+
+.modal {
+  width: 100%;
+  max-width: 740px;
+  max-height: min(90vh, 900px);
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 1px solid #e7e4e2;
+  border-radius: 14px;
+  box-shadow: 0 18px 55px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+}
+
+.modal form {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ============================================
+   ENCABEZADO
+============================================ */
+
+.modalHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 23px 27px 20px;
+  border-bottom: 1px solid #eeecea;
+}
+
+.modalHeader h2 {
+  margin: 0 0 6px;
+  color: #292929;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.modalHeader p {
+  margin: 0;
+  color: #787c84;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+  color: #69707a;
+  font-size: 26px;
+  cursor: pointer;
+}
+
+.closeButton:hover:not(:disabled) {
+  background: #f4f4f4;
+  color: #292929;
+}
+
+/* ============================================
+   CONTENIDO
+============================================ */
+
+.modalBody {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 24px 27px;
+  overscroll-behavior: contain;
+}
+
+/* ============================================
+   ENLACES EDITABLES
+============================================ */
+
+.editLinkList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.editLinkRow {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  min-width: 0;
+  padding: 10px;
+  border: 1px solid #e7e4e2;
+  border-radius: 8px;
+  background: #fafafa;
+  box-sizing: border-box;
+}
+
+.editLinkRow span {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #565d67;
+  font-size: 12px;
+}
+
+.editLinkRow button {
+  flex-shrink: 0;
+  padding: 7px 9px;
+  background: #ffffff;
+  border: 1px solid #dce0e5;
+  border-radius: 6px;
+  color: var(--wine);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.editLinkRow button:hover:not(:disabled) {
+  background: #faf4f5;
+}
+
+.editLinkRow .removeLinkButton {
+  color: #a02e39;
+  border-color: #e2c5c8;
+}
+
+.textButton {
+  align-self: flex-start;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  color: var(--wine);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ============================================
+   PIE DEL MODAL
+============================================ */
+
+.modalFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 17px 27px;
+  border-top: 1px solid #eeecea;
+  background: #ffffff;
+}
+
+.cancelButton {
+  min-height: 42px;
+  padding: 10px 19px;
+  background: #ffffff;
+  border: 1px solid #dce0e5;
+  border-radius: 8px;
+  color: #354150;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.cancelButton:hover:not(:disabled) {
+  background: #f8f8f8;
+}
+
+/* ============================================
+   ACCESIBILIDAD
+============================================ */
+
+.editButton:focus-visible,
+.closeButton:focus-visible,
+.editLinkRow button:focus-visible,
+.textButton:focus-visible,
+.cancelButton:focus-visible {
+  outline: 2px solid var(--wine);
+  outline-offset: 3px;
+}
+
+.modal button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ============================================
+   RESPONSIVE
+============================================ */
+
+@media (max-width: 760px) {
+  .overlay {
+    padding: 12px;
+  }
+
+  .modal {
+    max-height: 94vh;
+    border-radius: 12px;
+  }
+
+  .modalHeader {
+    padding: 19px 18px;
+  }
+
+  .modalBody {
+    padding: 20px 18px;
+  }
+
+  .modalFooter {
+    padding: 14px 18px;
+  }
+
+  .editLinkRow {
+    flex-wrap: wrap;
+  }
+
+  .editLinkRow span {
+    flex-basis: 100%;
+  }
+
+  .editLinkRow button {
+    flex: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .editButton {
+    transition: none;
+  }
+}
