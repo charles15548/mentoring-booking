@@ -494,13 +494,19 @@ export async function POST(request: Request) {
        El error RLS se corregirá por separado.
     ===================================================== */
 
-    const { error: confirmationError } = await supabase
+    const { error: confirmationError } = await supabaseAdmin
       .from("appointment_confirmations")
       .insert({
         microsoft_booking_id: appointment.id,
-
         status: "pendiente",
       });
+
+    if (confirmationError) {
+      console.error(
+        "[booking-create] Error guardando confirmación:",
+        confirmationError,
+      );
+    }
 
     if (confirmationError) {
       console.error("Error guardando confirmación:", confirmationError);
